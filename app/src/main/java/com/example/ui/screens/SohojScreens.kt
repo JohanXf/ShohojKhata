@@ -164,7 +164,7 @@ fun OnboardingScreen(
     var name by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var shopName by remember { mutableStateOf("") }
-    var shopType by remember { mutableStateOf(if (isBengali) "মুদি দোকান" else "Grocery Shop") }
+    var shopType by remember { mutableStateOf(if (isBengali) "মুদি দোকান (Grocery)" else "Grocery Shop") }
     var upiId by remember { mutableStateOf("") }
     var pin by remember { mutableStateOf("") }
     var confirmPin by remember { mutableStateOf("") }
@@ -172,13 +172,13 @@ fun OnboardingScreen(
     var expandedType by remember { mutableStateOf(false) }
     val shopTypes = if (isBengali) {
         listOf(
-            "মুদিখানা দোকান",
-            "ফার্মেসী",
-            "কাপড়ের দোকান",
-            "মোবাইল ও ইলেক্ট্রনিক্স",
-            "রেস্টুরেন্ট",
-            "সেলুন ও পার্লার",
-            "অন্যান্য ব্যবসা"
+            "মুদি দোকান (Grocery)",
+            "ফার্মেসী (Pharmacy)",
+            "কাপড়ের দোকান (Clothing Store)",
+            "মোবাইল ও ইলেকট্রনিক্স (Electronics)",
+            "রেস্টুরেন্ট ও ক্যাফে (Food & Cafe)",
+            "সেলুন ও পার্লার (Salon)",
+            "অন্যান্য ব্যবসা (Others)"
         )
     } else {
         listOf(
@@ -240,10 +240,9 @@ fun OnboardingScreen(
             }
 
             item {
-                Card(
+                NeumorphicCard(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    shape = RoundedCornerShape(28.dp)
                 ) {
                     Column(
                         modifier = Modifier.padding(20.dp),
@@ -322,7 +321,7 @@ fun OnboardingScreen(
                             onValueChange = { upiId = it },
                             label = { Text(if (isBengali) "UPI আইডি / পেমেন্ট নম্বর" else "UPI ID / Pay Number") },
                             leadingIcon = { Icon(Icons.Default.QrCode, null, tint = ForestGreen) },
-                            placeholder = { Text(if (isBengali) "merchant@upi" else "merchant@upi") },
+                            placeholder = { Text(if (isBengali) "merchant@upi বা bKash নম্বর" else "merchant@upi or bKash number") },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true
                         )
@@ -354,7 +353,7 @@ fun OnboardingScreen(
         }
 
         // Action submit button at bottom overlay
-        Button(
+        NeumorphicButton(
             onClick = {
                 if (name.isBlank() || phone.isBlank() || shopName.isBlank() || pin.length != 4) {
                     val alertText = if (isBengali) "অনুগ্রহ করে সব তথ্য এবং ৪ ডিজিটের পিন সঠিক দিন" else "Please fill all details and set a 4-digit PIN"
@@ -375,8 +374,8 @@ fun OnboardingScreen(
                 .height(56.dp)
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 8.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = ForestGreen),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(28.dp),
+            containerColor = ForestGreen
         ) {
             Icon(Icons.Default.Check, contentDescription = "Confirm", tint = Color.White)
             Spacer(modifier = Modifier.width(8.dp))
@@ -560,7 +559,7 @@ fun DashboardScreen(
                 containerColor = ForestGreen,
                 contentColor = Color.White,
                 icon = { Icon(Icons.Default.PersonAdd, "Add Customer") },
-                text = { Text(if (isBengali) "কাস্টমার যোগ করুন" else "Add New Customer", fontWeight = FontWeight.Bold) },
+                text = { Text(if (isBengali) "নতুন কাস্টমার যোগ করুন" else "Add New Customer", fontWeight = FontWeight.Bold) },
                 shape = RoundedCornerShape(16.dp)
             )
         },
@@ -625,8 +624,8 @@ fun DashboardScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = if (isBengali) "মোট হিসাব (Net Balance)" else "Net Balance",
-                            fontSize = 15.sp,
+                            text = if (isBengali) "মোট নেট হিসাব (Net Balance)" else "Net Balance",
+                            fontSize = 13.sp,
                             color = Color.White.copy(alpha = 0.80f),
                             fontWeight = FontWeight.Bold
                         )
@@ -756,7 +755,7 @@ fun DashboardScreen(
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
-                    placeholder = { Text(if (isBengali) "নাম বা নম্বর দিয়ে সার্চ করুন..." else "Search by name or number...") },
+                    placeholder = { Text(if (isBengali) "নাম বা মোবাইল দিয়ে সার্চ করুন..." else "Search by name or mobile...") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search", tint = ForestGreen) },
                     trailingIcon = {
                         if (searchQuery.isNotEmpty()) {
@@ -1633,7 +1632,7 @@ fun TransactionRow(
                         ) {
                             val methodText = when (transaction.paymentMethod) {
                                 "CASH" -> if (isBengali) "নগদ" else "CASH"
-                                "UPI" -> if (isBengali) "UPI" else "UPI"
+                                "UPI" -> if (isBengali) "UPI/bKash" else "UPI/MFS"
                                 else -> if (isBengali) "অন্যান্য" else "OTHER"
                             }
                             Text(methodText, fontSize = 9.sp, fontWeight = FontWeight.Bold, color = if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.9f) else Color.Gray)
@@ -1777,7 +1776,7 @@ fun TransactionEntryDialog(
                         onValueChange = { currentItemAmount = it },
                         placeholder = { 
                             Text(
-                                text = if (isBengali) "পরিমাণ" else "Amount",
+                                text = if (isBengali) "টাকার পরিমাণ" else "Amount",
                                 fontSize = 13.sp,
                                 color = if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.6f) else Color.Gray.copy(alpha = 0.6f)
                             ) 
@@ -1966,9 +1965,9 @@ fun TransactionEntryDialog(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         val modes = if (isBengali) {
-                            listOf("CASH" to "নগদ (Cash)", "UPI" to "UPI", "OTHER" to "অন্যান্য")
+                            listOf("CASH" to "নগদ (Cash)", "UPI" to "UPI/bKash", "OTHER" to "অন্যান্য")
                         } else {
-                            listOf("CASH" to "Cash", "UPI" to "UPI", "OTHER" to "Other")
+                            listOf("CASH" to "Cash", "UPI" to "UPI/bKash", "OTHER" to "Other")
                         }
                         modes.forEach { (key, label) ->
                             val selected = paymentMethod == key
@@ -2304,7 +2303,7 @@ fun TimeFilterTabsRow(
 ) {
     val filters = listOf(
         "DAILY" to (if (isBengali) "আজ" else "Daily"),
-        "WEEKLY" to (if (isBengali) "সপ্তাহ" else "Weekly"), // corrected translated text for better aesthetic representation
+        "WEEKLY" to (if (isBengali) "সветаহ" else "Weekly"), // corrected translated text for better aesthetic representation
         "MONTHLY" to (if (isBengali) "মাস" else "Monthly"),
         "ALL" to (if (isBengali) "সব সময়" else "All Time")
     )
@@ -2353,9 +2352,9 @@ fun PaymentMethodFilterRow(
     onSelectMethod: (String) -> Unit
 ) {
     val filters = if (isBengali) {
-        listOf("ALL" to "সব লেনদেন", "CASH" to "নগদ", "UPI" to "UPI")
+        listOf("ALL" to "সব লেনদেন", "CASH" to "নগদ", "UPI" to "UPI/bKash")
     } else {
-        listOf("ALL" to "All", "CASH" to "Cash Only", "UPI" to "UPI")
+        listOf("ALL" to "All Txns", "CASH" to "Cash Only", "UPI" to "UPI/bKash")
     }
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -2763,7 +2762,7 @@ fun TransactionItemRow(isBengali: Boolean, tx: Transaction) {
                 )
                 val methodText = when (tx.paymentMethod) {
                     "CASH" -> if (isBengali) "নগদ" else "CASH"
-                    "UPI" -> if (isBengali) "UPI" else "UPI"
+                    "UPI" -> if (isBengali) "UPI/bKash" else "UPI/MFS"
                     else -> if (isBengali) "অন্যান্য" else "OTHER"
                 }
                 Text("$txDate • $methodText", fontSize = 11.sp, color = Color.Gray)
@@ -2850,7 +2849,7 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
-                            text = if (isBengali) "ভাষা পরিবর্তন করুন" else "App Language Settings",
+                            text = if (isBengali) "ভাষা পরিবর্তন করুন (App Language)" else "App Language Settings",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             color = NavyDark
@@ -3032,7 +3031,7 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
                 ) {
                     Icon(Icons.Default.ExitToApp, null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(if (isBengali) "খাতা লক করুন" else "Lock Checkbook", color = Color.Red)
+                    Text(if (isBengali) "খাতা লক করুন" else "Lock Checkbook Exit", color = Color.Red)
                 }
             }
         }
