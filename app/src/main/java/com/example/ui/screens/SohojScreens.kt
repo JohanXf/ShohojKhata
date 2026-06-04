@@ -554,16 +554,6 @@ fun DashboardScreen(
     val netBalance = totalWeGet - totalWeGive
 
     Scaffold(
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = { showAddDialog = true },
-                containerColor = ForestGreen,
-                contentColor = Color.White,
-                icon = { Icon(Icons.Default.PersonAdd, "Add Customer") },
-                text = { Text(if (isBengali) "নতুন কাস্টমার যোগ করুন" else "Add New Customer", fontWeight = FontWeight.Bold) },
-                shape = RoundedCornerShape(16.dp)
-            )
-        },
         containerColor = WarmBg
     ) { innerPadding ->
         Column(
@@ -752,28 +742,50 @@ fun DashboardScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Search Box
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    placeholder = { Text(if (isBengali) "নাম বা মোবাইল দিয়ে সার্চ করুন..." else "Search by name or mobile...") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search", tint = ForestGreen) },
-                    trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { searchQuery = "" }) {
-                                Icon(Icons.Default.Clear, contentDescription = "Clear")
-                            }
-                        }
-                    },
+                // Search Box and Add New Customer (90-10% Ratio)
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.White,
-                        focusedContainerColor = Color.White,
-                        unfocusedBorderColor = ForestGreen.copy(alpha = 0.15f),
-                        focusedBorderColor = ForestGreen
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        placeholder = { Text(if (isBengali) "নাম বা মোবাইল দিয়ে সার্চ করুন..." else "Search by name or mobile...") },
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search", tint = ForestGreen) },
+                        trailingIcon = {
+                            if (searchQuery.isNotEmpty()) {
+                                IconButton(onClick = { searchQuery = "" }) {
+                                    Icon(Icons.Default.Clear, contentDescription = "Clear")
+                                }
+                            }
+                        },
+                        modifier = Modifier.weight(0.9f),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.White,
+                            focusedContainerColor = Color.White,
+                            unfocusedBorderColor = ForestGreen.copy(alpha = 0.15f),
+                            focusedBorderColor = ForestGreen
+                        )
                     )
-                )
+
+                    Box(
+                        modifier = Modifier
+                            .weight(0.1f)
+                            .height(56.dp)
+                            .background(ForestGreen, shape = RoundedCornerShape(24.dp))
+                            .clickable { showAddDialog = true },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PersonAdd,
+                            contentDescription = "Add Customer",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -812,7 +824,7 @@ fun DashboardScreen(
                             )
                             Text(
                                 text = if (searchQuery.isEmpty()) {
-                                    if (isBengali) "নতুন খাতা শুরু করতে নিচের বোতামে চাপুন।" else "Tap the button below to add your first customer."
+                                    if (isBengali) "নতুন কাস্টমার যোগ করতে উপরের '+' বোতামে চাপুন।" else "Tap the '+' button above to add your first customer."
                                 } else {
                                     if (isBengali) "বানান চেক করে আবার চেষ্টা করুন।" else "Check your query spelling and retry."
                                 },
