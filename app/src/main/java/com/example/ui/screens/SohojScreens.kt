@@ -50,10 +50,11 @@ fun NeumorphicCard(
     modifier: Modifier = Modifier,
     shape: RoundedCornerShape = RoundedCornerShape(24.dp),
     isDark: Boolean = isSystemInDarkTheme(),
+    containerColor: Color? = null,
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
-    val containerBg = if (isDark) Color(0xFF381F0F) else Color.White
+    val containerBg = containerColor ?: (if (isDark) Color(0xFF8B5E3C) else Color.White)
     val borderCol = if (isDark) ForestGreen.copy(alpha = 0.25f) else ForestGreen.copy(alpha = 0.12f)
     val shadowElev = if (isDark) 1.dp else 4.dp
     
@@ -602,14 +603,14 @@ fun DashboardScreen(
                                 Icon(
                                     imageVector = Icons.Default.Storefront,
                                     contentDescription = null,
-                                    tint = Color.White.copy(alpha = 0.85f),
+                                    tint = Color.White,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = ownerUser?.name ?: (if (isBengali) "মালিক" else "Owner"),
                                     fontSize = 13.sp,
-                                    color = Color.White.copy(alpha = 0.85f),
+                                    color = Color.White,
                                     fontWeight = FontWeight.Medium
                                 )
                             }
@@ -626,7 +627,7 @@ fun DashboardScreen(
                         Text(
                             text = if (isBengali) "মোট নেট হিসাব (Net Balance)" else "Net Balance",
                             fontSize = 13.sp,
-                            color = Color.White.copy(alpha = 0.80f),
+                            color = Color.White,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.height(2.dp))
@@ -860,6 +861,7 @@ fun CustomerListItem(
     NeumorphicCard(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
+        containerColor = ForestGreen,
         shape = RoundedCornerShape(20.dp)
     ) {
         Row(
@@ -873,13 +875,13 @@ fun CustomerListItem(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.weight(1f)
             ) {
-                // Circle initials avatar
+                // Circle initials avatar style - white circle background with brown initials
                 val initials = if (customer.name.length >= 2) customer.name.take(2) else customer.name.take(1)
                 Box(
                     modifier = Modifier
                         .size(46.dp)
                         .clip(CircleShape)
-                        .background(ForestGreen.copy(alpha = 0.1f)),
+                        .background(Color.White),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -901,7 +903,7 @@ fun CustomerListItem(
                             text = customer.name,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = NavyDark,
+                            color = Color.White,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.weight(1f, fill = false)
@@ -910,7 +912,7 @@ fun CustomerListItem(
                             Box(
                                 modifier = Modifier
                                     .background(
-                                        color = ForestGreen.copy(alpha = 0.15f),
+                                        color = Color.White.copy(alpha = 0.18f),
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -922,14 +924,14 @@ fun CustomerListItem(
                                     Icon(
                                         imageVector = Icons.Default.Language,
                                         contentDescription = null,
-                                        tint = ForestGreen,
+                                        tint = Color.White,
                                         modifier = Modifier.size(10.dp)
                                     )
                                     Text(
                                         text = if (isBengali) "অনলাইন" else "Online",
                                         fontSize = 9.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = ForestGreen
+                                        color = Color.White
                                     )
                                 }
                             }
@@ -937,12 +939,12 @@ fun CustomerListItem(
                             Box(
                                 modifier = Modifier
                                     .background(
-                                        color = WarmBg,
+                                        color = Color.White.copy(alpha = 0.12f),
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .border(
                                         width = 1.dp,
-                                        color = ForestGreen.copy(alpha = 0.25f),
+                                        color = Color.White.copy(alpha = 0.25f),
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -954,14 +956,14 @@ fun CustomerListItem(
                                     Icon(
                                         imageVector = Icons.Default.Person,
                                         contentDescription = null,
-                                        tint = ForestGreen.copy(alpha = 0.8f),
+                                        tint = Color.White,
                                         modifier = Modifier.size(10.dp)
                                     )
                                     Text(
                                         text = if (isBengali) "নিজে যুক্ত" else "Manual",
                                         fontSize = 9.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = ForestGreen.copy(alpha = 0.8f)
+                                        color = Color.White
                                     )
                                 }
                             }
@@ -970,7 +972,7 @@ fun CustomerListItem(
                     Text(
                         text = customer.phone,
                         fontSize = 13.sp,
-                        color = NavyDark.copy(alpha = 0.7f)
+                        color = Color.White.copy(alpha = 0.85f)
                     )
                 }
             }
@@ -980,16 +982,16 @@ fun CustomerListItem(
                 val dues = customer.totalDues
                 when {
                     dues > 0 -> {
-                        Text(if (isBengali) "পাবেন" else "Get", fontSize = 11.sp, color = KhataRed, fontWeight = FontWeight.Bold)
-                        Text("₹ ${String.format("%,.0f", dues)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = KhataRed)
+                        Text(if (isBengali) "পাবেন" else "Get", fontSize = 11.sp, color = Color(0xFFFFCDD2), fontWeight = FontWeight.Bold)
+                        Text("₹ ${String.format("%,.0f", dues)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color(0xFFFF8A80))
                     }
                     dues < 0 -> {
-                        Text(if (isBengali) "দেবেন" else "Give", fontSize = 11.sp, color = KhataGreen, fontWeight = FontWeight.Bold)
-                        Text("₹ ${String.format("%,.0f", -dues)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = KhataGreen)
+                        Text(if (isBengali) "দেবেন" else "Give", fontSize = 11.sp, color = Color(0xFFC8E6C9), fontWeight = FontWeight.Bold)
+                        Text("₹ ${String.format("%,.0f", -dues)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color(0xFF81C784))
                     }
                     else -> {
-                        Text(if (isBengali) "সমতা" else "Settled", fontSize = 11.sp, color = NavyDark.copy(alpha = 0.7f), fontWeight = FontWeight.Medium)
-                        Text("₹ ০", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = NavyDark.copy(alpha = 0.7f))
+                        Text(if (isBengali) "সমতা" else "Settled", fontSize = 11.sp, color = Color.White.copy(alpha = 0.7f), fontWeight = FontWeight.Medium)
+                        Text("₹ ০", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     }
                 }
             }
@@ -1006,14 +1008,13 @@ fun AddCustomerDialog(
     val isBengali by viewModel.isBengali.collectAsState()
     var name by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var isJoined by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
     Dialog(onDismissRequest = { onDismiss() }) {
         NeumorphicCard(
             shape = RoundedCornerShape(24.dp),
+            containerColor = ForestGreen,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
@@ -1026,19 +1027,25 @@ fun AddCustomerDialog(
                     text = if (isBengali) "নতুন কাস্টমার যোগ করুন" else "Add New Customer",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = NavyDark
+                    color = Color.White
                 )
 
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text(if (isBengali) "কাস্টমারের নাম" else "Customer Name") },
-                    leadingIcon = { Icon(Icons.Default.Person, null) },
+                    label = { Text(if (isBengali) "কাস্টমারের নাম" else "Customer Name", color = Color.White.copy(alpha = 0.85f)) },
+                    leadingIcon = { Icon(Icons.Default.Person, null, tint = ForestGreen) },
                     singleLine = true,
                     shape = RoundedCornerShape(16.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.White.copy(alpha = 0.5f),
-                        focusedContainerColor = Color.White
+                        focusedTextColor = ForestGreen,
+                        unfocusedTextColor = ForestGreen,
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.4f),
+                        focusedLabelColor = Color.White,
+                        unfocusedLabelColor = Color.White.copy(alpha = 0.85f),
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1046,116 +1053,23 @@ fun AddCustomerDialog(
                 OutlinedTextField(
                     value = phone,
                     onValueChange = { phone = it },
-                    label = { Text(if (isBengali) "মোবাইল নম্বর" else "Mobile Number") },
-                    leadingIcon = { Icon(Icons.Default.Phone, null) },
+                    label = { Text(if (isBengali) "মোবাইল নম্বর" else "Mobile Number", color = Color.White.copy(alpha = 0.85f)) },
+                    leadingIcon = { Icon(Icons.Default.Phone, null, tint = ForestGreen) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     singleLine = true,
                     shape = RoundedCornerShape(16.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.White.copy(alpha = 0.5f),
-                        focusedContainerColor = Color.White
+                        focusedTextColor = ForestGreen,
+                        unfocusedTextColor = ForestGreen,
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.4f),
+                        focusedLabelColor = Color.White,
+                        unfocusedLabelColor = Color.White.copy(alpha = 0.85f),
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
-
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text(if (isBengali) "ইমেইল (ঐচ্ছিক)" else "Email (Optional)") },
-                    leadingIcon = { Icon(Icons.Default.Email, null) },
-                    singleLine = true,
-                    shape = RoundedCornerShape(16.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.White.copy(alpha = 0.5f),
-                        focusedContainerColor = Color.White
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                // Registration Type / Customer Source Selector
-                Text(
-                    text = if (isBengali) "যোগ করার মাধ্যম (Customer Source)" else "Customer Source",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = NavyDark
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    // Manually Added Option
-                    val manualSelected = !isJoined
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(if (manualSelected) ForestGreen.copy(alpha = 0.12f) else Color.Transparent)
-                            .border(
-                                width = if (manualSelected) 2.dp else 1.dp,
-                                color = if (manualSelected) ForestGreen else Color.LightGray.copy(alpha = 0.6f),
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .clickable { isJoined = false }
-                            .padding(vertical = 10.dp, horizontal = 8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = null,
-                                tint = if (manualSelected) ForestGreen else Color.Gray,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = if (isBengali) "নিজে এন্ট্রি" else "Manual",
-                                fontSize = 12.sp,
-                                fontWeight = if (manualSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (manualSelected) ForestGreen else Color.Gray
-                            )
-                        }
-                    }
-
-                    // Joined Shop Option
-                    val joinSelected = isJoined
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(if (joinSelected) ForestGreen.copy(alpha = 0.12f) else Color.Transparent)
-                            .border(
-                                width = if (joinSelected) 2.dp else 1.dp,
-                                color = if (joinSelected) ForestGreen else Color.LightGray.copy(alpha = 0.6f),
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .clickable { isJoined = true }
-                            .padding(vertical = 10.dp, horizontal = 8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Language,
-                                contentDescription = null,
-                                tint = if (joinSelected) ForestGreen else Color.Gray,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = if (isBengali) "লিংকে যুক্ত" else "Joined Shop",
-                                fontSize = 12.sp,
-                                fontWeight = if (joinSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (joinSelected) ForestGreen else Color.Gray
-                            )
-                        }
-                    }
-                }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -1163,7 +1077,7 @@ fun AddCustomerDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(onClick = { onDismiss() }) {
-                        Text(if (isBengali) "বাতিল" else "Cancel", color = Color.Gray)
+                        Text(if (isBengali) "বাতিল" else "Cancel", color = Color.White)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     NeumorphicButton(
@@ -1172,13 +1086,13 @@ fun AddCustomerDialog(
                                 val alert = if (isBengali) "নাম ও মোবাইল দেয়া আবশ্যক" else "Name & Mobile are required"
                                 Toast.makeText(context, alert, Toast.LENGTH_SHORT).show()
                             } else {
-                                onAdd(name, phone, if (email.isBlank()) null else email, isJoined)
+                                onAdd(name, phone, null, false)
                             }
                         },
-                        containerColor = ForestGreen,
+                        containerColor = Color.White,
                         shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text(if (isBengali) "যোগ করুন" else "Add", color = Color.White)
+                        Text(if (isBengali) "যোগ করুন" else "Add", color = ForestGreen, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -1196,10 +1110,14 @@ fun CustomerDetailScreen(
     val ownerUser by viewModel.authenticatedUser.collectAsState()
     val isBengali by viewModel.isBengali.collectAsState()
 
-    var showTransactionDialog by remember { mutableStateOf(false) }
-    var activeTransactionType by remember { mutableStateOf("GIVE") } // GIVE = টাকা দিলাম, GET = টাকা পেলাম
-
     var showUpiQrDialog by remember { mutableStateOf(false) }
+    
+    // States for the inline Add Entry form
+    var inlineAmount by remember { mutableStateOf("") }
+    var inlineItemName by remember { mutableStateOf("") }
+    var inlineTransType by remember { mutableStateOf("GIVE") } // "GIVE" = Due (বাকি), "GET" = Paid (জমা)
+    var pendingDueItems by remember { mutableStateOf(listOf<Pair<String, Double>>()) }
+
     val context = LocalContext.current
 
     if (customer == null) {
@@ -1208,57 +1126,6 @@ fun CustomerDetailScreen(
     }
 
     Scaffold(
-        bottomBar = {
-            // Core Lend/Receive cash buttons at bottom
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                tonalElevation = 8.dp,
-                shadowElevation = 8.dp
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surface)
-                        .navigationBarsPadding()
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    // GIVE Button (DUE RED)
-                    NeumorphicButton(
-                        onClick = {
-                            activeTransactionType = "GIVE"
-                            showTransactionDialog = true
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(52.dp),
-                        containerColor = KhataRed,
-                        shape = RoundedCornerShape(20.dp)
-                    ) {
-                        Icon(Icons.Default.Add, null, tint = Color.White)
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(if (isBengali) "বাকি (Due)" else "DUE", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    }
-
-                    // GET Button (PAID GREEN)
-                    NeumorphicButton(
-                        onClick = {
-                            activeTransactionType = "GET"
-                            showTransactionDialog = true
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(52.dp),
-                        containerColor = KhataGreen,
-                        shape = RoundedCornerShape(20.dp)
-                    ) {
-                        Icon(Icons.Default.Remove, null, tint = Color.White)
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(if (isBengali) "জমা (Paid)" else "PAID", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    }
-                }
-            }
-        },
         containerColor = WarmBg
     ) { innerPadding ->
         Column(
@@ -1347,14 +1214,14 @@ fun CustomerDetailScreen(
                                             Icon(
                                                 imageVector = Icons.Default.Person,
                                                 contentDescription = null,
-                                                tint = Color.White.copy(alpha = 0.85f),
+                                                tint = Color.White,
                                                 modifier = Modifier.size(10.dp)
                                             )
                                             Text(
                                                 text = if (isBengali) "নিজে যুক্ত" else "Manual",
                                                 fontSize = 9.sp,
                                                 fontWeight = FontWeight.Bold,
-                                                color = Color.White.copy(alpha = 0.85f)
+                                                color = Color.White
                                             )
                                         }
                                     }
@@ -1363,7 +1230,7 @@ fun CustomerDetailScreen(
                             Text(
                                 text = customer!!.phone,
                                 fontSize = 12.sp,
-                                color = Color.White.copy(alpha = 0.8f)
+                                color = Color.White
                             )
                         }
                     }
@@ -1383,178 +1250,657 @@ fun CustomerDetailScreen(
                 }
             }
 
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f)
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-            // State Indicator Ledger Balance Header Card
-            NeumorphicCard(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    val currentDues = customer!!.totalDues
-                    Text(
-                        text = if (isBengali) "সর্বমোট হিসাব" else "Ledger Balance Status",
-                        fontSize = 13.sp,
-                        color = if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.8f) else Color.Gray,
-                        fontWeight = FontWeight.Medium
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = "₹ ${String.format("%,.0f", if (currentDues >= 0) currentDues else -currentDues)}",
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = when {
-                            currentDues > 0 -> KhataRed
-                            currentDues < 0 -> if (isSystemInDarkTheme()) Color(0xFFFFD494) else KhataGreen
-                            else -> if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.8f) else Color.Gray
-                        }
-                    )
-
-                    Text(
-                        text = when {
-                            currentDues > 0 -> if (isBengali) "আপনার কাছে কাস্টমার ঋণী আছেন" else "Customer owes you money"
-                            currentDues < 0 -> if (isBengali) "কাস্টমার আপনার কাছে পাবেন" else "You owe this customer"
-                            else -> if (isBengali) "হিসাব সম্পূর্ণ পরিশোধ করা হয়েছে" else "Ledger completely settled"
-                        },
-                        fontSize = 14.sp,
-                        color = when {
-                            currentDues > 0 -> KhataRed
-                            currentDues < 0 -> if (isSystemInDarkTheme()) Color(0xFFFFD494) else KhataGreen
-                            else -> if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.8f) else Color.Gray
-                        },
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Action reminders & payment buttons
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                // Item 1: Balance Header Card
+                item {
+                    NeumorphicCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        containerColor = ForestGreen,
+                        shape = RoundedCornerShape(24.dp)
                     ) {
-                        // UPI payment request display popup
-                        if (ownerUser?.upiId?.isNotBlank() == true && currentDues > 0) {
-                            TextButton(
-                                onClick = { showUpiQrDialog = true },
-                                colors = ButtonDefaults.textButtonColors(contentColor = if (isSystemInDarkTheme()) Color.White else ForestGreen)
-                            ) {
-                                Icon(Icons.Default.QrCode, null)
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(if (isBengali) "পেমেন্ট QR কোড" else "Collect via QR", fontWeight = FontWeight.Bold)
-                            }
-                        }
-
-                        // Share reminder via WhatsApp / SMS
-                        TextButton(
-                            onClick = {
-                                if (currentDues <= 0) {
-                                    val alert = if (isBengali) "কোনো বকেয়া dues নেই!" else "No arrears details to send!"
-                                    Toast.makeText(context, alert, Toast.LENGTH_SHORT).show()
-                                    return@TextButton
-                                }
-                                val shareText = if (isBengali) {
-                                    "প্রিয় ${customer!!.name},\nসহজ খাতা (Sohoj Khata) অনুযায়ী '${ownerUser?.shopName}' দোকানে আপনার বকেয়া হিসাব রয়েছে ₹ ${String.format("%,.0f", currentDues)}। অনুগ্রহ করে দ্রুত পরিশোধ করুন।\nধন্যবাদ!"
-                                } else {
-                                    "Dear ${customer!!.name},\nAccording to Sohoj Khata, your outstanding balance with '${ownerUser?.shopName}' is ₹ ${String.format("%,.0f", currentDues)}. Please settle it at your earliest convenience.\nThank you!"
-                                }
-                                try {
-                                    val intent = Intent(Intent.ACTION_SEND).apply {
-                                        type = "text/plain"
-                                        putExtra(Intent.EXTRA_TEXT, shareText)
-                                    }
-                                    val title = if (isBengali) "রিমাইন্ডার পাঠান" else "Send Payment Reminder"
-                                    context.startActivity(Intent.createChooser(intent, title))
-                                } catch (e: Exception) {
-                                    val alert = if (isBengali) "শেয়ার করা যায়নি" else "Failed to trigger share"
-                                    Toast.makeText(context, alert, Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Icon(Icons.Default.Share, null, tint = if (isSystemInDarkTheme()) Color.White else ForestGreen)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(if (isBengali) "রিমাইন্ডার পাঠান" else "Send Reminder", fontWeight = FontWeight.Bold, color = if (isSystemInDarkTheme()) Color.White else ForestGreen)
+                            val currentDues = customer!!.totalDues
+                            Text(
+                                text = if (isBengali) "চলতি ব্যালেন্স" else "RUNNING BALANCE",
+                                fontSize = 13.sp,
+                                color = Color.White.copy(alpha = 0.85f),
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.sp
+                            )
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Text(
+                                text = "₹ ${String.format("%,.0f", currentDues)}",
+                                fontSize = 32.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (currentDues > 0) Color(0xFFFF8A80) else (if (currentDues < 0) Color(0xFF81C784) else Color.White)
+                            )
+
+                            Text(
+                                text = when {
+                                    currentDues > 0 -> if (isBengali) "আপনার কাছে কাস্টমার ঋণী আছেন" else "Customer owes you money"
+                                    currentDues < 0 -> if (isBengali) "কাস্টমার আপনার কাছে পাবেন" else "You owe this customer"
+                                    else -> if (isBengali) "হিসাব সম্পূর্ণ পরিশোধ করা হয়েছে" else "Ledger completely settled"
+                                },
+                                fontSize = 13.sp,
+                                color = if (currentDues > 0) Color(0xFFFFCDD2) else (if (currentDues < 0) Color(0xFFC8E6C9) else Color.White.copy(alpha = 0.85f)),
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
+                            )
+
+                            // Action reminders & payment buttons
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                // UPI payment request
+                                if (ownerUser?.upiId?.isNotBlank() == true && currentDues > 0) {
+                                    TextButton(
+                                        onClick = { showUpiQrDialog = true },
+                                        colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
+                                    ) {
+                                        Icon(Icons.Default.QrCode, null, modifier = Modifier.size(16.dp), tint = Color.White)
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(if (isBengali) "পেমেন্ট QR কোড" else "Collect via QR", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
+                                    }
+                                }
+
+                                // Share reminder via WhatsApp / SMS
+                                TextButton(
+                                    onClick = {
+                                        if (currentDues <= 0) {
+                                            val alert = if (isBengali) "কোনো বকেয়া dues নেই!" else "No arrears details to send!"
+                                            Toast.makeText(context, alert, Toast.LENGTH_SHORT).show()
+                                            return@TextButton
+                                        }
+                                        val shareText = if (isBengali) {
+                                            "প্রিয় ${customer!!.name},\nসহজ খাতা (Sohoj Khata) অনুযায়ী '${ownerUser?.shopName}' দোকানে আপনার বকেয়া হিসাব রয়েছে ₹ ${String.format("%,.0f", currentDues)}। অনুগ্রহ করে দ্রুত পরিশোধ করুন।\nধন্যবাদ!"
+                                        } else {
+                                            "Dear ${customer!!.name},\nAccording to Sohoj Khata, your outstanding balance with '${ownerUser?.shopName}' is ₹ ${String.format("%,.0f", currentDues)}. Please settle it at your earliest convenience.\nThank you!"
+                                        }
+                                        try {
+                                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                                type = "text/plain"
+                                                putExtra(Intent.EXTRA_TEXT, shareText)
+                                            }
+                                            val title = if (isBengali) "রিমাইন্ডার পাঠান" else "Send Payment Reminder"
+                                            context.startActivity(Intent.createChooser(intent, title))
+                                        } catch (e: Exception) {
+                                            val alert = if (isBengali) "শেয়ার করা যায়নি" else "Failed to trigger share"
+                                            Toast.makeText(context, alert, Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                ) {
+                                    Icon(Icons.Default.Share, null, tint = Color.White, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(if (isBengali) "রিমাইন্ডার পাঠান" else "Share customer link", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 13.sp)
+                                }
+                            }
                         }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                // Item 2: Add Entry Card (Inline)
+                item {
+                    NeumorphicCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        containerColor = ForestGreen,
+                        shape = RoundedCornerShape(24.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(11.dp)
+                        ) {
+                            Text(
+                                text = if (isBengali) "এন্ট্রি যোগ করুন" else "Add entry",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
 
-            // Subtitle Transactions Statement
-            Text(
-                text = if (isBengali) "লেনদেন বিবরণী" else "Transaction Statement History",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                color = NavyDark,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+                            // Tab selector: [+ Due] inside Rust/Red and [- Paid] inside Green
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                val dueActive = inlineTransType == "GIVE"
+                                NeumorphicButton(
+                                    onClick = {
+                                        inlineTransType = "GIVE"
+                                        inlineAmount = ""
+                                        inlineItemName = ""
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(48.dp),
+                                    containerColor = if (dueActive) KhataRed else Color.White.copy(alpha = 0.15f),
+                                    content = {
+                                        Text(
+                                            text = if (isBengali) "+ বাকি (Due)" else "+ Due",
+                                            color = if (dueActive) Color.White else Color.White.copy(alpha = 0.85f),
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp
+                                        )
+                                    }
+                                )
 
-            // Timeline Entries List
-            if (transactions.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Default.HistoryToggleOff, null, tint = Color.LightGray, modifier = Modifier.size(56.dp))
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(if (isBengali) "কোনো লেনদেন এখনো হয়নি!" else "No transactions logged yet!", fontSize = 14.sp, color = Color.Gray)
-                        Text(if (isBengali) "নিচের বোতামগুলো দিয়ে হিসাব এন্ট্রি করুন।" else "Use DUE and PAID buttons to log entries.", fontSize = 12.sp, color = Color.LightGray)
+                                val paidActive = inlineTransType == "GET"
+                                NeumorphicButton(
+                                    onClick = {
+                                        inlineTransType = "GET"
+                                        inlineAmount = ""
+                                        inlineItemName = ""
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(48.dp),
+                                    containerColor = if (paidActive) KhataGreen else Color.White.copy(alpha = 0.15f),
+                                    content = {
+                                        Text(
+                                            text = if (isBengali) "- জমা (Paid)" else "- Paid",
+                                            color = if (paidActive) Color.White else Color.White.copy(alpha = 0.85f),
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp
+                                        )
+                                    }
+                                )
+                            }
+
+                            if (inlineTransType == "GIVE") {
+                                // DUE: Item & Amount side-by-side (50-50%)
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    OutlinedTextField(
+                                        value = inlineItemName,
+                                        onValueChange = { inlineItemName = it },
+                                        placeholder = {
+                                            Text(
+                                                text = if (isBengali) "আইটেম বিবরণী" else "Write item",
+                                                fontSize = 13.sp,
+                                                color = ForestGreen.copy(alpha = 0.6f)
+                                            )
+                                        },
+                                        singleLine = true,
+                                        shape = RoundedCornerShape(16.dp),
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            focusedTextColor = ForestGreen,
+                                            unfocusedTextColor = ForestGreen,
+                                            focusedContainerColor = Color.White,
+                                            unfocusedContainerColor = Color.White,
+                                            focusedBorderColor = Color.White,
+                                            unfocusedBorderColor = Color.White.copy(alpha = 0.4f)
+                                        ),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(56.dp)
+                                    )
+
+                                    OutlinedTextField(
+                                        value = inlineAmount,
+                                        onValueChange = { inlineAmount = it },
+                                        placeholder = {
+                                            Text(
+                                                text = "₹",
+                                                fontSize = 15.sp,
+                                                color = ForestGreen.copy(alpha = 0.6f)
+                                            )
+                                        },
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                        singleLine = true,
+                                        shape = RoundedCornerShape(16.dp),
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            focusedTextColor = ForestGreen,
+                                            unfocusedTextColor = ForestGreen,
+                                            focusedContainerColor = Color.White,
+                                            unfocusedContainerColor = Color.White,
+                                            focusedBorderColor = Color.White,
+                                            unfocusedBorderColor = Color.White.copy(alpha = 0.4f)
+                                        ),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(56.dp)
+                                    )
+                                }
+
+                                // List of added pending sub-items
+                                if (pendingDueItems.isNotEmpty()) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(Color.White.copy(alpha = 0.15f), RoundedCornerShape(12.dp))
+                                            .padding(8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        pendingDueItems.forEachIndexed { index, pair ->
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    IconButton(
+                                                        onClick = {
+                                                            pendingDueItems = pendingDueItems.toMutableList().apply { removeAt(index) }
+                                                        },
+                                                        modifier = Modifier.size(24.dp)
+                                                    ) {
+                                                        Icon(Icons.Default.Clear, "Remove", tint = Color(0xFFFF8A80), modifier = Modifier.size(14.dp))
+                                                    }
+                                                    Spacer(modifier = Modifier.width(4.dp))
+                                                    Text(pair.first, fontSize = 13.sp, color = Color.White, fontWeight = FontWeight.Medium)
+                                                }
+                                                Text("₹ ${String.format("%,.0f", pair.second)}", fontSize = 13.sp, color = Color.White, fontWeight = FontWeight.Bold)
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // Interactive Actions: [+ Add item] and [Save] (50-50%)
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    val hasInput = inlineItemName.isNotBlank() && inlineAmount.toDoubleOrNull() != null
+                                    NeumorphicButton(
+                                        onClick = {
+                                            val amt = inlineAmount.toDoubleOrNull()
+                                            if (inlineItemName.isNotBlank() && amt != null && amt > 0) {
+                                                pendingDueItems = pendingDueItems + Pair(inlineItemName.trim(), amt)
+                                                inlineItemName = ""
+                                                inlineAmount = ""
+                                            } else {
+                                                Toast.makeText(context, if (isBengali) "অনুগ্রহ করে সঠিক বিবরণ ও টাকা লিখুন" else "Please enter valid item description and amount", Toast.LENGTH_SHORT).show()
+                                            }
+                                        },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(48.dp),
+                                        containerColor = if (hasInput) Color.White else Color.White.copy(alpha = 0.15f),
+                                        content = {
+                                            Icon(Icons.Default.Add, null, tint = if (hasInput) ForestGreen else Color.White.copy(alpha = 0.5f), modifier = Modifier.size(16.dp))
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(
+                                                text = if (isBengali) "+ আইটেম" else "+ Add item",
+                                                color = if (hasInput) ForestGreen else Color.White.copy(alpha = 0.5f),
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 13.sp
+                                            )
+                                        }
+                                    )
+
+                                    NeumorphicButton(
+                                        onClick = {
+                                            val amt = inlineAmount.toDoubleOrNull()
+                                            val finalItems = pendingDueItems.toMutableList()
+                                            if (inlineItemName.isNotBlank() && amt != null && amt > 0) {
+                                                finalItems.add(Pair(inlineItemName.trim(), amt))
+                                            }
+
+                                            if (finalItems.isEmpty()) {
+                                                Toast.makeText(context, if (isBengali) "কোনো আইটেম যোগ করা হয়নি!" else "No items to save!", Toast.LENGTH_SHORT).show()
+                                                return@NeumorphicButton
+                                            }
+
+                                            var savedCount = 0
+                                            finalItems.forEach { (name, amtVal) ->
+                                                viewModel.addTransaction(amtVal, "GIVE", name, "CASH") {
+                                                    savedCount++
+                                                    if (savedCount == finalItems.size) {
+                                                        inlineItemName = ""
+                                                        inlineAmount = ""
+                                                        pendingDueItems = emptyList()
+                                                        Toast.makeText(context, if (isBengali) "হিসাব এন্ট্রি সংরক্ষণ করা হয়েছে" else "Due entry saved successfully", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(48.dp),
+                                        containerColor = KhataRed,
+                                        content = {
+                                            Text(
+                                                text = if (isBengali) "সংরক্ষণ করুন" else "Save",
+                                                color = Color.White,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+                                    )
+                                }
+                            } else {
+                                // PAID: Item label is statically "Amount" on the left; user types amount on the right (50-50%)
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    OutlinedTextField(
+                                        value = if (isBengali) "জমা হিসাব (Paid)" else "Amount",
+                                        onValueChange = { },
+                                        readOnly = true,
+                                        shape = RoundedCornerShape(16.dp),
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            focusedTextColor = ForestGreen,
+                                            unfocusedTextColor = ForestGreen,
+                                            focusedContainerColor = Color.White,
+                                            unfocusedContainerColor = Color.White,
+                                            focusedBorderColor = Color.White,
+                                            unfocusedBorderColor = Color.White.copy(alpha = 0.4f)
+                                        ),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(56.dp)
+                                    )
+
+                                    OutlinedTextField(
+                                        value = inlineAmount,
+                                        onValueChange = { inlineAmount = it },
+                                        placeholder = {
+                                            Text(
+                                                text = "0",
+                                                fontSize = 15.sp,
+                                                color = ForestGreen.copy(alpha = 0.6f)
+                                            )
+                                        },
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                        singleLine = true,
+                                        shape = RoundedCornerShape(16.dp),
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            focusedTextColor = ForestGreen,
+                                            unfocusedTextColor = ForestGreen,
+                                            focusedContainerColor = Color.White,
+                                            unfocusedContainerColor = Color.White,
+                                            focusedBorderColor = Color.White,
+                                            unfocusedBorderColor = Color.White.copy(alpha = 0.4f)
+                                        ),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(56.dp)
+                                    )
+                                }
+
+                                NeumorphicButton(
+                                    onClick = {
+                                        val amt = inlineAmount.toDoubleOrNull()
+                                        if (amt != null && amt > 0) {
+                                            val desc = if (isBengali) "জমা" else "Paid"
+                                            viewModel.addTransaction(amt, "GET", desc, "CASH") {
+                                                inlineAmount = ""
+                                                Toast.makeText(context, if (isBengali) "পেমেন্ট জমা করা হয়েছে" else "Payment received successfully", Toast.LENGTH_SHORT).show()
+                                            }
+                                        } else {
+                                            Toast.makeText(context, if (isBengali) "অনুগ্রহ করে সঠিক টাকা লিখুন" else "Please enter a valid amount", Toast.LENGTH_SHORT).show()
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(48.dp),
+                                    containerColor = KhataGreen,
+                                    content = {
+                                        Text(
+                                            text = if (isBengali) "সংরক্ষণ করুন (Save)" else "Save",
+                                            color = Color.White,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp
+                                        )
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(transactions) { tx ->
-                        TransactionRow(viewModel = viewModel, transaction = tx, onDelete = {
-                            viewModel.deleteTransaction(tx)
-                            val alert = if (isBengali) "লেনদেন ডিলিট করা হয়েছে" else "Transaction deleted successfully."
-                            Toast.makeText(context, alert, Toast.LENGTH_SHORT).show()
-                        })
+
+                // Item 3: Timeline Subtitle
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = if (isBengali) "টাইমলাইন" else "TIMELINE",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = NavyDark,
+                            letterSpacing = 1.sp
+                        )
+                        Text(
+                            text = if (isBengali) "${transactions.size}টি বিবরণী" else "${transactions.size} entries",
+                            fontSize = 13.sp,
+                            color = NavyDark.copy(alpha = 0.6f)
+                        )
+                    }
+                }
+
+                // Group transactions chronologically by Day
+                val sdfDay = SimpleDateFormat("dd MMM", Locale.getDefault())
+                val groups = transactions.groupBy { tx ->
+                    sdfDay.format(Date(tx.timestamp))
+                }
+
+                if (groups.isEmpty()) {
+                    item {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.5f)),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(24.dp)
+                                    .fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = if (isBengali) "কোনো বিবরণী নেই" else "No transactions yet.",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = NavyDark.copy(alpha = 0.5f)
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    groups.forEach { (dateStr, txs) ->
+                        item {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .border(1.dp, AppCaramel.copy(alpha = 0.08f), RoundedCornerShape(24.dp)),
+                                colors = CardDefaults.cardColors(containerColor = Color.White),
+                                shape = RoundedCornerShape(24.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    // Calendar / Day Header
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Text("📅", fontSize = 14.sp)
+                                        Text(
+                                            text = dateStr,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp,
+                                            color = AppCaramel
+                                        )
+                                    }
+
+                                    // Display each item as capsule design rows as in screenshot 3
+                                    txs.forEach { tx ->
+                                        val isGet = tx.type == "GET"
+                                        val rowBg = if (isGet) KhataGreenBg else AppBeige
+                                        val rowTextCol = if (isGet) KhataGreen else AppCaramel
+
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            // Description Capsule (e.g. Cha, Vegetables)
+                                            Box(
+                                                modifier = Modifier
+                                                    .weight(1.5f)
+                                                    .height(48.dp)
+                                                    .background(rowBg, RoundedCornerShape(16.dp))
+                                                    .border(1.dp, rowTextCol.copy(alpha = 0.15f), RoundedCornerShape(16.dp))
+                                                    .padding(horizontal = 12.dp),
+                                                contentAlignment = Alignment.CenterStart
+                                            ) {
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                                ) {
+                                                    if (isGet) {
+                                                        Text("💵", fontSize = 12.sp)
+                                                    }
+                                                    Text(
+                                                        text = tx.description.ifBlank {
+                                                            if (isGet) (if (isBengali) "জমা" else "Paid")
+                                                            else (if (isBengali) "বাকি" else "Due")
+                                                        },
+                                                        fontSize = 14.sp,
+                                                        color = rowTextCol,
+                                                        fontWeight = FontWeight.Medium
+                                                    )
+                                                }
+                                            }
+
+                                            // Amount Capsule
+                                            Box(
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .height(48.dp)
+                                                    .background(rowBg, RoundedCornerShape(16.dp))
+                                                    .border(1.dp, rowTextCol.copy(alpha = 0.15f), RoundedCornerShape(16.dp))
+                                                    .padding(horizontal = 12.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(
+                                                    text = "${if (isGet) "-" else ""}₹${String.format("%,.0f", tx.amount)}",
+                                                    fontSize = 14.sp,
+                                                    color = rowTextCol,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
+
+                                            // Revert Clear Action
+                                            IconButton(
+                                                onClick = {
+                                                    viewModel.deleteTransaction(tx)
+                                                    val alert = if (isBengali) "লেনদেন ডিলিট করা হয়েছে" else "Transaction deleted"
+                                                    Toast.makeText(context, alert, Toast.LENGTH_SHORT).show()
+                                                },
+                                                modifier = Modifier.size(24.dp)
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Clear,
+                                                    contentDescription = "Delete",
+                                                    tint = Color.LightGray,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(2.dp))
+
+                                    // Day total
+                                    val dayTotal = txs.sumOf { if (it.type == "GET") -it.amount else it.amount }
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = if (isBengali) "দিনের সংগ্রহ" else "Day total",
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            color = NavyDark.copy(alpha = 0.6f)
+                                        )
+                                        Text(
+                                            text = "${if (dayTotal < 0) "-" else ""}₹${String.format("%,.0f", if (dayTotal >= 0) dayTotal else -dayTotal)}",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 15.sp,
+                                            color = if (dayTotal < 0) KhataGreen else KhataRed
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Bottom Total Due Summary Row (Capsule)
+                item {
+                    val finalDues = customer!!.totalDues
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp)
+                            .border(1.dp, AppCaramel.copy(alpha = 0.12f), RoundedCornerShape(16.dp)),
+                        colors = CardDefaults.cardColors(containerColor = AppBeige),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Text("💰", fontSize = 16.sp)
+                                Text(
+                                    text = if (isBengali) "সর্বমোট বকেয়া (Total Due)" else "Total Due",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = AppCaramel
+                                )
+                            }
+                            Text(
+                                text = "₹ ${String.format("%,.0f", finalDues)}",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = AppCaramel
+                            )
+                        }
                     }
                 }
             }
         }
     }
 
-        // New Transaction Dialogue Picker
-        if (showTransactionDialog) {
-            TransactionEntryDialog(
-                viewModel = viewModel,
-                type = activeTransactionType,
-                onDismiss = { showTransactionDialog = false },
-                onConfirm = { amount, desc, paymentType ->
-                    viewModel.addTransaction(amount, activeTransactionType, desc, paymentType) {
-                        showTransactionDialog = false
-                    }
-                }
-            )
-        }
-
-        // QR UPI Bill dialogue
-        if (showUpiQrDialog && customer != null) {
-            UpiQrCodeDialog(
-                viewModel = viewModel,
-                upiId = ownerUser?.upiId ?: "",
-                merchantName = ownerUser?.shopName ?: "",
-                amount = customer!!.totalDues,
-                onDismiss = { showUpiQrDialog = false }
-            )
-        }
+    // QR UPI Bill dialogue
+    if (showUpiQrDialog && customer != null) {
+        UpiQrCodeDialog(
+            viewModel = viewModel,
+            upiId = ownerUser?.upiId ?: "",
+            merchantName = ownerUser?.shopName ?: "",
+            amount = customer!!.totalDues,
+            onDismiss = { showUpiQrDialog = false }
+        )
     }
 }
 
@@ -1623,7 +1969,7 @@ fun TransactionRow(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Text(text = formattedTime, fontSize = 11.sp, color = if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.7f) else Color.Gray)
+                        Text(text = formattedTime, fontSize = 11.sp, color = if (isSystemInDarkTheme()) Color.White else Color.Gray)
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(4.dp))
@@ -1635,7 +1981,7 @@ fun TransactionRow(
                                 "UPI" -> if (isBengali) "UPI/bKash" else "UPI/MFS"
                                 else -> if (isBengali) "অন্যান্য" else "OTHER"
                             }
-                            Text(methodText, fontSize = 9.sp, fontWeight = FontWeight.Bold, color = if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.9f) else Color.Gray)
+                            Text(methodText, fontSize = 9.sp, fontWeight = FontWeight.Bold, color = if (isSystemInDarkTheme()) Color.White else Color.Gray)
                         }
                     }
                 }
@@ -1852,7 +2198,7 @@ fun TransactionEntryDialog(
                         text = if (isBengali) "যোগকৃত তালিকা:" else "Added list:",
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
-                        color = if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.8f) else Color.Gray
+                        color = if (isSystemInDarkTheme()) Color.White else Color.Gray
                     )
 
                     Column(
@@ -1956,7 +2302,7 @@ fun TransactionEntryDialog(
                     Text(
                         text = if (isBengali) "লেনদেনের মাধ্যম" else "Payment Channel",
                         fontSize = 12.sp,
-                        color = if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.8f) else Color.Gray,
+                        color = if (isSystemInDarkTheme()) Color.White else Color.Gray,
                         fontWeight = FontWeight.Medium
                     )
                     Spacer(modifier = Modifier.height(4.dp))
@@ -2011,7 +2357,7 @@ fun TransactionEntryDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(onClick = { onDismiss() }) {
-                        Text(if (isBengali) "বাতিল" else "Cancel", color = if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.8f) else Color.Gray)
+                        Text(if (isBengali) "বাতিল" else "Cancel", color = if (isSystemInDarkTheme()) Color.White else Color.Gray)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     NeumorphicButton(
@@ -2214,7 +2560,7 @@ fun ReportsScreen(viewModel: LedgerViewModel) {
                     Text(
                         text = if (isBengali) "দোকানের সর্বমোট লেনদেন এবং ক্যাশ আদায়ের গতিধারা" else "Gain powerful insights into your credits & collections balance",
                         fontSize = 13.sp,
-                        color = Color.White.copy(alpha = 0.85f)
+                        color = Color.White
                     )
                 }
             }
@@ -2396,6 +2742,7 @@ fun AuditMetricsBlock(
 ) {
     NeumorphicCard(
         modifier = Modifier.fillMaxWidth(),
+        containerColor = ForestGreen,
         shape = RoundedCornerShape(22.dp)
     ) {
         Row(
@@ -2410,16 +2757,16 @@ fun AuditMetricsBlock(
                 modifier = Modifier.weight(1f)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.ArrowDownward, contentDescription = null, tint = KhataRed, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.ArrowDownward, contentDescription = null, tint = Color(0xFFFFCDD2), modifier = Modifier.size(14.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(if (isBengali) "বাকি দিয়েছেন" else "Credit Given", fontSize = 11.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
+                    Text(if (isBengali) "বাকি দিয়েছেন" else "Credit Given", fontSize = 11.sp, color = Color.White.copy(alpha = 0.85f), fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = "₹ ${String.format("%,.0f", creditTotal)}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = KhataRed
+                    color = Color(0xFFFF8A80)
                 )
             }
 
@@ -2427,7 +2774,7 @@ fun AuditMetricsBlock(
                 modifier = Modifier
                     .height(36.dp)
                     .width(1.dp)
-                    .background(Color.LightGray.copy(alpha = 0.4f))
+                    .background(Color.White.copy(alpha = 0.25f))
             )
 
             Column(
@@ -2435,16 +2782,16 @@ fun AuditMetricsBlock(
                 modifier = Modifier.weight(1f)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.ArrowUpward, contentDescription = null, tint = KhataGreen, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.ArrowUpward, contentDescription = null, tint = Color(0xFFC8E6C9), modifier = Modifier.size(14.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(if (isBengali) "ক্যাশ উঠেছে" else "Cash Received", fontSize = 11.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
+                    Text(if (isBengali) "ক্যাশ উঠেছে" else "Cash Received", fontSize = 11.sp, color = Color.White.copy(alpha = 0.85f), fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = "₹ ${String.format("%,.0f", debitTotal)}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = KhataGreen
+                    color = Color(0xFF81C784)
                 )
             }
         }
@@ -2479,6 +2826,7 @@ fun CollectionGoalGaugeCard(
 
     NeumorphicCard(
         modifier = Modifier.fillMaxWidth(),
+        containerColor = ForestGreen,
         shape = RoundedCornerShape(22.dp)
     ) {
         Column(
@@ -2490,7 +2838,7 @@ fun CollectionGoalGaugeCard(
                 text = if (isBengali) "লেনদেন আদায় অগ্রগতি" else "Ledger Collection Progress",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
-                color = NavyDark
+                color = Color.White
             )
             Spacer(modifier = Modifier.height(14.dp))
 
@@ -2506,16 +2854,16 @@ fun CollectionGoalGaugeCard(
                     CircularProgressIndicator(
                         progress = { collectionRate.toFloat() / 100f },
                         modifier = Modifier.size(72.dp),
-                        color = ForestGreen,
+                        color = Color.White,
                         strokeWidth = 8.dp,
-                        trackColor = ForestGreen.copy(alpha = 0.12f),
+                        trackColor = Color.White.copy(alpha = 0.15f),
                     )
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "$collectionRate%",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.ExtraBold,
-                            color = ForestGreen
+                            color = Color.White
                         )
                     }
                 }
@@ -2528,20 +2876,20 @@ fun CollectionGoalGaugeCard(
                         text = healthMsg,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
-                        color = NavyDark
+                        color = Color.White
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = dueText,
                         fontSize = 12.sp,
-                        color = KhataRed,
+                        color = Color(0xFFFFCDD2),
                         fontWeight = FontWeight.SemiBold
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = if (isBengali) "মোট লেনদেনের সাপেক্ষে আদায়ের হার" else "Ratio of total collections",
                         fontSize = 11.sp,
-                        color = Color.Gray
+                        color = Color.White.copy(alpha = 0.85f)
                     )
                 }
             }
@@ -2556,6 +2904,7 @@ fun LedgerTrendChartCard(
 ) {
     NeumorphicCard(
         modifier = Modifier.fillMaxWidth(),
+        containerColor = ForestGreen,
         shape = RoundedCornerShape(22.dp)
     ) {
         Column(
@@ -2573,7 +2922,7 @@ fun LedgerTrendChartCard(
                     text = if (isBengali) "ট্রেণ্ড অ্যানালাইসিস (Trend)" else "Weekly & Daily Trend",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
-                    color = NavyDark
+                    color = Color.White
                 )
 
                 // Legend
@@ -2587,13 +2936,13 @@ fun LedgerTrendChartCard(
                             modifier = Modifier
                                 .size(8.dp)
                                 .clip(RoundedCornerShape(2.dp))
-                                .background(KhataRed)
+                                .background(Color(0xFFFF8A80))
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = if (isBengali) "বাকি" else "Give",
                             fontSize = 10.sp,
-                            color = Color.Gray,
+                            color = Color.White.copy(alpha = 0.85f),
                             fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -2604,13 +2953,13 @@ fun LedgerTrendChartCard(
                             modifier = Modifier
                                 .size(8.dp)
                                 .clip(RoundedCornerShape(2.dp))
-                                .background(KhataGreen)
+                                .background(Color(0xFF81C784))
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = if (isBengali) "আদায়" else "Got",
                             fontSize = 10.sp,
-                            color = Color.Gray,
+                            color = Color.White.copy(alpha = 0.85f),
                             fontWeight = FontWeight.SemiBold
                         )
                     }
@@ -2629,7 +2978,7 @@ fun LedgerTrendChartCard(
                     Text(
                         text = if (isBengali) "গ্রাফ প্রদর্শনের জন্য পর্যাপ্ত ডেটা নেই" else "Not enough ledger records for graph projection",
                         fontSize = 11.sp,
-                        color = Color.Gray
+                        color = Color.White.copy(alpha = 0.85f)
                     )
                 }
             } else {
@@ -2667,7 +3016,7 @@ fun LedgerTrendChartCard(
                                         .width(7.dp)
                                         .fillMaxHeight(giveHeightShare)
                                         .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-                                        .background(KhataRed)
+                                        .background(Color(0xFFFF8A80))
                                 )
 
                                 // Draw Get Bar (Green)
@@ -2677,7 +3026,7 @@ fun LedgerTrendChartCard(
                                         .width(7.dp)
                                         .fillMaxHeight(getHeightShare)
                                         .clip(RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp))
-                                        .background(KhataGreen)
+                                        .background(Color(0xFF81C784))
                                 )
                             }
 
@@ -2688,7 +3037,7 @@ fun LedgerTrendChartCard(
                                 text = data.label,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = NavyDark.copy(alpha = 0.8f)
+                                color = Color.White.copy(alpha = 0.85f)
                             )
                         }
                     }
@@ -2734,10 +3083,11 @@ fun EmptyStateBlock(isBengali: Boolean) {
 fun TransactionItemRow(isBengali: Boolean, tx: Transaction) {
     NeumorphicCard(
         modifier = Modifier.fillMaxWidth(),
+        containerColor = ForestGreen,
         shape = RoundedCornerShape(16.dp)
     ) {
         Row(
-            modifier = Modifier.padding(14.dp),
+            modifier = Modifier.fillMaxWidth().padding(14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -2758,14 +3108,14 @@ fun TransactionItemRow(isBengali: Boolean, tx: Transaction) {
                     },
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = NavyDark
+                    color = Color.White
                 )
                 val methodText = when (tx.paymentMethod) {
                     "CASH" -> if (isBengali) "নগদ" else "CASH"
                     "UPI" -> if (isBengali) "UPI/bKash" else "UPI/MFS"
                     else -> if (isBengali) "অন্যান্য" else "OTHER"
                 }
-                Text("$txDate • $methodText", fontSize = 11.sp, color = Color.Gray)
+                Text("$txDate • $methodText", fontSize = 11.sp, color = Color.White.copy(alpha = 0.82f))
             }
 
             Text(
@@ -2776,7 +3126,7 @@ fun TransactionItemRow(isBengali: Boolean, tx: Transaction) {
                 },
                 fontSize = 14.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = if (isGive) KhataRed else KhataGreen
+                color = if (isGive) Color(0xFFFF8A80) else Color(0xFF81C784)
             )
         }
     }
@@ -2826,7 +3176,7 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
                     Text(
                         text = if (isBengali) "দোকান খাতা ও মালিকানার সেটিংস" else "Manage your ledger & business credentials",
                         fontSize = 13.sp,
-                        color = Color.White.copy(alpha = 0.85f)
+                        color = Color.White
                     )
                 }
             }
@@ -2842,6 +3192,7 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
             item {
                 NeumorphicCard(
                     modifier = Modifier.fillMaxWidth(),
+                    containerColor = ForestGreen,
                     shape = RoundedCornerShape(24.dp)
                 ) {
                     Column(
@@ -2852,7 +3203,7 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
                             text = if (isBengali) "ভাষা পরিবর্তন করুন (App Language)" else "App Language Settings",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = NavyDark
+                            color = Color.White
                         )
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -2863,8 +3214,8 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
                                 modifier = Modifier
                                     .weight(1f)
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(if (isBengali) ForestGreen.copy(alpha = 0.1f) else Color.Transparent)
-                                    .border(1.dp, if (isBengali) ForestGreen else Color.LightGray, RoundedCornerShape(12.dp))
+                                    .background(if (isBengali) Color.White else Color.Transparent)
+                                    .border(1.dp, if (isBengali) Color.White else Color.White.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
                                     .clickable { viewModel.setLanguage(true) }
                                     .padding(12.dp),
                                 horizontalArrangement = Arrangement.Center,
@@ -2873,10 +3224,10 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
                                 RadioButton(
                                     selected = isBengali,
                                     onClick = { viewModel.setLanguage(true) },
-                                    colors = RadioButtonDefaults.colors(selectedColor = ForestGreen)
+                                    colors = RadioButtonDefaults.colors(selectedColor = ForestGreen, unselectedColor = Color.White)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("বাংলা", fontWeight = FontWeight.Bold, color = if (isBengali) ForestGreen else Color.Gray)
+                                Text("বাংলা", fontWeight = FontWeight.Bold, color = if (isBengali) ForestGreen else Color.White)
                             }
 
                             // English button
@@ -2884,8 +3235,8 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
                                 modifier = Modifier
                                     .weight(1f)
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(if (!isBengali) ForestGreen.copy(alpha = 0.1f) else Color.Transparent)
-                                    .border(1.dp, if (!isBengali) ForestGreen else Color.LightGray, RoundedCornerShape(12.dp))
+                                    .background(if (!isBengali) Color.White else Color.Transparent)
+                                    .border(1.dp, if (!isBengali) Color.White else Color.White.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
                                     .clickable { viewModel.setLanguage(false) }
                                     .padding(12.dp),
                                 horizontalArrangement = Arrangement.Center,
@@ -2894,10 +3245,10 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
                                 RadioButton(
                                     selected = !isBengali,
                                     onClick = { viewModel.setLanguage(false) },
-                                    colors = RadioButtonDefaults.colors(selectedColor = ForestGreen)
+                                    colors = RadioButtonDefaults.colors(selectedColor = ForestGreen, unselectedColor = Color.White)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("English", fontWeight = FontWeight.Bold, color = if (!isBengali) ForestGreen else Color.Gray)
+                                Text("English", fontWeight = FontWeight.Bold, color = if (!isBengali) ForestGreen else Color.White)
                             }
                         }
                     }
@@ -2907,6 +3258,7 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
             item {
                 NeumorphicCard(
                     modifier = Modifier.fillMaxWidth(),
+                    containerColor = ForestGreen,
                     shape = RoundedCornerShape(24.dp)
                 ) {
                     Column(
@@ -2917,7 +3269,7 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
                             text = if (isBengali) "দোকানদারের তথ্য সংশোধন করুন" else "Modify Shop Info",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = NavyDark
+                            color = Color.White
                         )
 
                         OutlinedTextField(
@@ -2928,8 +3280,16 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
                             singleLine = true,
                             shape = RoundedCornerShape(16.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.5f),
-                                focusedContainerColor = Color.White
+                                focusedTextColor = ForestGreen,
+                                unfocusedTextColor = ForestGreen,
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
+                                focusedBorderColor = Color.White,
+                                unfocusedBorderColor = Color.White.copy(alpha = 0.4f),
+                                focusedLabelColor = Color.White,
+                                unfocusedLabelColor = Color.White.copy(alpha = 0.85f),
+                                focusedLeadingIconColor = ForestGreen,
+                                unfocusedLeadingIconColor = ForestGreen.copy(alpha = 0.8f)
                             ),
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -2942,8 +3302,16 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
                             singleLine = true,
                             shape = RoundedCornerShape(16.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.5f),
-                                focusedContainerColor = Color.White
+                                focusedTextColor = ForestGreen,
+                                unfocusedTextColor = ForestGreen,
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
+                                focusedBorderColor = Color.White,
+                                unfocusedBorderColor = Color.White.copy(alpha = 0.4f),
+                                focusedLabelColor = Color.White,
+                                unfocusedLabelColor = Color.White.copy(alpha = 0.85f),
+                                focusedLeadingIconColor = ForestGreen,
+                                unfocusedLeadingIconColor = ForestGreen.copy(alpha = 0.8f)
                             ),
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -2956,8 +3324,16 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
                             singleLine = true,
                             shape = RoundedCornerShape(16.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.5f),
-                                focusedContainerColor = Color.White
+                                focusedTextColor = ForestGreen,
+                                unfocusedTextColor = ForestGreen,
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
+                                focusedBorderColor = Color.White,
+                                unfocusedBorderColor = Color.White.copy(alpha = 0.4f),
+                                focusedLabelColor = Color.White,
+                                unfocusedLabelColor = Color.White.copy(alpha = 0.85f),
+                                focusedLeadingIconColor = ForestGreen,
+                                unfocusedLeadingIconColor = ForestGreen.copy(alpha = 0.8f)
                             ),
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -2971,8 +3347,16 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
                             singleLine = true,
                             shape = RoundedCornerShape(16.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.5f),
-                                focusedContainerColor = Color.White
+                                focusedTextColor = ForestGreen,
+                                unfocusedTextColor = ForestGreen,
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
+                                focusedBorderColor = Color.White,
+                                unfocusedBorderColor = Color.White.copy(alpha = 0.4f),
+                                focusedLabelColor = Color.White,
+                                unfocusedLabelColor = Color.White.copy(alpha = 0.85f),
+                                focusedLeadingIconColor = ForestGreen,
+                                unfocusedLeadingIconColor = ForestGreen.copy(alpha = 0.8f)
                             ),
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -2987,8 +3371,16 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
                             singleLine = true,
                             shape = RoundedCornerShape(16.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.5f),
-                                focusedContainerColor = Color.White
+                                focusedTextColor = ForestGreen,
+                                unfocusedTextColor = ForestGreen,
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
+                                focusedBorderColor = Color.White,
+                                unfocusedBorderColor = Color.White.copy(alpha = 0.4f),
+                                focusedLabelColor = Color.White,
+                                unfocusedLabelColor = Color.White.copy(alpha = 0.85f),
+                                focusedLeadingIconColor = ForestGreen,
+                                unfocusedLeadingIconColor = ForestGreen.copy(alpha = 0.8f)
                             ),
                             modifier = Modifier.fillMaxWidth()
                         )

@@ -1,6 +1,8 @@
 package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.Composable
+import androidx.compose.foundation.isSystemInDarkTheme
 
 // The 2 Exact Colors From 1000084919.png
 val AppBeige = Color(0xFFFDF8F3)      // Soft, light cream beige background canvas (highly readable and warm)
@@ -16,7 +18,6 @@ val PurpleGrey40 = AppBeige
 val Pink40 = AppCaramel
 
 // Sohoj Khata Custom Bookkeeping Color Codes
-val ForestGreen = AppCaramel          // Main brand color
 val MintGreenLight = Color(0xFFFDF5ED) // Soft cream-caramel card/container background tint
 val DeepGold = Color(0xFFFFA500)      // Accent/Highlights warm gold
 
@@ -26,6 +27,7 @@ val KhataGreenBg = Color(0xFFE8F5E9)  // Rich light green background for high co
 val KhataRed = Color(0xFFC62828)      // High contrast red for dues states
 val KhataRedBg = Color(0xFFFFEBEE)    // Soft light red container background for readability
 
+val ForestGreen = AppCaramel          // Main brand color
 val WarmBg = AppBeige                 // Cozy wallpaper background canvas
 val NavyDark = AppCaramel             // Primary text headers and body text
 

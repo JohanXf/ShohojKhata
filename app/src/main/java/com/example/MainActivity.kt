@@ -46,13 +46,13 @@ class MainActivity : ComponentActivity() {
                 ) {
                     when {
                         registeredUser == null -> {
-                            // First launch: register shop owner
-                            OnboardingScreen(
-                                viewModel = viewModel,
-                                onSuccess = {
-                                    // Managed inside view model state
-                                }
-                            )
+                            // Loading state during first launch DB seeding or flow loading
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = androidx.compose.ui.Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = com.example.ui.theme.ForestGreen)
+                            }
                         }
                         isLocked || authenticatedUser == null -> {
                             // Locked state: require security PIN

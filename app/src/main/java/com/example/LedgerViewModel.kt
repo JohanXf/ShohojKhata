@@ -90,10 +90,39 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
         )
 
     init {
-        // Auto-authenticate if no owner is registered yet, to skip PIN screen on first startup
+        // Auto-authenticate and auto-seed default owner Laxmi Grocery / Subir Mukherjee on first launch
         viewModelScope.launch {
             val user = repository.getFirstUser()
             if (user == null) {
+                val ownerId = repository.registerUser(
+                    name = "Subir Mukherjee",
+                    phone = "+91 98765 43210",
+                    shopName = "Laxmi Grocery",
+                    shopType = "Kirana store",
+                    upiId = "laxmigrocery@upi",
+                    pin = "1234"
+                )
+                
+                // Seed the 5 customers from screenshots:
+                val sujataId = repository.insertCustomer(ownerId.toInt(), "Sujata di", "+91 91234 56780", null, false)
+                repository.insertCustomer(ownerId.toInt(), "Imran (mechanic)", "+91 99887 12345", null, false)
+                repository.insertCustomer(ownerId.toInt(), "Ravi da", "+91 93333 44455", null, false)
+                repository.insertCustomer(ownerId.toInt(), "Amit (3rd floor)", "+91 98765 43210", null, false)
+                repository.insertCustomer(ownerId.toInt(), "Priyanka madam", "+91 90000 11122", null, false)
+
+                // Add timeline history for Sujata di (Vegetables ₹320, Cash Received -₹320, Cha ₹50, Gorom moshla ₹60)
+                repository.addTransaction(sujataId.toInt(), 320.0, "GIVE", "Vegetables", "CASH")
+                repository.addTransaction(sujataId.toInt(), 320.0, "GET", "Paid", "CASH")
+                repository.addTransaction(sujataId.toInt(), 50.0, "GIVE", "Cha", "CASH")
+                repository.addTransaction(sujataId.toInt(), 60.0, "GIVE", "Gorom moshla", "CASH")
+
+                val newUser = repository.getUserById(ownerId.toInt())
+                if (newUser != null) {
+                    _authenticatedUser.value = newUser
+                    _isLocked.value = false
+                }
+            } else {
+                _authenticatedUser.value = user
                 _isLocked.value = false
             }
         }
