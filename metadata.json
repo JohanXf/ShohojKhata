@@ -1,0 +1,6 @@
+{
+  "name": "Sohoj Khata",
+  "description": "Premium digital ledger for Bengali shop owners. Track customer dues, accept UPI, and view reports offline.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

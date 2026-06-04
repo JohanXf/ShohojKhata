@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Cast subtle shadow for the book cover -->
+    <path
+        android:pathData="M34,32 h44 v48 h-44 z"
+        android:fillColor="#000000"
+        android:fillAlpha="0.15" />
+
+    <!-- Main Notebook Cover (Beautiful Deep Gold) -->
+    <path
+        android:pathData="M32 30h44v48H32c-2.2 0-4-1.8-4-4V34c0-2.2 1.8-4 4-4z"
+        android:fillColor="#FFB300" />
+
+    <!-- Book Spine Bindings (Left margin border detail) -->
+    <path
+        android:pathData="M28 34h6v40h-6z"
+        android:fillColor="#FFA000" />
+    <path
+        android:pathData="M26 39h4v2h-4z M26 49h4v2h-4z M26 59h4v2h-4z M26 69h4v2h-4z"
+        android:fillColor="#E65100" />
+
+    <!-- Embossed Checkmark Ledger Emblem in center of the book -->
+    <path
+        android:pathData="M44 54l5 5 15-15"
+        android:strokeWidth="5"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+
+    <!-- Crimson Red Ribbon Bookmark draped over top cover -->
+    <path
+        android:pathData="M54 30h6v18l-3-3-3 3V30z"
+        android:fillColor="#D32F2F" />
+</vector>
