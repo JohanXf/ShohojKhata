@@ -11,7 +11,7 @@ val PurpleGrey40 = Color(0xFF1E3A34)
 val Pink40 = Color(0xFFFF3B30)
 
 // Sohoj Khata custom bookkeeping color codes (Modified for Beige and Dark Caramel theme)
-val ForestGreen = Color(0xFF8B4D20) // Rich Dark Caramel brand color
+val ForestGreen = Color(0xFFD18C5D) // Rich Dark Caramel brand color
 val MintGreenLight = Color(0xFFFFF5EB) // Soft Warm Cream/Beige tint
 val DeepGold = Color(0xFFFFA500) // Beautiful Warm Amber Gold
 
