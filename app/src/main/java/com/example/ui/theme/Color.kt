@@ -22,4 +22,4 @@ val KhataRed = Color(0xFFFF3B30) // Apple-style Solid Red for dues
 val KhataRedBg = Color(0xFFFFF2F2)
 
 val WarmBg = Color(0xFFFDF8F3) // Cozy warm cream beige wallpaper background
-val NavyDark = Color(0xFF2E190D) // Deep Dark Chocolate Brown for headers and body text
+val NavyDark = Color(0xFFFEFAF6) // Deep Dark Chocolate Brown for headers and body text
