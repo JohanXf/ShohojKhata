@@ -53,8 +53,8 @@ fun NeumorphicCard(
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
-    val containerBg = if (isDark) Color(0xFF7E4219) else Color.White
-    val borderCol = if (isDark) ForestGreen.copy(alpha = 0.25f) else ForestGreen.copy(alpha = 0.08f)
+    val containerBg = if (isDark) Color(0xFF381F0F) else Color.White
+    val borderCol = if (isDark) ForestGreen.copy(alpha = 0.25f) else ForestGreen.copy(alpha = 0.12f)
     val shadowElev = if (isDark) 1.dp else 4.dp
     
     val cardModifier = if (onClick != null) {
@@ -970,7 +970,7 @@ fun CustomerListItem(
                     Text(
                         text = customer.phone,
                         fontSize = 13.sp,
-                        color = Color.Gray
+                        color = NavyDark.copy(alpha = 0.7f)
                     )
                 }
             }
@@ -988,8 +988,8 @@ fun CustomerListItem(
                         Text("₹ ${String.format("%,.0f", -dues)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = KhataGreen)
                     }
                     else -> {
-                        Text(if (isBengali) "সমতা" else "Settled", fontSize = 11.sp, color = Color.Gray, fontWeight = FontWeight.Medium)
-                        Text("₹ ০", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+                        Text(if (isBengali) "সমতা" else "Settled", fontSize = 11.sp, color = NavyDark.copy(alpha = 0.7f), fontWeight = FontWeight.Medium)
+                        Text("₹ ০", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = NavyDark.copy(alpha = 0.7f))
                     }
                 }
             }
@@ -1218,7 +1218,7 @@ fun CustomerDetailScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.surface)
                         .navigationBarsPadding()
                         .padding(horizontal = 16.dp, vertical = 10.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)

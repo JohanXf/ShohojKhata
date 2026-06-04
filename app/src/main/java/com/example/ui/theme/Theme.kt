@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme =
   darkColorScheme(
-    primary = ForestGreen,
+    primary = DarkCaramelBrand,
     secondary = PurpleGrey80,
     tertiary = Pink80,
     background = Color(0xFF1E110A), // Rich dark chocolate background
@@ -24,13 +24,13 @@ private val DarkColorScheme =
 
 private val LightColorScheme =
   lightColorScheme(
-    primary = ForestGreen,
+    primary = DarkCaramelBrand,
     secondary = PurpleGrey40,
-    tertiary = KhataGreen,
-    background = WarmBg,
-    surface = Color.White,
-    onBackground = NavyDark, // Premium deep-charcoal-brown readability text
-    onSurface = NavyDark,
+    tertiary = PaidCaramel,
+    background = WarmCanvasBg,
+    surface = Color.White, // Crisp white surfaces for perfect card readability
+    onBackground = DeepEspressoText, // Premium deep chocolate espresso readability text
+    onSurface = DeepEspressoText,
   )
 
 @Composable
