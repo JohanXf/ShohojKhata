@@ -2,41 +2,64 @@ package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
 
-// The 2 Exact Colors From 1000084919.png
-val AppBeige = Color(0xFFFDF8F3)      // Soft, light cream beige background canvas (highly readable and warm)
-val AppCaramel = Color(0xFF76421E)    // Rich dark caramel for all buttons, text, and primary actions
+// Dynamic background/text getters linked to the Black and White theme
+val WarmBg: Color
+    @Composable get() = MaterialTheme.colorScheme.background
 
-// Material 3 Baseline Colors - Cleaned up to use only the 2 colors with maximum contrast
-val Purple80 = AppBeige
-val PurpleGrey80 = AppCaramel
-val Pink80 = AppBeige
+val ForestGreen: Color
+    @Composable get() = MaterialTheme.colorScheme.primary
 
-val Purple40 = AppCaramel
-val PurpleGrey40 = AppBeige
-val Pink40 = AppCaramel
+val NavyDark: Color
+    @Composable get() = MaterialTheme.colorScheme.onBackground
 
-// Sohoj Khata Custom Bookkeeping Color Codes
-val MintGreenLight = Color(0xFFFDF5ED) // Soft cream-caramel card/container background tint
+val MintGreenLight: Color
+    @Composable get() = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+
 val DeepGold = Color(0xFFFFA500)      // Accent/Highlights warm gold
 
+// High contrast Black and White styled states or fallback to modern readable indicators
 val KhataGreen = Color(0xFF2E7D32)    // High contrast green for paid states
-val KhataGreenBg = Color(0xFFE8F5E9)  // Rich light green background for high contrast readability
+val KhataGreenBg: Color
+    @Composable get() = Color(0xFFE8F5E9)
 
 val KhataRed = Color(0xFFC62828)      // High contrast red for dues states
-val KhataRedBg = Color(0xFFFFEBEE)    // Soft light red container background for readability
+val KhataRedBg: Color
+    @Composable get() = Color(0xFFFFEBEE)
 
-val ForestGreen = AppCaramel          // Main brand color
-val WarmBg = AppBeige                 // Cozy wallpaper background canvas
-val NavyDark = AppCaramel             // Primary text headers and body text
+// Compatibility aliases - all fully dynamic mapping to material color scheme
+val AppBeige = Color(0xFFFDF8F3)
+val AppCaramel = Color(0xFF76421E)
 
-// Additional aliases for other names used in files to maintain 100% compatibility
-val DarkCaramelBrand = ForestGreen
-val WarmBeigeTint = MintGreenLight
-val PaidCaramel = KhataGreen
-val PaidCaramelBg = KhataGreenBg
-val DuesRed = KhataRed
-val DuesRedBg = KhataRedBg
-val WarmCanvasBg = WarmBg
-val DeepEspressoText = NavyDark
+val Purple80 = Color.White
+val PurpleGrey80 = Color.LightGray
+val Pink80 = Color.White
+
+val Purple40 = Color.Black
+val PurpleGrey40 = Color.DarkGray
+val Pink40 = Color.Black
+
+val DarkCaramelBrand: Color
+    @Composable get() = ForestGreen
+
+val WarmBeigeTint: Color
+    @Composable get() = MintGreenLight
+
+val PaidCaramel: Color
+    @Composable get() = KhataGreen
+
+val PaidCaramelBg: Color
+    @Composable get() = KhataGreenBg
+
+val DuesRed: Color
+    @Composable get() = KhataRed
+
+val DuesRedBg: Color
+    @Composable get() = KhataRedBg
+
+val WarmCanvasBg: Color
+    @Composable get() = WarmBg
+
+val DeepEspressoText: Color
+    @Composable get() = NavyDark

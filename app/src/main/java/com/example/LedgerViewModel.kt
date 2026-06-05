@@ -21,6 +21,24 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
         prefs.edit().putBoolean("is_bengali", bengali).apply()
     }
 
+    // Dark mode setting: true = Dark Mode (opposite), false = Light Mode (normal)
+    private val _isDarkMode = MutableStateFlow(prefs.getBoolean("is_dark_mode", false))
+    val isDarkMode: StateFlow<Boolean> = _isDarkMode.asStateFlow()
+
+    fun setDarkMode(enabled: Boolean) {
+        _isDarkMode.value = enabled
+        prefs.edit().putBoolean("is_dark_mode", enabled).apply()
+    }
+
+    // Notifications enabled setting: true = Enabled, false = Disabled
+    private val _notificationsEnabled = MutableStateFlow(prefs.getBoolean("notifications_enabled", true))
+    val notificationsEnabled: StateFlow<Boolean> = _notificationsEnabled.asStateFlow()
+
+    fun setNotificationsEnabled(enabled: Boolean) {
+        _notificationsEnabled.value = enabled
+        prefs.edit().putBoolean("notifications_enabled", enabled).apply()
+    }
+
     // Monitor if any profile exists in the DB
     val registeredUserFlow: StateFlow<User?> = repository.firstUserFlow
         .stateIn(
@@ -43,6 +61,28 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
     // Selected customer for detail screen
     private val _selectedCustomer = MutableStateFlow<Customer?>(null)
     val selectedCustomer: StateFlow<Customer?> = _selectedCustomer.asStateFlow()
+
+    // Supabase Synchronization State
+    enum class SyncState { IDLE, SYNCING, SUCCESS, ERROR }
+    private val _syncState = MutableStateFlow(SyncState.IDLE)
+    val syncState: StateFlow<SyncState> = _syncState.asStateFlow()
+
+    fun isSupabaseActive(): Boolean = SupabaseClient.isConfigured()
+
+    fun triggerSync() {
+        if (!isSupabaseActive()) return
+        viewModelScope.launch {
+            _syncState.value = SyncState.SYNCING
+            val success = repository.syncWithSupabase()
+            if (success) {
+                _syncState.value = SyncState.SUCCESS
+                // Refresh active customer data to update screens
+                refreshSelectedCustomer()
+            } else {
+                _syncState.value = SyncState.ERROR
+            }
+        }
+    }
 
     // Query list of customers for authenticated shop
     val customers: StateFlow<List<Customer>> = _authenticatedUser
@@ -120,10 +160,27 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
                 if (newUser != null) {
                     _authenticatedUser.value = newUser
                     _isLocked.value = false
+
+                    // If Supabase is active, do initial registration and sync immediately!
+                    if (isSupabaseActive()) {
+                        SupabaseClient.api?.let { api ->
+                            val cleanPhone = newUser.phone.replace("\\s".toRegex(), "").replace("+", "")
+                            val email = "${cleanPhone}@sohojkhata.com"
+                            val password = "pin_${newUser.pin}_secure"
+                            runCatching {
+                                api.signUp(SupabaseAuthRequest(email, password))
+                            }
+                        }
+                        triggerSync()
+                    }
                 }
             } else {
                 _authenticatedUser.value = user
                 _isLocked.value = false
+                
+                if (isSupabaseActive()) {
+                    triggerSync()
+                }
             }
         }
     }
@@ -144,6 +201,20 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
             if (user != null) {
                 _authenticatedUser.value = user
                 _isLocked.value = false
+
+                // Synchronously try signing up with Supabase Auth
+                if (isSupabaseActive()) {
+                    SupabaseClient.api?.let { api ->
+                        val cleanPhone = phone.replace("\\s".toRegex(), "").replace("+", "")
+                        val email = "${cleanPhone}@sohojkhata.com"
+                        val password = "pin_${pin}_secure"
+                        runCatching {
+                            api.signUp(SupabaseAuthRequest(email, password))
+                        }
+                    }
+                    triggerSync()
+                }
+
                 onSuccess()
             }
         }
@@ -155,10 +226,73 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
             _authenticatedUser.value = user
             _isLocked.value = false
             _pinError.value = null
+
+            // Background Supabase sign-in & sync
+            if (isSupabaseActive()) {
+                viewModelScope.launch {
+                    SupabaseClient.api?.let { api ->
+                        val cleanPhone = user.phone.replace("\\s".toRegex(), "").replace("+", "")
+                        val email = "${cleanPhone}@sohojkhata.com"
+                        val password = "pin_${user.pin}_secure"
+                        runCatching {
+                            api.signIn(SupabaseAuthRequest(email, password))
+                            triggerSync()
+                        }
+                    }
+                }
+            }
+            
             true
         } else {
             _pinError.value = "ভুল পিন! আবার চেষ্টা করুন।" // Incorrect PIN! Try again.
             false
+        }
+    }
+
+    // Custom Cloud restoration using Supabase Auth Email and PIN
+    fun signInWithSupabaseEmail(email: String, pin: String, onResult: (Boolean, String) -> Unit) {
+        val api = SupabaseClient.api
+        if (api == null) {
+            onResult(false, "Supabase credentials are not configured or empty!")
+            return
+        }
+        viewModelScope.launch {
+            _syncState.value = SyncState.SYNCING
+            try {
+                val password = "pin_${pin}_secure"
+                val response = api.signIn(SupabaseAuthRequest(email, password))
+                if (response.access_token != null) {
+                    // Try to fetch users from database matching this Pin
+                    val usersList = api.getUsers()
+                    val remoteUser = usersList.firstOrNull { it.pin == pin }
+                    
+                    if (remoteUser != null) {
+                        // Persist to local room database
+                        repository.updateUser(remoteUser)
+                        _authenticatedUser.value = remoteUser
+                        _isLocked.value = false
+                        
+                        // Sync database pull
+                        val fullySynced = repository.syncWithSupabase()
+                        if (fullySynced) {
+                            _syncState.value = SyncState.SUCCESS
+                        } else {
+                            _syncState.value = SyncState.ERROR
+                        }
+                        
+                        onResult(true, "সাফল্যজনকভাবে রিস্টোর ও কানেক্ট হয়েছে!") // Restored and connected successfully
+                    } else {
+                        _syncState.value = SyncState.ERROR
+                        onResult(false, "Profile row not found in Supabase database of Users table.")
+                    }
+                } else {
+                    _syncState.value = SyncState.ERROR
+                    onResult(false, "ভুল বা অস্বীকৃত অ্যাক্সেস!") // Invalid or denied access
+                }
+            } catch (e: Exception) {
+                _syncState.value = SyncState.ERROR
+                onResult(false, "পাসওয়ার্ড ভুল বা সংযোগ সমস্যা: ${e.message}")
+            }
         }
     }
 
@@ -180,6 +314,10 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
             )
             repository.updateUser(updatedUser)
             _authenticatedUser.value = updatedUser
+            
+            if (isSupabaseActive()) {
+                triggerSync()
+            }
         }
     }
 

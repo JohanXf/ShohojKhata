@@ -169,6 +169,7 @@ fun OnboardingScreen(
     var upiId by remember { mutableStateOf("") }
     var pin by remember { mutableStateOf("") }
     var confirmPin by remember { mutableStateOf("") }
+    var showRestoreDialog by remember { mutableStateOf(false) }
 
     var expandedType by remember { mutableStateOf(false) }
     val shopTypes = if (isBengali) {
@@ -351,6 +352,20 @@ fun OnboardingScreen(
                     }
                 }
             }
+
+            if (viewModel.isSupabaseActive()) {
+                item {
+                    TextButton(onClick = { showRestoreDialog = true }) {
+                        Icon(Icons.Default.CloudDownload, null, tint = ForestGreen)
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = if (isBengali) "আগের খাতা ক্লাউড থেকে রিস্টোর করুন" else "Restore Existing Ledger from Cloud",
+                            color = ForestGreen,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
         }
 
         // Action submit button at bottom overlay
@@ -382,6 +397,13 @@ fun OnboardingScreen(
             Spacer(modifier = Modifier.width(8.dp))
             Text(if (isBengali) "নতুন খাতা চালু করুন" else "Launch Shop Ledger", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
         }
+
+        if (showRestoreDialog) {
+            RestoreFromCloudDialog(
+                viewModel = viewModel,
+                onDismiss = { showRestoreDialog = false }
+            )
+        }
     }
 }
 
@@ -394,6 +416,7 @@ fun LockScreen(
     val pinError by viewModel.pinError.collectAsState()
     val isBengali by viewModel.isBengali.collectAsState()
     var enteredPin by remember { mutableStateOf("") }
+    var showRestoreDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     Column(
@@ -522,6 +545,29 @@ fun LockScreen(
                     }
                 }
             }
+        }
+
+        if (viewModel.isSupabaseActive()) {
+            TextButton(
+                onClick = { showRestoreDialog = true },
+                modifier = Modifier.padding(bottom = 8.dp)
+            ) {
+                Icon(Icons.Default.CloudDownload, null, tint = DeepGold)
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = if (isBengali) "ক্লাউড থেকে খাতা রিস্টোর করুন" else "Restore Ledger from Cloud",
+                    color = DeepGold,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
+            }
+        }
+
+        if (showRestoreDialog) {
+            RestoreFromCloudDialog(
+                viewModel = viewModel,
+                onDismiss = { showRestoreDialog = false }
+            )
         }
     }
 }
@@ -3145,18 +3191,18 @@ fun TransactionItemRow(isBengali: Boolean, tx: Transaction) {
 }
 
 @Composable
-fun ProfileScreen(viewModel: LedgerViewModel) {
+fun ProfileScreen(
+    viewModel: LedgerViewModel,
+    onBack: () -> Unit = {}
+) {
     val ownerUser by viewModel.authenticatedUser.collectAsState()
     val isBengali by viewModel.isBengali.collectAsState()
     val context = LocalContext.current
 
     if (ownerUser == null) return
 
-    var name by remember { mutableStateOf(ownerUser!!.name) }
-    var shopName by remember { mutableStateOf(ownerUser!!.shopName) }
-    var shopType by remember { mutableStateOf(ownerUser!!.shopType) }
-    var upiId by remember { mutableStateOf(ownerUser!!.upiId) }
-    var pin by remember { mutableStateOf(ownerUser!!.pin) }
+    var showEditProfileDialog by remember { mutableStateOf(false) }
+    var showRestoreDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = WarmBg
@@ -3165,280 +3211,638 @@ fun ProfileScreen(viewModel: LedgerViewModel) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = innerPadding.calculateBottomPadding())
+                .statusBarsPadding()
         ) {
-            // High-Fidelity Curved Emerald Header (Matches Dashboard/Reports theme)
+            // 1. Unified Placement-Style Header Row (Matches screenshot title & back button spacing)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        color = ForestGreen,
-                        shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
-                    )
-                    .statusBarsPadding()
-                    .padding(horizontal = 20.dp, vertical = 24.dp)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Column {
-                    Text(
-                        text = if (isBengali) "প্রোফাইল সেটিংস" else "Profile Settings",
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = if (isBengali) "দোকান খাতা ও মালিকানার সেটিংস" else "Manage your ledger & business credentials",
-                        fontSize = 13.sp,
-                        color = Color.White
-                    )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(CircleShape)
+                            .background(Color.White)
+                            .border(1.dp, Color.LightGray.copy(alpha = 0.3f), CircleShape)
+                            .clickable { onBack() }
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = ForestGreen,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
+                Text(
+                    text = if (isBengali) "প্রোফাইল সেটিংস" else "Settings",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = ForestGreen
+                )
             }
 
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f)
-                    .padding(16.dp),
+                    .verticalScroll(rememberScrollState())
+                    .padding(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-            // Language selector card
-            item {
-                NeumorphicCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    containerColor = ForestGreen,
-                    shape = RoundedCornerShape(24.dp)
+                // 2. Profile Summary Card (Matches screenshot layout)
+                val firstLetter = ownerUser?.name?.firstOrNull()?.uppercase() ?: "S"
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                        .clickable { showEditProfileDialog = true },
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    shape = RoundedCornerShape(20.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Text(
-                            text = if (isBengali) "ভাষা পরিবর্তন করুন (App Language)" else "App Language Settings",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        // Styled circle avatar
+                        Box(
+                            modifier = Modifier
+                                .size(56.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)),
+                            contentAlignment = Alignment.Center
                         ) {
-                            // Bangla button
-                            Row(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(if (isBengali) Color.White else Color.Transparent)
-                                    .border(1.dp, if (isBengali) Color.White else Color.White.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                                    .clickable { viewModel.setLanguage(true) }
-                                    .padding(12.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                RadioButton(
-                                    selected = isBengali,
-                                    onClick = { viewModel.setLanguage(true) },
-                                    colors = RadioButtonDefaults.colors(selectedColor = ForestGreen, unselectedColor = Color.White)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text("বাংলা", fontWeight = FontWeight.Bold, color = if (isBengali) ForestGreen else Color.White)
-                            }
+                            Text(
+                                text = firstLetter,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
 
-                            // English button
-                            Row(
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (isBengali) "হাই, ${ownerUser?.name}" else "Hi, ${ownerUser?.name}",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = ownerUser?.shopName ?: "",
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        }
+
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = "Edit Profile",
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+
+                // 3. Supabase Cloud Sync Card (Matches middle promotional card placement style)
+                val isSupabaseActive = viewModel.isSupabaseActive()
+                val syncState by viewModel.syncState.collectAsState()
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    shape = RoundedCornerShape(24.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1.2f).padding(end = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = if (isBengali) "সুপাবেস ক্লাউড সিঙ্ক" else "Supabase Cloud Sync",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            
+                            Text(
+                                text = if (isSupabaseActive) {
+                                    when (syncState) {
+                                        LedgerViewModel.SyncState.SYNCING -> if (isBengali) "ক্লাউড ডেটা সিঙ্ক হচ্ছে..." else "Syncing database with Supabase..."
+                                        LedgerViewModel.SyncState.SUCCESS -> if (isBengali) "সাফল্যজনকভাবে ক্লাউডে সিঙ্কড!" else "Synced securely with Supabase!"
+                                        LedgerViewModel.SyncState.ERROR -> if (isBengali) "সংযোগ ত্রুটি! অফলাইনে সংরক্ষিত।" else "Sync failed. Local backup ok."
+                                        else -> if (isBengali) "আপনার হিসাব সুরক্ষিতভাবে ক্লাউডে সংরক্ষিত।" else "Ledger securely backed up in the cloud."
+                                    }
+                                } else {
+                                    if (isBengali) "আপনার খাতা ক্লাউডে ব্যাকআপ রাখতে সিক্রেটস সেট করুন।" else "Configure Supabase values in Secrets to activate backup."
+                                },
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                lineHeight = 18.sp
+                            )
+
+                            if (isSupabaseActive) {
+                                Button(
+                                    onClick = { viewModel.triggerSync() },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.onSurface,
+                                        contentColor = MaterialTheme.colorScheme.surface
+                                    ),
+                                    shape = RoundedCornerShape(50.dp),
+                                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                                    modifier = Modifier.height(38.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Sync,
+                                        contentDescription = "Sync",
+                                        tint = MaterialTheme.colorScheme.surface,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = if (isBengali) "এখনই সিঙ্ক করুন" else "Sync Now",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.surface
+                                    )
+                                }
+                            }
+                        }
+
+                        // Sync icon / cloud visual elements
+                        Box(
+                            modifier = Modifier
+                                .weight(0.8f)
+                                .aspectRatio(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Box(
                                 modifier = Modifier
-                                    .weight(1f)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(if (!isBengali) Color.White else Color.Transparent)
-                                    .border(1.dp, if (!isBengali) Color.White else Color.White.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                                    .clickable { viewModel.setLanguage(false) }
-                                    .padding(12.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
+                                    .size(76.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
+                                contentAlignment = Alignment.Center
                             ) {
-                                RadioButton(
-                                    selected = !isBengali,
-                                    onClick = { viewModel.setLanguage(false) },
-                                    colors = RadioButtonDefaults.colors(selectedColor = ForestGreen, unselectedColor = Color.White)
+                                Icon(
+                                    imageVector = if (isSupabaseActive) Icons.Default.CloudQueue else Icons.Default.CloudOff,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.size(44.dp)
                                 )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text("English", fontWeight = FontWeight.Bold, color = if (!isBengali) ForestGreen else Color.White)
                             }
                         }
                     }
                 }
-            }
 
-            item {
-                NeumorphicCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    containerColor = ForestGreen,
+                // 4. Section Label: Other Settings
+                Text(
+                    text = if (isBengali) "অন্যান্য সেটিংস" else "Other Settings",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = ForestGreen,
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp)
+                )
+
+                // 5. Unified Option Settings Card (Matches screenshot grouped items wrapper)
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     shape = RoundedCornerShape(24.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
                     ) {
-                        Text(
-                            text = if (isBengali) "দোকানদারের তথ্য সংশোধন করুন" else "Modify Shop Info",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
+                        SettingsListItem(
+                            icon = Icons.Default.Person,
+                            title = if (isBengali) "আমার প্রোফাইল" else "My Account",
+                            onItemClick = { showEditProfileDialog = true }
                         )
 
-                        OutlinedTextField(
-                            value = name,
-                            onValueChange = { name = it },
-                            label = { Text(if (isBengali) "মালিকের নাম" else "Owner Name") },
-                            leadingIcon = { Icon(Icons.Default.Person, null) },
-                            singleLine = true,
-                            shape = RoundedCornerShape(16.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = ForestGreen,
-                                unfocusedTextColor = ForestGreen,
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
-                                focusedBorderColor = Color.White,
-                                unfocusedBorderColor = Color.White.copy(alpha = 0.4f),
-                                focusedLabelColor = Color.White,
-                                unfocusedLabelColor = Color.White.copy(alpha = 0.85f),
-                                focusedLeadingIconColor = ForestGreen,
-                                unfocusedLeadingIconColor = ForestGreen.copy(alpha = 0.8f)
-                            ),
-                            modifier = Modifier.fillMaxWidth()
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                            color = Color.LightGray.copy(alpha = 0.3f),
+                            thickness = 1.dp
                         )
 
-                        OutlinedTextField(
-                            value = shopName,
-                            onValueChange = { shopName = it },
-                            label = { Text(if (isBengali) "দোকানের নাম" else "Shop Name") },
-                            leadingIcon = { Icon(Icons.Default.Store, null) },
-                            singleLine = true,
-                            shape = RoundedCornerShape(16.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = ForestGreen,
-                                unfocusedTextColor = ForestGreen,
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
-                                focusedBorderColor = Color.White,
-                                unfocusedBorderColor = Color.White.copy(alpha = 0.4f),
-                                focusedLabelColor = Color.White,
-                                unfocusedLabelColor = Color.White.copy(alpha = 0.85f),
-                                focusedLeadingIconColor = ForestGreen,
-                                unfocusedLeadingIconColor = ForestGreen.copy(alpha = 0.8f)
-                            ),
-                            modifier = Modifier.fillMaxWidth()
+                        SettingsListItem(
+                            icon = Icons.Default.Language,
+                            title = if (isBengali) "ভাষা পরিবর্তন (Language)" else "App Language",
+                            trailingContent = {
+                                Row(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(ForestGreen.copy(alpha = 0.08f))
+                                        .clickable { viewModel.setLanguage(!isBengali) }
+                                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = if (isBengali) "বাংলা" else "English",
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = ForestGreen
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Icon(
+                                        imageVector = Icons.Default.SwapHoriz,
+                                        contentDescription = "Switch",
+                                        tint = ForestGreen,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
                         )
 
-                        OutlinedTextField(
-                            value = shopType,
-                            onValueChange = { shopType = it },
-                            label = { Text(if (isBengali) "ব্যবসার ধরন" else "Business Type") },
-                            leadingIcon = { Icon(Icons.Default.Category, null) },
-                            singleLine = true,
-                            shape = RoundedCornerShape(16.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = ForestGreen,
-                                unfocusedTextColor = ForestGreen,
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
-                                focusedBorderColor = Color.White,
-                                unfocusedBorderColor = Color.White.copy(alpha = 0.4f),
-                                focusedLabelColor = Color.White,
-                                unfocusedLabelColor = Color.White.copy(alpha = 0.85f),
-                                focusedLeadingIconColor = ForestGreen,
-                                unfocusedLeadingIconColor = ForestGreen.copy(alpha = 0.8f)
-                            ),
-                            modifier = Modifier.fillMaxWidth()
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                            color = Color.LightGray.copy(alpha = 0.3f),
+                            thickness = 1.dp
                         )
 
-                        OutlinedTextField(
-                            value = upiId,
-                            onValueChange = { upiId = it },
-                            label = { Text(if (isBengali) "পেমেন্ট UPI আইডি" else "Payment UPI ID") },
-                            leadingIcon = { Icon(Icons.Default.QrCode, null) },
-                            placeholder = { Text("যেমন: test@upi") },
-                            singleLine = true,
-                            shape = RoundedCornerShape(16.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = ForestGreen,
-                                unfocusedTextColor = ForestGreen,
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
-                                focusedBorderColor = Color.White,
-                                unfocusedBorderColor = Color.White.copy(alpha = 0.4f),
-                                focusedLabelColor = Color.White,
-                                unfocusedLabelColor = Color.White.copy(alpha = 0.85f),
-                                focusedLeadingIconColor = ForestGreen,
-                                unfocusedLeadingIconColor = ForestGreen.copy(alpha = 0.8f)
-                            ),
-                            modifier = Modifier.fillMaxWidth()
+                        // 3. Dynamic Notifications enabled switch
+                        val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
+                        SettingsListItem(
+                            icon = Icons.Default.Notifications,
+                            title = if (isBengali) "বার্তা নোটিফিকেশন" else "Notifications",
+                            trailingContent = {
+                                Switch(
+                                    checked = notificationsEnabled,
+                                    onCheckedChange = { viewModel.setNotificationsEnabled(it) },
+                                    colors = SwitchDefaults.colors(
+                                        checkedThumbColor = ForestGreen,
+                                        checkedTrackColor = ForestGreen.copy(alpha = 0.3f),
+                                        uncheckedThumbColor = Color.LightGray,
+                                        uncheckedTrackColor = Color.LightGray.copy(alpha = 0.2f)
+                                    )
+                                )
+                            }
                         )
 
-                        OutlinedTextField(
-                            value = pin,
-                            onValueChange = { if (it.length <= 4) pin = it },
-                            label = { Text(if (isBengali) "পিন লক পাসওয়ার্ড (৪-সংখ্যা)" else "Security PIN Password (4-digits)") },
-                            leadingIcon = { Icon(Icons.Default.Lock, null) },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-                            visualTransformation = PasswordVisualTransformation(),
-                            singleLine = true,
-                            shape = RoundedCornerShape(16.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = ForestGreen,
-                                unfocusedTextColor = ForestGreen,
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
-                                focusedBorderColor = Color.White,
-                                unfocusedBorderColor = Color.White.copy(alpha = 0.4f),
-                                focusedLabelColor = Color.White,
-                                unfocusedLabelColor = Color.White.copy(alpha = 0.85f),
-                                focusedLeadingIconColor = ForestGreen,
-                                unfocusedLeadingIconColor = ForestGreen.copy(alpha = 0.8f)
-                            ),
-                            modifier = Modifier.fillMaxWidth()
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                            color = Color.LightGray.copy(alpha = 0.3f),
+                            thickness = 1.dp
+                        )
+
+                        if (isSupabaseActive) {
+                            SettingsListItem(
+                                icon = Icons.Default.CloudDownload,
+                                title = if (isBengali) "ক্লাউড থেকে রিস্টোর" else "Restore from Cloud",
+                                onItemClick = { showRestoreDialog = true }
+                            )
+
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 20.dp),
+                                color = Color.LightGray.copy(alpha = 0.3f),
+                                thickness = 1.dp
+                            )
+                        }
+
+                        SettingsListItem(
+                            icon = Icons.Default.ExitToApp,
+                            title = if (isBengali) "নিরাপদ লক আউট" else "Secure Lockout",
+                            titleColor = Color.Red,
+                            onItemClick = {
+                                viewModel.logout()
+                                val logoutAlert = if (isBengali) "নিরাপদ লগ-আউট সম্পন্ন!" else "Secured exit complete!"
+                                Toast.makeText(context, logoutAlert, Toast.LENGTH_SHORT).show()
+                            }
                         )
                     }
-                }
-            }
-
-            item {
-                NeumorphicButton(
-                    onClick = {
-                        if (name.isBlank() || shopName.isBlank() || pin.length != 4) {
-                            val alert = if (isBengali) "অনুগ্রহ করে সব তথ্য সঠিক দিন" else "Please correctly fill all information"
-                            Toast.makeText(context, alert, Toast.LENGTH_SHORT).show()
-                        } else {
-                            viewModel.updateProfile(name, shopName, shopType, upiId, pin)
-                            val successAlert = if (isBengali) "প্রোফাইল পরিবর্তন সফল হয়েছে!" else "Profile credentials updated successfully!"
-                            Toast.makeText(context, successAlert, Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    containerColor = ForestGreen,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp)
-                ) {
-                    Icon(Icons.Default.Save, null, tint = Color.White)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(if (isBengali) "সংরক্ষণ করুন" else "Save Profile", color = Color.White)
-                }
-            }
-
-            item {
-                OutlinedButton(
-                    onClick = {
-                        viewModel.logout()
-                        val logoutAlert = if (isBengali) "নিরাপদ লগ-আউট সম্পন্ন!" else "Secured exit complete!"
-                        Toast.makeText(context, logoutAlert, Toast.LENGTH_SHORT).show()
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
-                    shape = RoundedCornerShape(20.dp)
-                ) {
-                    Icon(Icons.Default.ExitToApp, null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(if (isBengali) "খাতা লক করুন" else "Lock Checkbook Exit", color = Color.Red)
                 }
             }
         }
+
+        // Show edit profile overlay modal/dialog
+        if (showEditProfileDialog && ownerUser != null) {
+            EditProfileDialog(
+                ownerUser = ownerUser!!,
+                viewModel = viewModel,
+                isBengali = isBengali,
+                onDismiss = { showEditProfileDialog = false }
+            )
+        }
+
+        // Show cloud restoration dialog
+        if (showRestoreDialog) {
+            RestoreFromCloudDialog(
+                viewModel = viewModel,
+                onDismiss = { showRestoreDialog = false }
+            )
         }
     }
 }
+
+@Composable
+fun SettingsListItem(
+    icon: ImageVector,
+    title: String,
+    titleColor: Color = MaterialTheme.colorScheme.onSurface,
+    onItemClick: (() -> Unit)? = null,
+    trailingContent: (@Composable () -> Unit)? = null
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(if (onItemClick != null) Modifier.clickable { onItemClick() } else Modifier)
+            .padding(horizontal = 20.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Icon in custom small circle background
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color.LightGray.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = titleColor,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            Text(
+                text = title,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = titleColor
+            )
+        }
+
+        if (trailingContent != null) {
+            trailingContent()
+        } else {
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = null,
+                tint = Color.LightGray,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun EditProfileDialog(
+    ownerUser: User,
+    viewModel: LedgerViewModel,
+    isBengali: Boolean,
+    onDismiss: () -> Unit
+) {
+    var name by remember { mutableStateOf(ownerUser.name) }
+    var shopName by remember { mutableStateOf(ownerUser.shopName) }
+    var shopType by remember { mutableStateOf(ownerUser.shopType) }
+    var upiId by remember { mutableStateOf(ownerUser.upiId) }
+    var pin by remember { mutableStateOf(ownerUser.pin) }
+    val context = LocalContext.current
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = if (isBengali) "প্রোফাইল সংশোধন" else "Edit Profile Information",
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                color = ForestGreen
+            )
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            ) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text(if (isBengali) "মালিকের নাম" else "Owner Name") },
+                    leadingIcon = { Icon(Icons.Default.Person, null, tint = ForestGreen) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = ForestGreen,
+                        focusedLabelColor = ForestGreen
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = shopName,
+                    onValueChange = { shopName = it },
+                    label = { Text(if (isBengali) "দোকানের নাম" else "Shop Name") },
+                    leadingIcon = { Icon(Icons.Default.Store, null, tint = ForestGreen) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = ForestGreen,
+                        focusedLabelColor = ForestGreen
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = shopType,
+                    onValueChange = { shopType = it },
+                    label = { Text(if (isBengali) "ব্যবসার ধরন" else "Business Type") },
+                    leadingIcon = { Icon(Icons.Default.Category, null, tint = ForestGreen) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = ForestGreen,
+                        focusedLabelColor = ForestGreen
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = upiId,
+                    onValueChange = { upiId = it },
+                    label = { Text(if (isBengali) "পেমেন্ট UPI আইডি" else "Payment UPI ID") },
+                    leadingIcon = { Icon(Icons.Default.QrCode, null, tint = ForestGreen) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = ForestGreen,
+                        focusedLabelColor = ForestGreen
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = pin,
+                    onValueChange = { if (it.length <= 4 && it.all { c -> c.isDigit() }) pin = it },
+                    label = { Text(if (isBengali) "পিন লক পাসওয়ার্ড" else "Security PIN Password") },
+                    leadingIcon = { Icon(Icons.Default.Lock, null, tint = ForestGreen) },
+                    singleLine = true,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = ForestGreen,
+                        focusedLabelColor = ForestGreen
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (name.isBlank() || shopName.isBlank() || pin.length != 4) {
+                        val alert = if (isBengali) "অনুগ্রহ করে সব তথ্য সঠিক দিন" else "Please correctly fill all information"
+                        Toast.makeText(context, alert, Toast.LENGTH_SHORT).show()
+                    } else {
+                        viewModel.updateProfile(name, shopName, shopType, upiId, pin)
+                        val successAlert = if (isBengali) "প্রোফাইল পরিবর্তন সফল হয়েছে!" else "Profile details updated!"
+                        Toast.makeText(context, successAlert, Toast.LENGTH_SHORT).show()
+                        onDismiss()
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = ForestGreen)
+            ) {
+                Text(if (isBengali) "সংরক্ষণ" else "Save", color = Color.White)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(if (isBengali) "বাতিল" else "Cancel", color = Color.Gray)
+            }
+        }
+    )
+}
+
+@Composable
+fun RestoreFromCloudDialog(
+    viewModel: LedgerViewModel,
+    onDismiss: () -> Unit
+) {
+    val isBengali by viewModel.isBengali.collectAsState()
+    val syncState by viewModel.syncState.collectAsState()
+    var email by remember { mutableStateOf("") }
+    var pin by remember { mutableStateOf("") }
+    var statusMsg by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = if (isBengali) "ক্লাউড থেকে খাতা রিস্টোর করুন" else "Restore Ledger from Cloud",
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                color = ForestGreen
+            )
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Text(
+                    text = if (isBengali) "আপনার নিবন্ধিত ইমেইল আইডি এবং ৪-ডিজিটের পিন কোড দিন।" else "Provide your registered email and 4-digit PIN.",
+                    fontSize = 13.sp,
+                    color = Color.Gray
+                )
+                
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email Address") },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = ForestGreen,
+                        focusedLabelColor = ForestGreen
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                OutlinedTextField(
+                    value = pin,
+                    onValueChange = { if (it.length <= 4 && it.all { c -> c.isDigit() }) pin = it },
+                    label = { Text(if (isBengali) "৪-ডিজিট পিন" else "4-Digit PIN") },
+                    singleLine = true,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = ForestGreen,
+                        focusedLabelColor = ForestGreen
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                if (statusMsg.isNotEmpty() || syncState == LedgerViewModel.SyncState.SYNCING) {
+                    val displayMsg = if (syncState == LedgerViewModel.SyncState.SYNCING) {
+                        if (isBengali) "খাতা ডাউনলোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন..." else "Downloading ledger, please wait..."
+                    } else {
+                        statusMsg
+                    }
+                    Text(
+                        text = displayMsg,
+                        color = if (syncState == LedgerViewModel.SyncState.ERROR) Color.Red else ForestGreen,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (email.isBlank() || pin.length < 4) {
+                        statusMsg = if (isBengali) "সঠিক ইমেইল এবং ৪ অঙ্কের পিন লিখুন।" else "Enter a valid email and 4-digit PIN."
+                        return@Button
+                    }
+                    viewModel.signInWithSupabaseEmail(email, pin) { success, msg ->
+                        statusMsg = msg
+                        if (success) {
+                            Toast.makeText(context, if (isBengali) "সাফল্যজনকভাবে খাতা রিস্টোর হয়েছে!" else "Ledger successfully restored!", Toast.LENGTH_SHORT).show()
+                            onDismiss()
+                        }
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = ForestGreen)
+            ) {
+                Text(if (isBengali) "রিস্টোর করুন" else "Restore", color = Color.White)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(if (isBengali) "বাতিল" else "Cancel", color = Color.Gray)
+            }
+        }
+    )
+}
+

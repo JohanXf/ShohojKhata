@@ -11,44 +11,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme =
-  darkColorScheme(
-    primary = DarkCaramelBrand,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
-    background = Color(0xFF1E110A), // Rich dark chocolate background
-    surface = Color(0xFF381F0F), // Rich dark roast caramel card surface
-    onBackground = Color(0xFFFFF5EB), // Warm light cream text
-    onSurface = Color(0xFFFFF5EB)
-  )
+private val LessBlack = Color(0xFF222222)
+private val LittleGreyish = Color(0xFFF3F4F6)
 
 private val LightColorScheme =
   lightColorScheme(
-    primary = DarkCaramelBrand,
-    secondary = PurpleGrey40,
-    tertiary = PaidCaramel,
-    background = WarmCanvasBg,
-    surface = Color.White, // Crisp white surfaces for perfect card readability
-    onBackground = DeepEspressoText, // Premium deep chocolate espresso readability text
-    onSurface = DeepEspressoText,
+    primary = LessBlack,
+    secondary = Color(0xFF666666),
+    tertiary = LessBlack,
+    background = LittleGreyish,
+    surface = Color.White,
+    onBackground = LessBlack,
+    onSurface = LessBlack,
+    onPrimary = LittleGreyish
   )
 
 @Composable
 fun MyApplicationTheme(
-  darkTheme: Boolean = isSystemInDarkTheme(),
+  darkTheme: Boolean = false,
   dynamicColor: Boolean = false,
   content: @Composable () -> Unit,
 ) {
-  val colorScheme =
-    when {
-      dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-        val context = LocalContext.current
-        if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-      }
-
-      darkTheme -> DarkColorScheme
-      else -> LightColorScheme
-    }
+  // Always use the customized LightColorScheme since dark mode is removed
+  val colorScheme = LightColorScheme
 
   MaterialTheme(colorScheme = colorScheme, typography = Typography, content = content)
 }

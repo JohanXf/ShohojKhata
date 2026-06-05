@@ -30,11 +30,24 @@ class SohojRepository(private val database: AppDatabase) {
             upiId = upiId,
             pin = pin
         )
-        return userDao.insertUser(user)
+        val id = userDao.insertUser(user)
+        val insertedUser = user.copy(id = id.toInt())
+        
+        // Attempt cloud sync
+        SupabaseClient.api?.let { api ->
+            runCatching { api.upsertUser(insertedUser) }
+        }
+        
+        return id
     }
 
     suspend fun updateUser(user: User) {
         userDao.updateUser(user)
+        
+        // Attempt cloud sync
+        SupabaseClient.api?.let { api ->
+            runCatching { api.upsertUser(user) }
+        }
     }
 
     fun getCustomers(ownerId: Int): Flow<List<Customer>> {
@@ -54,15 +67,33 @@ class SohojRepository(private val database: AppDatabase) {
             totalDues = 0.0,
             isJoined = isJoined
         )
-        return customerDao.insertCustomer(customer)
+        val id = customerDao.insertCustomer(customer)
+        val insertedCustomer = customer.copy(id = id.toInt())
+
+        // Attempt cloud sync
+        SupabaseClient.api?.let { api ->
+            runCatching { api.upsertCustomers(listOf(insertedCustomer)) }
+        }
+
+        return id
     }
 
     suspend fun updateCustomer(customer: Customer) {
         customerDao.updateCustomer(customer)
+
+        // Attempt cloud sync
+        SupabaseClient.api?.let { api ->
+            runCatching { api.upsertCustomers(listOf(customer)) }
+        }
     }
 
     suspend fun deleteCustomer(customer: Customer) {
         customerDao.deleteCustomer(customer)
+
+        // Attempt cloud sync
+        SupabaseClient.api?.let { api ->
+            runCatching { api.deleteCustomer("id=eq.${customer.id}") }
+        }
     }
 
     fun getTransactionsForCustomer(customerId: Int): Flow<List<Transaction>> {
@@ -90,29 +121,85 @@ class SohojRepository(private val database: AppDatabase) {
             timestamp = timestamp
         )
 
-        // Delta calculation for Customer's dues:
-        // GIVE means we lent money/sold on credit -> Customer's debt increases (+amount)
-        // GET means they paid us -> Customer's debt decreases (-amount)
         val delta = if (type == "GIVE") amount else -amount
-
         var transactionId: Long = 0
+        
         database.withTransaction {
             transactionId = transactionDao.insertTransaction(transaction)
             customerDao.updateCustomerDues(customerId, delta, timestamp)
         }
+
+        val insertedTx = transaction.copy(id = transactionId.toInt())
+
+        // Attempt cloud sync of both transaction and updated customer
+        SupabaseClient.api?.let { api ->
+            runCatching {
+                api.upsertTransactions(listOf(insertedTx))
+                getCustomerById(customerId)?.let { api.upsertCustomers(listOf(it)) }
+            }
+        }
+
         return transactionId
     }
 
     suspend fun deleteTransaction(transaction: Transaction) {
-        // Revert balance change on customer dues:
-        // If deleted transaction was GIVE, we decrease customer's dues (delta = -amount)
-        // If deleted transaction was GET, we increase customer's dues (delta = +amount)
         val delta = if (transaction.type == "GIVE") -transaction.amount else transaction.amount
         val timestamp = System.currentTimeMillis()
 
         database.withTransaction {
             transactionDao.deleteTransaction(transaction)
             customerDao.updateCustomerDues(transaction.customerId, delta, timestamp)
+        }
+
+        // Attempt cloud sync
+        SupabaseClient.api?.let { api ->
+            runCatching {
+                api.deleteTransaction("id=eq.${transaction.id}")
+                getCustomerById(transaction.customerId)?.let { api.upsertCustomers(listOf(it)) }
+            }
+        }
+    }
+
+    // --- High-level Full Database Sync and Merge function ---
+    suspend fun syncWithSupabase(): Boolean {
+        val api = SupabaseClient.api ?: return false
+        try {
+            // 1. Sync User Profile
+            val localUser = getFirstUser()
+            if (localUser != null) {
+                runCatching { api.upsertUser(localUser) }
+            }
+
+            // 2. Sync Customers (Push)
+            val localCustomers = customerDao.getAllCustomersDirect()
+            if (localCustomers.isNotEmpty()) {
+                api.upsertCustomers(localCustomers)
+            }
+
+            // 3. Sync Transactions (Push)
+            val localTransactions = transactionDao.getAllTransactionsDirect()
+            if (localTransactions.isNotEmpty()) {
+                api.upsertTransactions(localTransactions)
+            }
+
+            // 4. Remote Pull & Merge
+            if (localUser != null) {
+                // Pull remote customers for this owner and save locally
+                val remoteCustomers = api.getCustomers("ownerId=eq.${localUser.id}")
+                for (remoteCust in remoteCustomers) {
+                    customerDao.insertCustomer(remoteCust)
+                }
+
+                // Pull remote transactions and save locally
+                val remoteTransactions = api.getTransactions()
+                for (remoteTx in remoteTransactions) {
+                    transactionDao.insertTransaction(remoteTx)
+                }
+            }
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
         }
     }
 }

@@ -34,8 +34,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val viewModel: LedgerViewModel = viewModel()
+
             MyApplicationTheme {
-                val viewModel: LedgerViewModel = viewModel()
                 val registeredUser by viewModel.registeredUserFlow.collectAsState()
                 val authenticatedUser by viewModel.authenticatedUser.collectAsState()
                 val isLocked by viewModel.isLocked.collectAsState()
@@ -209,7 +210,10 @@ fun MainAppContainer(viewModel: LedgerViewModel) {
                     ReportsScreen(viewModel = viewModel)
                 }
                 ActiveScreen.Profile -> {
-                    ProfileScreen(viewModel = viewModel)
+                    ProfileScreen(
+                        viewModel = viewModel,
+                        onBack = { activeTab = ActiveScreen.Dashboard }
+                    )
                 }
                 else -> { /* No-op or exhaustiveness compliance */ }
             }

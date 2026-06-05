@@ -29,6 +29,9 @@ interface CustomerDao {
     @Query("SELECT * FROM customers WHERE id = :customerId LIMIT 1")
     suspend fun getCustomerById(customerId: Int): Customer?
 
+    @Query("SELECT * FROM customers")
+    suspend fun getAllCustomersDirect(): List<Customer>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCustomer(customer: Customer): Long
 
@@ -46,6 +49,9 @@ interface CustomerDao {
 interface TransactionDao {
     @Query("SELECT * FROM transactions WHERE customerId = :customerId ORDER BY timestamp DESC")
     fun getTransactionsByCustomer(customerId: Int): Flow<List<Transaction>>
+
+    @Query("SELECT * FROM transactions")
+    suspend fun getAllTransactionsDirect(): List<Transaction>
 
     @Query("""
         SELECT t.* FROM transactions t 
