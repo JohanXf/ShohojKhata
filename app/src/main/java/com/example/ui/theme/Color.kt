@@ -20,17 +20,20 @@ val MintGreenLight: Color
 val DeepGold = Color(0xFFFFA500)      // Accent/Highlights warm gold
 
 // High contrast Black and White styled states or fallback to modern readable indicators
-val KhataGreen = Color(0xFF2E7D32)    // High contrast green for paid states
+val KhataGreen = Color(0xFF4CAF50)    // High contrast green for paid states
 val KhataGreenBg: Color
-    @Composable get() = Color(0xFFE8F5E9)
+    @Composable get() = Color(0xFF1B382B)
 
-val KhataRed = Color(0xFFC62828)      // High contrast red for dues states
+val KhataRed = Color(0xFFF44336)      // High contrast red for dues states
 val KhataRedBg: Color
-    @Composable get() = Color(0xFFFFEBEE)
+    @Composable get() = Color(0xFF3F1B1B)
 
 // Compatibility aliases - all fully dynamic mapping to material color scheme
-val AppBeige = Color(0xFFFDF8F3)
-val AppCaramel = Color(0xFF76421E)
+val AppBeige: Color
+    @Composable get() = Color(0xFF2C2C2C)
+
+val AppCaramel: Color
+    @Composable get() = MaterialTheme.colorScheme.onSurface
 
 val Purple80 = Color.White
 val PurpleGrey80 = Color.LightGray

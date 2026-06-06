@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val LessBlack = Color(0xFF222222)
-private val LittleGreyish = Color(0xFFF3F4F6)
+private val LessBlack = Color(0xFF2C2C2C)
+private val LittleGreyish = Color(0xFFCECECE)
 
 private val LightColorScheme =
   lightColorScheme(
@@ -20,9 +20,9 @@ private val LightColorScheme =
     secondary = Color(0xFF666666),
     tertiary = LessBlack,
     background = LittleGreyish,
-    surface = Color.White,
+    surface = LessBlack,
     onBackground = LessBlack,
-    onSurface = LessBlack,
+    onSurface = LittleGreyish,
     onPrimary = LittleGreyish
   )
 

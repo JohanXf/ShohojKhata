@@ -54,9 +54,9 @@ fun NeumorphicCard(
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
-    val containerBg = containerColor ?: (if (isDark) Color(0xFF8B5E3C) else Color.White)
-    val borderCol = if (isDark) ForestGreen.copy(alpha = 0.25f) else ForestGreen.copy(alpha = 0.12f)
-    val shadowElev = if (isDark) 1.dp else 4.dp
+    val containerBg = containerColor ?: MaterialTheme.colorScheme.surface
+    val borderCol = ForestGreen.copy(alpha = 0.12f)
+    val shadowElev = 2.dp
     
     val cardModifier = if (onClick != null) {
         modifier.clickable { onClick() }
@@ -697,7 +697,7 @@ fun DashboardScreen(
                             .weight(1f)
                             .border(1.dp, ForestGreen.copy(alpha = 0.15f), RoundedCornerShape(20.dp)),
                         shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Row(
@@ -725,7 +725,7 @@ fun DashboardScreen(
                                 Text(
                                     text = if (isBengali) "পাবেন" else "You Get",
                                     fontSize = 11.sp,
-                                    color = Color.Gray,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
@@ -744,7 +744,7 @@ fun DashboardScreen(
                             .weight(1f)
                             .border(1.dp, ForestGreen.copy(alpha = 0.15f), RoundedCornerShape(20.dp)),
                         shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Row(
@@ -772,7 +772,7 @@ fun DashboardScreen(
                                 Text(
                                     text = if (isBengali) "দেবেন" else "You Give",
                                     fontSize = 11.sp,
-                                    color = Color.Gray,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
@@ -1147,10 +1147,10 @@ fun AddCustomerDialog(
                                 onAdd(name, phone, null, false)
                             }
                         },
-                        containerColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.surface,
                         shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text(if (isBengali) "যোগ করুন" else "Add", color = ForestGreen, fontWeight = FontWeight.Bold)
+                        Text(if (isBengali) "যোগ করুন" else "Add", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -1758,7 +1758,7 @@ fun CustomerDetailScreen(
                     item {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.5f)),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)),
                             shape = RoundedCornerShape(16.dp)
                         ) {
                             Column(
@@ -1771,7 +1771,7 @@ fun CustomerDetailScreen(
                                     text = if (isBengali) "কোনো বিবরণী নেই" else "No transactions yet.",
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Medium,
-                                    color = NavyDark.copy(alpha = 0.5f)
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                 )
                             }
                         }
@@ -1783,7 +1783,7 @@ fun CustomerDetailScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .border(1.dp, AppCaramel.copy(alpha = 0.08f), RoundedCornerShape(24.dp)),
-                                colors = CardDefaults.cardColors(containerColor = Color.White),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                                 shape = RoundedCornerShape(24.dp)
                             ) {
                                 Column(
@@ -1894,7 +1894,7 @@ fun CustomerDetailScreen(
                                             text = if (isBengali) "দিনের সংগ্রহ" else "Day total",
                                             fontSize = 13.sp,
                                             fontWeight = FontWeight.Medium,
-                                            color = NavyDark.copy(alpha = 0.6f)
+                                            color = AppCaramel.copy(alpha = 0.6f)
                                         )
                                         Text(
                                             text = "${if (dayTotal < 0) "-" else ""}₹${String.format("%,.0f", if (dayTotal >= 0) dayTotal else -dayTotal)}",
@@ -2473,13 +2473,13 @@ fun UpiQrCodeDialog(
                     text = if (isBengali) "UPI পেমেন্ট QR কোড" else "UPI Instant Payment QR",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = ForestGreen
+                    color = KhataGreen
                 )
 
                 Text(
                     text = if (isBengali) "কাস্টমারকে স্ক্রিন স্ক্যান করতে বলুন:" else "Ask Customer to Scan QR directly:",
                     fontSize = 13.sp,
-                    color = Color.Gray
+                    color = AppCaramel.copy(alpha = 0.7f)
                 )
 
                 // Stenciled mockup QR Canvas representation
@@ -2487,20 +2487,20 @@ fun UpiQrCodeDialog(
                     modifier = Modifier
                         .size(180.dp)
                         .background(Color.White)
-                        .border(3.dp, ForestGreen, RoundedCornerShape(12.dp))
+                        .border(3.dp, KhataGreen, RoundedCornerShape(12.dp))
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Default.QrCode, null, modifier = Modifier.size(100.dp), tint = NavyDark)
+                        Icon(Icons.Default.QrCode, null, modifier = Modifier.size(100.dp), tint = Color.Black)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("SCAN TO PAY INR", fontSize = 10.sp, fontWeight = FontWeight.Black, color = ForestGreen)
+                        Text("SCAN TO PAY INR", fontSize = 10.sp, fontWeight = FontWeight.Black, color = Color.Black)
                     }
                 }
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = merchantName, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = NavyDark)
-                    Text(text = "UPI / MFS: $upiId", fontSize = 11.sp, color = Color.Gray)
+                    Text(text = merchantName, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = AppCaramel)
+                    Text(text = "UPI / MFS: $upiId", fontSize = 11.sp, color = AppCaramel.copy(alpha = 0.7f))
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = if (isBengali) "পরিশোধের পরিমাণ ₹ ${String.format("%,.0f", amount)}" else "Collection Arrears: ₹ ${String.format("%,.0f", amount)}",
@@ -2555,9 +2555,7 @@ fun ReportsScreen(viewModel: LedgerViewModel) {
         }
     }
 
-    val finalFilteredList = remember(filteredByTime, filterType) {
-        if (filterType == "ALL") filteredByTime else filteredByTime.filter { it.paymentMethod == filterType }
-    }
+    val finalFilteredList = filteredByTime
 
     // Sum credit vs sum deposits
     val (creditTotal, debitTotal) = remember(finalFilteredList) {
@@ -2616,7 +2614,7 @@ fun ReportsScreen(viewModel: LedgerViewModel) {
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = if (isBengali) "দোকানের সর্বমোট লেনদেন এবং ক্যাশ আদায়ের গতিধারা" else "Gain powerful insights into your credits & collections balance",
+                        text = if (isBengali) "দেনার মোট হিসাব ও আদায়ের গতিধারা" else "Gain insights into your credit & collection",
                         fontSize = 13.sp,
                         color = Color.White
                     )
@@ -2639,14 +2637,7 @@ fun ReportsScreen(viewModel: LedgerViewModel) {
                     )
                 }
 
-                // Item 2: Cash/UPI Segment Switch Selector
-                item {
-                    PaymentMethodFilterRow(
-                        isBengali = isBengali,
-                        selectedMethod = filterType,
-                        onSelectMethod = { filterType = it }
-                    )
-                }
+                // Payment Method filter removed as requested
 
                 // Item 3: Total Credit Given vs Total Cash Collected Metrics
                 item {
@@ -2870,10 +2861,10 @@ fun CollectionGoalGaugeCard(
     }
 
     val healthMsg = when {
-        collectionRate >= 80 -> if (isBengali) "চমৎকার ক্যাশ আদায়, সুস্থ্য ব্যবসা!" else "Excellent collection health!"
-        collectionRate >= 50 -> if (isBengali) "মোটামুটি আদায়ে ব্যালেন্স রয়েছে" else "Healthy balanced cashflow."
-        collectionRate > 0 -> if (isBengali) "বাকির পরিমাণ বেশি, দ্রুত আদায় করুন!" else "High Outstanding dues. Immediate collection needed."
-        else -> if (isBengali) "কোনো আদান-প্রদান শুরু হয়নি" else "No outstanding collections records found."
+        collectionRate >= 80 -> if (isBengali) "ক্যাশ আদায় চমৎকার!" else "Excellent cash collection."
+        collectionRate >= 50 -> if (isBengali) "ক্যাশ আদায় সন্তোষজনক।" else "Healthy balanced cashflow."
+        collectionRate > 0 -> if (isBengali) "তাড়াতাড়ি বাকি আদায় করুন।" else "Collect dues soon."
+        else -> if (isBengali) "কোনো আদান-প্রদান শুরু হয়নি।" else "No transactions found."
     }
 
     val dueText = if (isBengali) {
@@ -2945,7 +2936,7 @@ fun CollectionGoalGaugeCard(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = if (isBengali) "মোট লেনদেনের সাপেক্ষে আদায়ের হার" else "Ratio of total collections",
+                        text = if (isBengali) "মোট আদায়ের হার" else "Cash collection rate",
                         fontSize = 11.sp,
                         color = Color.White.copy(alpha = 0.85f)
                     )
@@ -2977,7 +2968,7 @@ fun LedgerTrendChartCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = if (isBengali) "ট্রেণ্ড অ্যানালাইসিস (Trend)" else "Weekly & Daily Trend",
+                    text = if (isBengali) "লেনদেন ট্রেন্ড" else "Ledger Trend",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -3034,7 +3025,7 @@ fun LedgerTrendChartCard(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (isBengali) "গ্রাফ প্রদর্শনের জন্য পর্যাপ্ত ডেটা নেই" else "Not enough ledger records for graph projection",
+                        text = if (isBengali) "পর্যাপ্ত ডেটা নেই" else "Not enough data",
                         fontSize = 11.sp,
                         color = Color.White.copy(alpha = 0.85f)
                     )
@@ -3168,12 +3159,7 @@ fun TransactionItemRow(isBengali: Boolean, tx: Transaction) {
                     fontSize = 14.sp,
                     color = Color.White
                 )
-                val methodText = when (tx.paymentMethod) {
-                    "CASH" -> if (isBengali) "নগদ" else "CASH"
-                    "UPI" -> if (isBengali) "UPI/bKash" else "UPI/MFS"
-                    else -> if (isBengali) "অন্যান্য" else "OTHER"
-                }
-                Text("$txDate • $methodText", fontSize = 11.sp, color = Color.White.copy(alpha = 0.82f))
+                Text(txDate, fontSize = 11.sp, color = Color.White.copy(alpha = 0.82f))
             }
 
             Text(
