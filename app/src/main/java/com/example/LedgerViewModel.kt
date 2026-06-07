@@ -51,6 +51,148 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
     private val _authenticatedUser = MutableStateFlow<User?>(null)
     val authenticatedUser: StateFlow<User?> = _authenticatedUser.asStateFlow()
 
+    // Google Sign-In authentication states
+    private val _googleEmail = MutableStateFlow<String?>(prefs.getString("google_email", null))
+    val googleEmail: StateFlow<String?> = _googleEmail.asStateFlow()
+
+    private val _googleName = MutableStateFlow<String?>(prefs.getString("google_name", null))
+    val googleName: StateFlow<String?> = _googleName.asStateFlow()
+
+    private val _googlePhone = MutableStateFlow<String?>(prefs.getString("google_phone", ""))
+    val googlePhone: StateFlow<String?> = _googlePhone.asStateFlow()
+
+    // Active App Mode role: "MERCHANT" or "CLIENT"
+    private val _appMode = MutableStateFlow(prefs.getString("app_mode", "CLIENT") ?: "CLIENT")
+    val appMode: StateFlow<String> = _appMode.asStateFlow()
+
+    // Premium Subscription Status for Store Creation
+    private val _isPremiumMerchant = MutableStateFlow(prefs.getBoolean("is_premium_merchant", false))
+    val isPremiumMerchant: StateFlow<Boolean> = _isPremiumMerchant.asStateFlow()
+
+    // Set of Joined Shop IDs by this Client
+    private val _joinedStores = MutableStateFlow<Set<String>>(prefs.getStringSet("joined_stores", emptySet()) ?: emptySet())
+    val joinedStores: StateFlow<Set<String>> = _joinedStores.asStateFlow()
+
+    fun signInWithGoogle(name: String, email: String) {
+        _googleEmail.value = email
+        _googleName.value = name
+        prefs.edit()
+            .putString("google_email", email)
+            .putString("google_name", name)
+            .apply()
+    }
+
+    fun linkPhoneAndPin(phone: String, pin: String) {
+        _googlePhone.value = phone
+        prefs.edit().putString("google_phone", phone).apply()
+        
+        // Save security credentials in active user DB profile
+        val currentUser = _authenticatedUser.value
+        if (currentUser != null) {
+            viewModelScope.launch {
+                val updated = currentUser.copy(phone = phone, pin = pin)
+                repository.updateUser(updated)
+                _authenticatedUser.value = updated
+            }
+        }
+    }
+
+    fun setAppMode(mode: String) {
+        _appMode.value = mode
+        prefs.edit().putString("app_mode", mode).apply()
+    }
+
+    fun activatePremiumMerchant(shopName: String, shopType: String, location: String, upiId: String) {
+        _isPremiumMerchant.value = true
+        prefs.edit().putBoolean("is_premium_merchant", true).apply()
+        
+        // Update user shop properties
+        viewModelScope.launch {
+            val user = repository.getFirstUser()
+            if (user != null) {
+                val updated = user.copy(
+                    shopName = shopName,
+                    shopType = shopType,
+                    upiId = upiId,
+                    name = _googleName.value ?: user.name
+                )
+                repository.updateUser(updated)
+                _authenticatedUser.value = updated
+            }
+        }
+    }
+
+    fun joinShop(shopId: String) {
+        val currentSet = _joinedStores.value.toMutableSet()
+        currentSet.add(shopId)
+        _joinedStores.value = currentSet
+        prefs.edit().putStringSet("joined_stores", currentSet).apply()
+
+        val targetOwnerId = when (shopId) {
+            "1" -> 1
+            "2" -> 2
+            "3" -> 3
+            else -> shopId.toIntOrNull() ?: (_authenticatedUser.value?.id ?: 1)
+        }
+
+        // Associate or insert matching customer profile inside merchant's books so they sync
+        viewModelScope.launch {
+            val name = _googleName.value ?: "Faizen Ahmed"
+            val phone = _googlePhone.value?.takeIf { it.isNotEmpty() } ?: "+91 98765 00000"
+            val allCustomers = repository.getCustomers(targetOwnerId).first()
+            val existing = allCustomers.firstOrNull { it.name.lowercase() == name.lowercase() }
+            if (existing == null) {
+                repository.insertCustomer(
+                    ownerId = targetOwnerId,
+                    name = name,
+                    phone = phone,
+                    email = _googleEmail.value,
+                    isJoined = true
+                )
+            } else {
+                repository.updateCustomer(existing.copy(isJoined = true))
+            }
+        }
+    }
+
+    fun leaveShop(shopId: String) {
+        val currentSet = _joinedStores.value.toMutableSet()
+        currentSet.remove(shopId)
+        _joinedStores.value = currentSet
+        prefs.edit().putStringSet("joined_stores", currentSet).apply()
+
+        val targetOwnerId = when (shopId) {
+            "1" -> 1
+            "2" -> 2
+            "3" -> 3
+            else -> shopId.toIntOrNull() ?: (_authenticatedUser.value?.id ?: 1)
+        }
+
+        viewModelScope.launch {
+            val name = _googleName.value ?: "Faizen Ahmed"
+            val allCustomers = repository.getCustomers(targetOwnerId).first()
+            val existing = allCustomers.firstOrNull { it.name.lowercase() == name.lowercase() }
+            if (existing != null) {
+                repository.updateCustomer(existing.copy(isJoined = false))
+            }
+        }
+    }
+
+    fun logoutGoogle() {
+        _googleEmail.value = null
+        _googleName.value = null
+        _googlePhone.value = ""
+        _isPremiumMerchant.value = false
+        _joinedStores.value = emptySet()
+        prefs.edit()
+            .remove("google_email")
+            .remove("google_name")
+            .remove("google_phone")
+            .remove("is_premium_merchant")
+            .remove("joined_stores")
+            .apply()
+    }
+
     // PIN lock screen state
     private val _isLocked = MutableStateFlow(true)
     val isLocked: StateFlow<Boolean> = _isLocked.asStateFlow()

@@ -28,12 +28,12 @@ private val LightColorScheme =
 
 @Composable
 fun MyApplicationTheme(
-  darkTheme: Boolean = false,
-  dynamicColor: Boolean = false,
+  isBengali: Boolean = false,
   content: @Composable () -> Unit,
 ) {
-  // Always use the customized LightColorScheme since dark mode is removed
+  // Always use the customized rich caramel-earth LightColorScheme matching the global balance UI
   val colorScheme = LightColorScheme
+  val typography = getAppTypography(isBengali)
 
-  MaterialTheme(colorScheme = colorScheme, typography = Typography, content = content)
+  MaterialTheme(colorScheme = colorScheme, typography = typography, content = content)
 }

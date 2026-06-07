@@ -20,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -44,6 +45,8 @@ import android.net.Uri
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.text.font.FontFamily
 
 @Composable
 fun NeumorphicCard(
@@ -671,6 +674,7 @@ fun DashboardScreen(
                             text = "₹ ${String.format("%,.0f", netBalance)}",
                             fontSize = 32.sp,
                             fontWeight = FontWeight.ExtraBold,
+                            fontFamily = FontFamily.Serif,
                             color = Color.White
                         )
                     }
@@ -732,6 +736,7 @@ fun DashboardScreen(
                                     text = "₹ ${String.format("%,.0f", totalWeGet)}",
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.ExtraBold,
+                                    fontFamily = FontFamily.Serif,
                                     color = KhataRed
                                 )
                             }
@@ -779,6 +784,7 @@ fun DashboardScreen(
                                     text = "₹ ${String.format("%,.0f", totalWeGive)}",
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.ExtraBold,
+                                    fontFamily = FontFamily.Serif,
                                     color = KhataGreen
                                 )
                             }
@@ -1041,15 +1047,15 @@ fun CustomerListItem(
                 when {
                     dues > 0 -> {
                         Text(if (isBengali) "পাবেন" else "Get", fontSize = 11.sp, color = Color(0xFFFFCDD2), fontWeight = FontWeight.Bold)
-                        Text("₹ ${String.format("%,.0f", dues)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color(0xFFFF8A80))
+                        Text("₹ ${String.format("%,.0f", dues)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Serif, color = Color(0xFFFF8A80))
                     }
                     dues < 0 -> {
                         Text(if (isBengali) "দেবেন" else "Give", fontSize = 11.sp, color = Color(0xFFC8E6C9), fontWeight = FontWeight.Bold)
-                        Text("₹ ${String.format("%,.0f", -dues)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color(0xFF81C784))
+                        Text("₹ ${String.format("%,.0f", -dues)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Serif, color = Color(0xFF81C784))
                     }
                     else -> {
                         Text(if (isBengali) "সমতা" else "Settled", fontSize = 11.sp, color = Color.White.copy(alpha = 0.7f), fontWeight = FontWeight.Medium)
-                        Text("₹ ০", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(if (isBengali) "₹ ০" else "₹ 0", fontSize = 15.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Serif, color = Color.White)
                     }
                 }
             }
@@ -1072,38 +1078,40 @@ fun AddCustomerDialog(
     Dialog(onDismissRequest = { onDismiss() }) {
         NeumorphicCard(
             shape = RoundedCornerShape(24.dp),
-            containerColor = ForestGreen,
+            containerColor = Color(0xFF222222),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
             Column(
-                modifier = Modifier.padding(20.dp),
+                modifier = Modifier.padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
                     text = if (isBengali) "নতুন কাস্টমার যোগ করুন" else "Add New Customer",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.ExtraBold,
                     color = Color.White
                 )
 
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text(if (isBengali) "কাস্টমারের নাম" else "Customer Name", color = Color.White.copy(alpha = 0.85f)) },
+                    label = { Text(if (isBengali) "কাস্টমারের নাম" else "Customer Name") },
                     leadingIcon = { Icon(Icons.Default.Person, null, tint = ForestGreen) },
                     singleLine = true,
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = ForestGreen,
-                        unfocusedTextColor = ForestGreen,
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
-                        focusedBorderColor = Color.White,
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.4f),
-                        focusedLabelColor = Color.White,
-                        unfocusedLabelColor = Color.White.copy(alpha = 0.85f),
+                        focusedTextColor = Color(0xFF1C1C1C),
+                        unfocusedTextColor = Color(0xFF1C1C1C),
+                        focusedContainerColor = Color(0xFFF5F5F5),
+                        unfocusedContainerColor = Color(0xFFF5F5F5),
+                        focusedBorderColor = ForestGreen,
+                        unfocusedBorderColor = Color.Transparent,
+                        focusedLabelColor = ForestGreen,
+                        unfocusedLabelColor = Color.Gray,
+                        focusedLeadingIconColor = ForestGreen,
+                        unfocusedLeadingIconColor = Color.Gray
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1111,20 +1119,22 @@ fun AddCustomerDialog(
                 OutlinedTextField(
                     value = phone,
                     onValueChange = { phone = it },
-                    label = { Text(if (isBengali) "মোবাইল নম্বর" else "Mobile Number", color = Color.White.copy(alpha = 0.85f)) },
+                    label = { Text(if (isBengali) "মোবাইল নম্বর" else "Mobile Number") },
                     leadingIcon = { Icon(Icons.Default.Phone, null, tint = ForestGreen) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     singleLine = true,
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = ForestGreen,
-                        unfocusedTextColor = ForestGreen,
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
-                        focusedBorderColor = Color.White,
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.4f),
-                        focusedLabelColor = Color.White,
-                        unfocusedLabelColor = Color.White.copy(alpha = 0.85f),
+                        focusedTextColor = Color(0xFF1C1C1C),
+                        unfocusedTextColor = Color(0xFF1C1C1C),
+                        focusedContainerColor = Color(0xFFF5F5F5),
+                        unfocusedContainerColor = Color(0xFFF5F5F5),
+                        focusedBorderColor = ForestGreen,
+                        unfocusedBorderColor = Color.Transparent,
+                        focusedLabelColor = ForestGreen,
+                        unfocusedLabelColor = Color.Gray,
+                        focusedLeadingIconColor = ForestGreen,
+                        unfocusedLeadingIconColor = Color.Gray
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -1135,10 +1145,10 @@ fun AddCustomerDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(onClick = { onDismiss() }) {
-                        Text(if (isBengali) "বাতিল" else "Cancel", color = Color.White)
+                        Text(if (isBengali) "বাতিল" else "Cancel", color = Color.LightGray, fontWeight = FontWeight.Bold)
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    NeumorphicButton(
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Button(
                         onClick = {
                             if (name.isBlank() || phone.isBlank()) {
                                 val alert = if (isBengali) "নাম ও মোবাইল দেয়া আবশ্যক" else "Name & Mobile are required"
@@ -1147,10 +1157,10 @@ fun AddCustomerDialog(
                                 onAdd(name, phone, null, false)
                             }
                         },
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        shape = RoundedCornerShape(16.dp)
+                        colors = ButtonDefaults.buttonColors(containerColor = ForestGreen),
+                        shape = RoundedCornerShape(20.dp)
                     ) {
-                        Text(if (isBengali) "যোগ করুন" else "Add", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
+                        Text(if (isBengali) "যোগ করুন" else "Add", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -1291,19 +1301,6 @@ fun CustomerDetailScreen(
                                 color = Color.White
                             )
                         }
-                    }
-
-                    // Delete customer ledger
-                    IconButton(
-                        onClick = {
-                            viewModel.deleteCustomer(customer!!) {
-                                val alert = if (isBengali) "কাস্টমার খাতা ডিলিট করা হয়েছে!" else "Customer ledger deleted!"
-                                Toast.makeText(context, alert, Toast.LENGTH_SHORT).show()
-                                onBack()
-                            }
-                        }
-                    ) {
-                        Icon(Icons.Default.Delete, "Delete Customer", tint = Color.White)
                     }
                 }
             }
@@ -1862,22 +1859,7 @@ fun CustomerDetailScreen(
                                                 )
                                             }
 
-                                            // Revert Clear Action
-                                            IconButton(
-                                                onClick = {
-                                                    viewModel.deleteTransaction(tx)
-                                                    val alert = if (isBengali) "লেনদেন ডিলিট করা হয়েছে" else "Transaction deleted"
-                                                    Toast.makeText(context, alert, Toast.LENGTH_SHORT).show()
-                                                },
-                                                modifier = Modifier.size(24.dp)
-                                            ) {
-                                                Icon(
-                                                    imageVector = Icons.Default.Clear,
-                                                    contentDescription = "Delete",
-                                                    tint = Color.LightGray,
-                                                    modifier = Modifier.size(16.dp)
-                                                )
-                                            }
+
                                         }
                                     }
 
@@ -1916,12 +1898,14 @@ fun CustomerDetailScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 12.dp)
-                            .border(1.dp, AppCaramel.copy(alpha = 0.12f), RoundedCornerShape(16.dp)),
-                        colors = CardDefaults.cardColors(containerColor = AppBeige),
+                            .border(1.dp, Color(0xFF333333).copy(alpha = 0.15f), RoundedCornerShape(16.dp)),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Row(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -1934,14 +1918,14 @@ fun CustomerDetailScreen(
                                     text = if (isBengali) "সর্বমোট বকেয়া (Total Due)" else "Total Due",
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = AppCaramel
+                                    color = Color.White
                                 )
                             }
                             Text(
                                 text = "₹ ${String.format("%,.0f", finalDues)}",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = AppCaramel
+                                color = Color.White
                             )
                         }
                     }
@@ -3183,12 +3167,16 @@ fun ProfileScreen(
 ) {
     val ownerUser by viewModel.authenticatedUser.collectAsState()
     val isBengali by viewModel.isBengali.collectAsState()
+    val googleName by viewModel.googleName.collectAsState()
     val context = LocalContext.current
 
-    if (ownerUser == null) return
+    val displayName = ownerUser?.name ?: googleName ?: "Faizen Ahmed"
+    val isSupabaseActive = viewModel.isSupabaseActive()
+    val isPremiumMerchant by viewModel.isPremiumMerchant.collectAsState()
 
-    var showEditProfileDialog by remember { mutableStateOf(false) }
-    var showRestoreDialog by remember { mutableStateOf(false) }
+    var showEditUserSettingsDialog by remember { mutableStateOf(false) }
+    var showEditShopSettingsDialog by remember { mutableStateOf(false) }
+    var showPremiumDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = WarmBg
@@ -3245,12 +3233,18 @@ fun ProfileScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // 2. Profile Summary Card (Matches screenshot layout)
-                val firstLetter = ownerUser?.name?.firstOrNull()?.uppercase() ?: "S"
+                val firstLetter = displayName.firstOrNull()?.uppercase() ?: "S"
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
-                        .clickable { showEditProfileDialog = true },
+                        .let { 
+                            if (ownerUser != null) {
+                                it.clickable { showEditUserSettingsDialog = true }
+                            } else {
+                                it
+                            }
+                        },
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     shape = RoundedCornerShape(20.dp)
@@ -3280,37 +3274,38 @@ fun ProfileScreen(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = if (isBengali) "হাই, ${ownerUser?.name}" else "Hi, ${ownerUser?.name}",
+                                text = if (isBengali) "হাই, $displayName" else "Hi, $displayName",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = ownerUser?.shopName ?: "",
+                                text = ownerUser?.shopName ?: (if (isBengali) "কাস্টমার অ্যাকাউন্ট" else "Customer Connected Account"),
                                 fontSize = 14.sp,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
                         }
 
-                        Icon(
-                            imageVector = Icons.Default.ChevronRight,
-                            contentDescription = "Edit Profile",
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            modifier = Modifier.size(24.dp)
-                        )
+                        if (ownerUser != null) {
+                            Icon(
+                                imageVector = Icons.Default.ChevronRight,
+                                contentDescription = "Edit Profile",
+                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 }
 
-                // 3. Supabase Cloud Sync Card (Matches middle promotional card placement style)
-                val isSupabaseActive = viewModel.isSupabaseActive()
-                val syncState by viewModel.syncState.collectAsState()
-
+                // 3. Brand-aligned High Impact Premium Storefront Paywall / Status Card
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (isPremiumMerchant) ForestGreen else MaterialTheme.colorScheme.surface
+                    ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     shape = RoundedCornerShape(24.dp)
                 ) {
@@ -3325,58 +3320,73 @@ fun ProfileScreen(
                             modifier = Modifier.weight(1.2f).padding(end = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Star,
+                                    contentDescription = null,
+                                    tint = if (isPremiumMerchant) DeepGold else ForestGreen,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text(
+                                    text = if (isBengali) "সহজ খাতা প্রিমিয়াম" else "Shohoj Khata Premium",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = if (isPremiumMerchant) Color.White else ForestGreen
+                                )
+                            }
+
                             Text(
-                                text = if (isBengali) "সুপাবেস ক্লাউড সিঙ্ক" else "Supabase Cloud Sync",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            
-                            Text(
-                                text = if (isSupabaseActive) {
-                                    when (syncState) {
-                                        LedgerViewModel.SyncState.SYNCING -> if (isBengali) "ক্লাউড ডেটা সিঙ্ক হচ্ছে..." else "Syncing database with Supabase..."
-                                        LedgerViewModel.SyncState.SUCCESS -> if (isBengali) "সাফল্যজনকভাবে ক্লাউডে সিঙ্কড!" else "Synced securely with Supabase!"
-                                        LedgerViewModel.SyncState.ERROR -> if (isBengali) "সংযোগ ত্রুটি! অফলাইনে সংরক্ষিত।" else "Sync failed. Local backup ok."
-                                        else -> if (isBengali) "আপনার হিসাব সুরক্ষিতভাবে ক্লাউডে সংরক্ষিত।" else "Ledger securely backed up in the cloud."
-                                    }
+                                text = if (isPremiumMerchant) {
+                                    if (isBengali) "আপনার প্রিমিয়াম স্টোর অ্যাক্সেস সফলভাবে সক্রিয় করা হয়েছে! সুবিধা উপভোগ করুন।" 
+                                    else "Premium Store access is active! Public directory indexing & real-time client push sync are fully live."
                                 } else {
-                                    if (isBengali) "আপনার খাতা ক্লাউডে ব্যাকআপ রাখতে সিক্রেটস সেট করুন।" else "Configure Supabase values in Secrets to activate backup."
+                                    if (isBengali) "পাবলিক ডিরেক্টরিতে আপনার দোকান তালিকাভুক্ত করুন এবং গ্রাহকদের সরাসরি লাইভ বিল আপডেট পাঠান।" 
+                                    else "Publish your storefront online to the public directory so regular customers can link instantly & stream balance status."
                                 },
                                 fontSize = 13.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                color = if (isPremiumMerchant) Color.White.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 lineHeight = 18.sp
                             )
 
-                            if (isSupabaseActive) {
+                            if (isPremiumMerchant) {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(Color.White.copy(alpha = 0.2f))
+                                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = if (isBengali) "প্রিমিয়াম স্টোর অ্যাক্টিভ ✨" else "Active Premium Status ✨",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                }
+                            } else {
                                 Button(
-                                    onClick = { viewModel.triggerSync() },
+                                    onClick = { showPremiumDialog = true },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.onSurface,
-                                        contentColor = MaterialTheme.colorScheme.surface
+                                        containerColor = ForestGreen,
+                                        contentColor = Color.White
                                     ),
                                     shape = RoundedCornerShape(50.dp),
                                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                                     modifier = Modifier.height(38.dp)
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Sync,
-                                        contentDescription = "Sync",
-                                        tint = MaterialTheme.colorScheme.surface,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
                                     Text(
-                                        text = if (isBengali) "এখনই সিঙ্ক করুন" else "Sync Now",
+                                        text = if (isBengali) "প্রিমিয়াম স্টোর চালু করুন" else "Activate Premium • ₹999",
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.surface
+                                        color = Color.White
                                     )
                                 }
                             }
                         }
 
-                        // Sync icon / cloud visual elements
+                        // Premium illustration element on the right
                         Box(
                             modifier = Modifier
                                 .weight(0.8f)
@@ -3387,13 +3397,13 @@ fun ProfileScreen(
                                 modifier = Modifier
                                     .size(76.dp)
                                     .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
+                                    .background(if (isPremiumMerchant) Color.White.copy(alpha = 0.15f) else DeepGold.copy(alpha = 0.1f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = if (isSupabaseActive) Icons.Default.CloudQueue else Icons.Default.CloudOff,
+                                    imageVector = if (isPremiumMerchant) Icons.Default.WorkspacePremium else Icons.Default.Storefront,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    tint = if (isPremiumMerchant) DeepGold else ForestGreen,
                                     modifier = Modifier.size(44.dp)
                                 )
                             }
@@ -3426,8 +3436,8 @@ fun ProfileScreen(
                     ) {
                         SettingsListItem(
                             icon = Icons.Default.Person,
-                            title = if (isBengali) "আমার প্রোফাইল" else "My Account",
-                            onItemClick = { showEditProfileDialog = true }
+                            title = if (isBengali) "আমার প্রোফাইল ও অ্যাকাউন্ট" else "My Account & Profile",
+                            onItemClick = { showEditUserSettingsDialog = true }
                         )
 
                         HorizontalDivider(
@@ -3436,34 +3446,169 @@ fun ProfileScreen(
                             thickness = 1.dp
                         )
 
-                        SettingsListItem(
-                            icon = Icons.Default.Language,
-                            title = if (isBengali) "ভাষা পরিবর্তন (Language)" else "App Language",
-                            trailingContent = {
-                                Row(
+                        if (ownerUser != null) {
+                            SettingsListItem(
+                                icon = Icons.Default.Storefront,
+                                title = if (isBengali) "দোকানের সেটিংস" else "Shop Settings",
+                                onItemClick = { showEditShopSettingsDialog = true }
+                            )
+
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 20.dp),
+                                color = Color.LightGray.copy(alpha = 0.3f),
+                                thickness = 1.dp
+                            )
+                        }
+
+                        // 2. Segmented control language selector exactly matching requested designs
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp, vertical = 12.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Text(
+                                text = if (isBengali) "ভাষা" else "App Language",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                            )
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // "বাংলা" Segment (Selected if isBengali is true)
+                                Box(
                                     modifier = Modifier
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(ForestGreen.copy(alpha = 0.08f))
-                                        .clickable { viewModel.setLanguage(!isBengali) }
-                                        .padding(horizontal = 12.dp, vertical = 6.dp),
-                                    verticalAlignment = Alignment.CenterVertically
+                                        .weight(1f)
+                                        .height(48.dp)
+                                        .clip(RoundedCornerShape(24.dp))
+                                        .background(
+                                            if (isBengali) Color.White else Color(0xFF1F1F1F)
+                                        )
+                                        .border(
+                                            width = if (isBengali) 1.5.dp else 1.dp,
+                                            color = if (isBengali) Color.White else Color.White.copy(alpha = 0.2f),
+                                            shape = RoundedCornerShape(24.dp)
+                                        )
+                                        .clickable { if (!isBengali) viewModel.setLanguage(true) },
+                                    contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = if (isBengali) "বাংলা" else "English",
-                                        fontSize = 13.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = ForestGreen
+                                        text = "বাংলা",
+                                        fontSize = 15.sp,
+                                        fontWeight = if (isBengali) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isBengali) Color(0xFF121212) else Color.White.copy(alpha = 0.65f)
                                     )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Icon(
-                                        imageVector = Icons.Default.SwapHoriz,
-                                        contentDescription = "Switch",
-                                        tint = ForestGreen,
-                                        modifier = Modifier.size(16.dp)
+                                }
+
+                                // "English" Segment (Selected if isBengali is false)
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(48.dp)
+                                        .clip(RoundedCornerShape(24.dp))
+                                        .background(
+                                            if (!isBengali) Color.White else Color(0xFF1F1F1F)
+                                        )
+                                        .border(
+                                            width = if (!isBengali) 1.5.dp else 1.dp,
+                                            color = if (!isBengali) Color.White else Color.White.copy(alpha = 0.2f),
+                                            shape = RoundedCornerShape(24.dp)
+                                        )
+                                        .clickable { if (isBengali) viewModel.setLanguage(false) },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "English",
+                                        fontSize = 15.sp,
+                                        fontWeight = if (!isBengali) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (!isBengali) Color(0xFF121212) else Color.White.copy(alpha = 0.65f)
                                     )
                                 }
                             }
+                        }
+
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                            color = Color.LightGray.copy(alpha = 0.3f),
+                            thickness = 1.dp
                         )
+
+                        val appMode by viewModel.appMode.collectAsState()
+                        // Segmented control User Mode selector matching language selector style and requested design
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp, vertical = 12.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Text(
+                                text = if (isBengali) "ব্যবহারকারীর ধরণ" else "User Mode",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                            )
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                val isMerchant = appMode == "MERCHANT"
+                                // "🏪 Merchant" Segment (Selected if isMerchant is true)
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(48.dp)
+                                        .clip(RoundedCornerShape(24.dp))
+                                        .background(
+                                            if (isMerchant) Color.White else Color(0xFF1F1F1F)
+                                        )
+                                        .border(
+                                            width = if (isMerchant) 1.5.dp else 1.dp,
+                                            color = if (isMerchant) Color.White else Color.White.copy(alpha = 0.2f),
+                                            shape = RoundedCornerShape(24.dp)
+                                        )
+                                        .clickable { if (!isMerchant) viewModel.setAppMode("MERCHANT") },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = if (isBengali) "দোকানদার" else "Merchant",
+                                        fontSize = 15.sp,
+                                        fontWeight = if (isMerchant) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isMerchant) Color(0xFF121212) else Color.White.copy(alpha = 0.65f)
+                                    )
+                                }
+
+                                // "👥 Client" Segment (Selected if isMerchant is false/CLIENT)
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(48.dp)
+                                        .clip(RoundedCornerShape(24.dp))
+                                        .background(
+                                            if (!isMerchant) Color.White else Color(0xFF1F1F1F)
+                                        )
+                                        .border(
+                                            width = if (!isMerchant) 1.5.dp else 1.dp,
+                                            color = if (!isMerchant) Color.White else Color.White.copy(alpha = 0.2f),
+                                            shape = RoundedCornerShape(24.dp)
+                                        )
+                                        .clickable { if (isMerchant) viewModel.setAppMode("CLIENT") },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = if (isBengali) "কাস্টমার" else "Client",
+                                        fontSize = 15.sp,
+                                        fontWeight = if (!isMerchant) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (!isMerchant) Color(0xFF121212) else Color.White.copy(alpha = 0.65f)
+                                    )
+                                }
+                            }
+                        }
 
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 20.dp),
@@ -3481,10 +3626,12 @@ fun ProfileScreen(
                                     checked = notificationsEnabled,
                                     onCheckedChange = { viewModel.setNotificationsEnabled(it) },
                                     colors = SwitchDefaults.colors(
-                                        checkedThumbColor = ForestGreen,
-                                        checkedTrackColor = ForestGreen.copy(alpha = 0.3f),
+                                        checkedThumbColor = Color.White,
+                                        checkedTrackColor = Color(0xFF4CAF50),
                                         uncheckedThumbColor = Color.LightGray,
-                                        uncheckedTrackColor = Color.LightGray.copy(alpha = 0.2f)
+                                        uncheckedTrackColor = Color.DarkGray,
+                                        checkedBorderColor = Color(0xFF4CAF50),
+                                        uncheckedBorderColor = Color.Gray
                                     )
                                 )
                             }
@@ -3496,27 +3643,60 @@ fun ProfileScreen(
                             thickness = 1.dp
                         )
 
-                        if (isSupabaseActive) {
-                            SettingsListItem(
-                                icon = Icons.Default.CloudDownload,
-                                title = if (isBengali) "ক্লাউড থেকে রিস্টোর" else "Restore from Cloud",
-                                onItemClick = { showRestoreDialog = true }
-                            )
+                        val syncState by viewModel.syncState.collectAsState()
+                        SettingsListItem(
+                            icon = Icons.Default.CloudSync,
+                            title = if (isBengali) "ক্লাউড সিকিউর ব্যাকআপ" else "Upload / Sync to Supabase",
+                            trailingContent = {
+                                val statusText = when (syncState) {
+                                    LedgerViewModel.SyncState.SYNCING -> if (isBengali) "সিঙ্ক..." else "Syncing..."
+                                    LedgerViewModel.SyncState.SUCCESS -> if (isBengali) "সফল ✅" else "Success ✅"
+                                    LedgerViewModel.SyncState.ERROR -> if (isBengali) "ব্যর্থ ❌" else "Failed ❌"
+                                    else -> if (isBengali) "ব্যাকআপ" else "Backup"
+                                }
+                                val badgeBg = when (syncState) {
+                                    LedgerViewModel.SyncState.SYNCING -> Color.Gray.copy(alpha = 0.2f)
+                                    LedgerViewModel.SyncState.SUCCESS -> Color(0xFF2E7D32).copy(alpha = 0.15f)
+                                    LedgerViewModel.SyncState.ERROR -> Color.Red.copy(alpha = 0.15f)
+                                    else -> Color.Gray.copy(alpha = 0.15f)
+                                }
+                                val badgeColor = when (syncState) {
+                                    LedgerViewModel.SyncState.SYNCING -> Color.LightGray
+                                    LedgerViewModel.SyncState.SUCCESS -> Color(0xFF4CAF50)
+                                    LedgerViewModel.SyncState.ERROR -> Color.Red
+                                    else -> Color.LightGray
+                                }
+                                Text(
+                                    text = statusText,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = badgeColor,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(badgeBg)
+                                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                                )
+                            },
+                            onItemClick = {
+                                viewModel.triggerSync()
+                                val msg = if (isBengali) "ক্লাউড আপলোড শুরু হয়েছে..." else "Uploading database to Supabase Cloud..."
+                                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                            }
+                        )
 
-                            HorizontalDivider(
-                                modifier = Modifier.padding(horizontal = 20.dp),
-                                color = Color.LightGray.copy(alpha = 0.3f),
-                                thickness = 1.dp
-                            )
-                        }
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                            color = Color.LightGray.copy(alpha = 0.3f),
+                            thickness = 1.dp
+                        )
 
                         SettingsListItem(
                             icon = Icons.Default.ExitToApp,
-                            title = if (isBengali) "নিরাপদ লক আউট" else "Secure Lockout",
+                            title = if (isBengali) "লগআউট (গুগল অ্যাকাউন্ট)" else "Log Out (Google Account)",
                             titleColor = Color.Red,
                             onItemClick = {
-                                viewModel.logout()
-                                val logoutAlert = if (isBengali) "নিরাপদ লগ-আউট সম্পন্ন!" else "Secured exit complete!"
+                                viewModel.logoutGoogle()
+                                val logoutAlert = if (isBengali) "সাফল্যজনকভাবে লগআউট সম্পন্ন!" else "Secured Google log-out complete!"
                                 Toast.makeText(context, logoutAlert, Toast.LENGTH_SHORT).show()
                             }
                         )
@@ -3525,21 +3705,33 @@ fun ProfileScreen(
             }
         }
 
-        // Show edit profile overlay modal/dialog
-        if (showEditProfileDialog && ownerUser != null) {
-            EditProfileDialog(
+        // Show edit user settings dialog
+        if (showEditUserSettingsDialog && ownerUser != null) {
+            EditUserSettingsDialog(
                 ownerUser = ownerUser!!,
                 viewModel = viewModel,
                 isBengali = isBengali,
-                onDismiss = { showEditProfileDialog = false }
+                onDismiss = { showEditUserSettingsDialog = false }
             )
         }
 
-        // Show cloud restoration dialog
-        if (showRestoreDialog) {
-            RestoreFromCloudDialog(
+        // Show edit shop settings dialog
+        if (showEditShopSettingsDialog && ownerUser != null) {
+            EditShopSettingsDialog(
+                ownerUser = ownerUser!!,
                 viewModel = viewModel,
-                onDismiss = { showRestoreDialog = false }
+                isBengali = isBengali,
+                onDismiss = { showEditShopSettingsDialog = false }
+            )
+        }
+
+        // Show Premium Paywall Simulation Dialog
+        if (showPremiumDialog) {
+            PremiumPaywallDialog(
+                ownerUser = ownerUser,
+                viewModel = viewModel,
+                isBengali = isBengali,
+                onDismiss = { showPremiumDialog = false }
             )
         }
     }
@@ -3603,27 +3795,25 @@ fun SettingsListItem(
 }
 
 @Composable
-fun EditProfileDialog(
+fun EditUserSettingsDialog(
     ownerUser: User,
     viewModel: LedgerViewModel,
     isBengali: Boolean,
     onDismiss: () -> Unit
 ) {
     var name by remember { mutableStateOf(ownerUser.name) }
-    var shopName by remember { mutableStateOf(ownerUser.shopName) }
-    var shopType by remember { mutableStateOf(ownerUser.shopType) }
-    var upiId by remember { mutableStateOf(ownerUser.upiId) }
     var pin by remember { mutableStateOf(ownerUser.pin) }
     val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = Color(0xFF131316),
         title = {
             Text(
                 text = if (isBengali) "প্রোফাইল সংশোধন" else "Edit Profile Information",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                color = ForestGreen
+                color = Color.White
             )
         },
         text = {
@@ -3639,50 +3829,16 @@ fun EditProfileDialog(
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ForestGreen,
-                        focusedLabelColor = ForestGreen
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = shopName,
-                    onValueChange = { shopName = it },
-                    label = { Text(if (isBengali) "দোকানের নাম" else "Shop Name") },
-                    leadingIcon = { Icon(Icons.Default.Store, null, tint = ForestGreen) },
-                    singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ForestGreen,
-                        focusedLabelColor = ForestGreen
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = shopType,
-                    onValueChange = { shopType = it },
-                    label = { Text(if (isBengali) "ব্যবসার ধরন" else "Business Type") },
-                    leadingIcon = { Icon(Icons.Default.Category, null, tint = ForestGreen) },
-                    singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ForestGreen,
-                        focusedLabelColor = ForestGreen
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = upiId,
-                    onValueChange = { upiId = it },
-                    label = { Text(if (isBengali) "পেমেন্ট UPI আইডি" else "Payment UPI ID") },
-                    leadingIcon = { Icon(Icons.Default.QrCode, null, tint = ForestGreen) },
-                    singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ForestGreen,
-                        focusedLabelColor = ForestGreen
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.LightGray,
+                        focusedContainerColor = Color(0xFF1C1C1E),
+                        unfocusedContainerColor = Color(0xFF1C1C1E),
+                        focusedBorderColor = Color(0xFF2E7D32),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                        focusedLabelColor = Color(0xFF2E7D32),
+                        unfocusedLabelColor = Color.Gray,
+                        focusedLeadingIconColor = ForestGreen,
+                        unfocusedLeadingIconColor = Color.Gray
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -3697,8 +3853,16 @@ fun EditProfileDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ForestGreen,
-                        focusedLabelColor = ForestGreen
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.LightGray,
+                        focusedContainerColor = Color(0xFF1C1C1E),
+                        unfocusedContainerColor = Color(0xFF1C1C1E),
+                        focusedBorderColor = Color(0xFF2E7D32),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                        focusedLabelColor = Color(0xFF2E7D32),
+                        unfocusedLabelColor = Color.Gray,
+                        focusedLeadingIconColor = ForestGreen,
+                        unfocusedLeadingIconColor = Color.Gray
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -3707,24 +3871,236 @@ fun EditProfileDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    if (name.isBlank() || shopName.isBlank() || pin.length != 4) {
+                    if (name.isBlank() || pin.length != 4) {
                         val alert = if (isBengali) "অনুগ্রহ করে সব তথ্য সঠিক দিন" else "Please correctly fill all information"
                         Toast.makeText(context, alert, Toast.LENGTH_SHORT).show()
                     } else {
-                        viewModel.updateProfile(name, shopName, shopType, upiId, pin)
+                        viewModel.updateProfile(name, ownerUser.shopName, ownerUser.shopType, ownerUser.upiId, pin)
                         val successAlert = if (isBengali) "প্রোফাইল পরিবর্তন সফল হয়েছে!" else "Profile details updated!"
                         Toast.makeText(context, successAlert, Toast.LENGTH_SHORT).show()
                         onDismiss()
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = ForestGreen)
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
             ) {
                 Text(if (isBengali) "সংরক্ষণ" else "Save", color = Color.White)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(if (isBengali) "বাতিল" else "Cancel", color = Color.Gray)
+                Text(if (isBengali) "বাতিল" else "Cancel", color = Color.LightGray)
+            }
+        }
+    )
+}
+
+@Composable
+fun EditShopSettingsDialog(
+    ownerUser: User,
+    viewModel: LedgerViewModel,
+    isBengali: Boolean,
+    onDismiss: () -> Unit
+) {
+    var shopName by remember { mutableStateOf(ownerUser.shopName) }
+    val rawShopType = ownerUser.shopType
+    val defaultCats = listOf("Grocery", "Pharmacy", "Cafe & Tea")
+    val initialIsOther = defaultCats.none { rawShopType.startsWith(it) }
+
+    var selectedCategoryTab by remember {
+        mutableStateOf(
+            if (initialIsOther) "Other"
+            else defaultCats.firstOrNull { rawShopType.startsWith(it) } ?: "Grocery"
+        )
+    }
+    var customCategoryName by remember {
+        mutableStateOf(
+            if (initialIsOther) rawShopType else ""
+        )
+    }
+    var upiId by remember { mutableStateOf(ownerUser.upiId) }
+    val context = LocalContext.current
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = Color(0xFF131316),
+        title = {
+            Text(
+                text = if (isBengali) "দোকানের সেটিংস" else "Edit Shop Settings",
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                color = Color.White
+            )
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            ) {
+                OutlinedTextField(
+                    value = shopName,
+                    onValueChange = { shopName = it },
+                    label = { Text(if (isBengali) "দোকানের নাম" else "Shop Name") },
+                    leadingIcon = { Icon(Icons.Default.Store, null, tint = ForestGreen) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.LightGray,
+                        focusedContainerColor = Color(0xFF1C1C1E),
+                        unfocusedContainerColor = Color(0xFF1C1C1E),
+                        focusedBorderColor = Color(0xFF2E7D32),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                        focusedLabelColor = Color(0xFF2E7D32),
+                        unfocusedLabelColor = Color.Gray,
+                        focusedLeadingIconColor = ForestGreen,
+                        unfocusedLeadingIconColor = Color.Gray
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Text(
+                    text = if (isBengali) "দোকানের ক্যাটাগরি" else "Shop Category",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray
+                )
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        listOf("Grocery", "Pharmacy").forEach { cat ->
+                            val isSel = selectedCategoryTab == cat
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(if (isSel) Color(0xFF2E7D32) else Color.White.copy(alpha = 0.08f))
+                                        .clickable { 
+                                            selectedCategoryTab = cat
+                                        }
+                                        .padding(vertical = 8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = cat,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isSel) Color.White else Color.LightGray
+                                    )
+                                }
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            listOf("Cafe & Tea", "Other").forEach { cat ->
+                                val isSel = selectedCategoryTab == cat
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(if (isSel) Color(0xFF2E7D32) else Color.White.copy(alpha = 0.08f))
+                                        .clickable { 
+                                            selectedCategoryTab = cat
+                                        }
+                                        .padding(vertical = 8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = cat,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isSel) Color.White else Color.LightGray
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    if (selectedCategoryTab == "Other") {
+                        OutlinedTextField(
+                            value = customCategoryName,
+                            onValueChange = { customCategoryName = it },
+                            label = { Text(if (isBengali) "কাস্টম ক্যাটাগরি" else "Custom Category") },
+                            placeholder = { Text("e.g. Cloth Store") },
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.LightGray,
+                                focusedContainerColor = Color(0xFF1C1C1E),
+                                unfocusedContainerColor = Color(0xFF1C1C1E),
+                                focusedBorderColor = Color(0xFF2E7D32),
+                                unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                                focusedLabelColor = Color(0xFF2E7D32),
+                                unfocusedLabelColor = Color.Gray
+                            ),
+                            modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                        )
+                    }
+
+                OutlinedTextField(
+                    value = upiId,
+                    onValueChange = { upiId = it },
+                    label = { Text(if (isBengali) "পেমেন্ট UPI আইডি" else "Payment UPI ID") },
+                    leadingIcon = { Icon(Icons.Default.QrCode, null, tint = ForestGreen) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.LightGray,
+                        focusedContainerColor = Color(0xFF1C1C1E),
+                        unfocusedContainerColor = Color(0xFF1C1C1E),
+                        focusedBorderColor = Color(0xFF2E7D32),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                        focusedLabelColor = Color(0xFF2E7D32),
+                        unfocusedLabelColor = Color.Gray,
+                        focusedLeadingIconColor = ForestGreen,
+                        unfocusedLeadingIconColor = Color.Gray
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val finalCategory = if (selectedCategoryTab == "Other") {
+                        if (customCategoryName.isNotBlank()) customCategoryName else "Other Shop"
+                    } else {
+                        "$selectedCategoryTab Shop"
+                    }
+                    if (shopName.isBlank()) {
+                        val alert = if (isBengali) "দয়া করে দোকানের নাম দিন" else "Please enter a shop name"
+                        Toast.makeText(context, alert, Toast.LENGTH_SHORT).show()
+                    } else {
+                        viewModel.updateProfile(
+                            name = ownerUser.name,
+                            shopName = shopName,
+                            shopType = finalCategory,
+                            upiId = upiId,
+                            pin = ownerUser.pin
+                        )
+                        val successAlert = if (isBengali) "দোকানের সেটিংস আপডেট করা হয়েছে!" else "Shop details updated!"
+                        Toast.makeText(context, successAlert, Toast.LENGTH_SHORT).show()
+                        onDismiss()
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+            ) {
+                Text(if (isBengali) "সংরক্ষণ" else "Save", color = Color.White)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(if (isBengali) "বাতিল" else "Cancel", color = Color.LightGray)
             }
         }
     )
@@ -3744,12 +4120,13 @@ fun RestoreFromCloudDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = Color(0xFF131316),
         title = {
             Text(
                 text = if (isBengali) "ক্লাউড থেকে খাতা রিস্টোর করুন" else "Restore Ledger from Cloud",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                color = ForestGreen
+                color = Color.White
             )
         },
         text = {
@@ -3769,8 +4146,14 @@ fun RestoreFromCloudDialog(
                     label = { Text("Email Address") },
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ForestGreen,
-                        focusedLabelColor = ForestGreen
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.LightGray,
+                        focusedContainerColor = Color(0xFF1C1C1E),
+                        unfocusedContainerColor = Color(0xFF1C1C1E),
+                        focusedBorderColor = Color(0xFF2E7D32),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                        focusedLabelColor = Color(0xFF2E7D32),
+                        unfocusedLabelColor = Color.Gray
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -3783,8 +4166,14 @@ fun RestoreFromCloudDialog(
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ForestGreen,
-                        focusedLabelColor = ForestGreen
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.LightGray,
+                        focusedContainerColor = Color(0xFF1C1C1E),
+                        unfocusedContainerColor = Color(0xFF1C1C1E),
+                        focusedBorderColor = Color(0xFF2E7D32),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                        focusedLabelColor = Color(0xFF2E7D32),
+                        unfocusedLabelColor = Color.Gray
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -3797,7 +4186,7 @@ fun RestoreFromCloudDialog(
                     }
                     Text(
                         text = displayMsg,
-                        color = if (syncState == LedgerViewModel.SyncState.ERROR) Color.Red else ForestGreen,
+                        color = if (syncState == LedgerViewModel.SyncState.ERROR) Color.Red else Color(0xFF2E7D32),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -3819,16 +4208,2978 @@ fun RestoreFromCloudDialog(
                         }
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = ForestGreen)
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
             ) {
                 Text(if (isBengali) "রিস্টোর করুন" else "Restore", color = Color.White)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(if (isBengali) "বাতিল" else "Cancel", color = Color.Gray)
+                Text(if (isBengali) "বাতিল" else "Cancel", color = Color.LightGray)
             }
         }
     )
+}
+
+@Composable
+fun PlanComparisonTable(isBengali: Boolean) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF131316)),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // Header Row
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = if (isBengali) "ফিচার" else "Feature",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 11.sp,
+                    color = Color.LightGray,
+                    modifier = Modifier.weight(1.1f)
+                )
+                Text(
+                    text = if (isBengali) "ফ্রি (₹০)" else "Free (₹0)",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 10.sp,
+                    color = Color.LightGray,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = if (isBengali) "প্রিমিয়াম (₹৯৯৯)" else "Premium (₹999)",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 10.sp,
+                    color = DeepGold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            HorizontalDivider(color = Color.White.copy(alpha = 0.15f))
+
+            // Comparison Rows
+            val comparisons = listOf(
+                Triple(
+                    if (isBengali) "গ্রাহক সংখ্যা" else "Customers",
+                    if (isBengali) "সর্বোচ্চ ১৫" else "Max 15 customers",
+                    if (isBengali) "আনলিমিটেড" else "Unlimited customers"
+                ),
+                Triple(
+                    if (isBengali) "হোয়াটসঅ্যাপ" else "WhatsApp",
+                    if (isBengali) "নেই" else "No WhatsApp reminders",
+                    if (isBengali) "১-ক্লিক" else "Yes (1-Click WhatsApp reminders)"
+                ),
+                Triple(
+                    if (isBengali) "পাবলিক ডিরেক্টরি" else "Shop Directory",
+                    if (isBengali) "পাবলিক স্টোর" else "Public (Listed in global Shop Section)",
+                    if (isBengali) "পাবলিক স্টোর" else "Public (Listed in global Shop Section)"
+                ),
+                Triple(
+                    if (isBengali) "আইটেমযুক্ত হিসাব" else "Itemized Entries",
+                    if (isBengali) "৫০ চা, ৫০ আদা" else "Itemized entries (50 cha, 50 ada)",
+                    if (isBengali) "৫০ চা, ৫০ আদা" else "Itemized entries (50 cha, 50 ada)"
+                ),
+                Triple(
+                    if (isBengali) "ক্লায়েন্ট ড্যাশবোর্ড" else "Client UI Live",
+                    if (isBengali) "রিয়েল-টাইম" else "Real-Time line-item details on client UI",
+                    if (isBengali) "রিয়েল-টাইম" else "Real-Time line-item details on client UI"
+                )
+            )
+
+            comparisons.forEach { (feature, free, premium) ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = feature,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White,
+                        modifier = Modifier.weight(1.1f)
+                    )
+                    
+                    // Free Column
+                    Box(
+                        modifier = Modifier.weight(1f).padding(horizontal = 2.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = if (free.contains("No") || free.contains("নেই") || free.contains("Max") || free.contains("সর্বোচ্চ")) Color.Red.copy(alpha = 0.12f) else Color.White.copy(alpha = 0.05f),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = free,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = if (free.contains("No") || free.contains("নেই")) Color(0xFFFF8A80) else Color.LightGray,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(vertical = 4.dp, horizontal = 2.dp)
+                            )
+                        }
+                    }
+
+                    // Premium Column
+                    Box(
+                        modifier = Modifier.weight(1f).padding(horizontal = 2.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = Color(0xFF2E7D32).copy(alpha = 0.15f),
+                            modifier = Modifier.fillMaxWidth(),
+                            border = BorderStroke(1.dp, Color(0xFF2E7D32).copy(alpha = 0.3f))
+                        ) {
+                            Text(
+                                text = premium,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF81C784),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(vertical = 4.dp, horizontal = 2.dp)
+                            )
+                        }
+                    }
+                }
+                HorizontalDivider(color = Color.White.copy(alpha = 0.06f))
+            }
+        }
+    }
+}
+
+@Composable
+fun PremiumPaywallDialog(
+    ownerUser: User?,
+    viewModel: LedgerViewModel,
+    isBengali: Boolean,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val isPremiumMerchant by viewModel.isPremiumMerchant.collectAsState()
+    var step by remember { mutableStateOf(if (isPremiumMerchant) 3 else 0) } // 0 = Perks, 1 = Config, 2 = Process Payment, 3 = Success Screen
+    
+    var shopName by remember { mutableStateOf(ownerUser?.shopName ?: "") }
+    var shopType by remember { mutableStateOf(ownerUser?.shopType ?: "Grocery Shop") }
+    var location by remember { mutableStateOf("Garia, Kolkata") }
+    var upiId by remember { mutableStateOf(ownerUser?.upiId ?: "merchant@upi") }
+
+    val defaultCats = listOf("Grocery", "Pharmacy", "Cafe & Tea")
+    val initialIsOther = ownerUser != null && ownerUser.shopType.isNotBlank() && defaultCats.none { ownerUser.shopType.startsWith(it) }
+    var selectedCategoryTab by remember {
+        mutableStateOf(
+            if (initialIsOther) "Other"
+            else defaultCats.firstOrNull { shopType.startsWith(it) } ?: "Grocery"
+        )
+    }
+    var customCategoryName by remember {
+        mutableStateOf(
+            if (initialIsOther) ownerUser.shopType else ""
+        )
+    }
+
+    // If step == 2: Simulate payment network transit
+    var paymentProgress by remember { mutableStateOf(0f) }
+    var paymentStatusText by remember { mutableStateOf("") }
+
+    LaunchedEffect(step) {
+        if (step == 2) {
+            paymentProgress = 0f
+            paymentStatusText = if (isBengali) "নিরাপদ পেমেন্ট গেটওয়েতে সংযোগ করা হচ্ছে..." else "Opening secure UPI checkout gateway..."
+            kotlinx.coroutines.delay(600)
+            paymentProgress = 0.4f
+            paymentStatusText = if (isBengali) "ট্রানজ্যাকশন অনুমোদিত হচ্ছে..." else "Authorizing ₹999 subscription charge..."
+            kotlinx.coroutines.delay(800)
+            paymentProgress = 0.8f
+            paymentStatusText = if (isBengali) "পেমেন্ট সফলভাবে নিশ্চিত করা হয়েছে!" else "Secure UPI Payment authorization successful!"
+            kotlinx.coroutines.delay(600)
+            paymentProgress = 1.0f
+            step = 3
+        }
+    }
+
+    Dialog(onDismissRequest = { if (step != 2) onDismiss() }) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF131316)),
+            shape = RoundedCornerShape(24.dp),
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(18.dp)
+                    .animateContentSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (step == 0) { // Step 0: High-Impact Perks display
+                    Box(
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(CircleShape)
+                            .background(DeepGold.copy(alpha = 0.15f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.WorkspacePremium,
+                            contentDescription = null,
+                            tint = DeepGold,
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
+
+                    Text(
+                        text = if (isBengali) "সহজ খাতা প্রিমিয়াম" else "ShohojKhata Premium",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Black,
+                        color = DeepGold,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Text(
+                        text = if (isBengali) "মাত্র ₹৯৯৯/বছরে আনলিমিটেড কাস্টমার পান!" 
+                        else "₹999/year • Unlock Unlimited Customers & Growth!",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White.copy(alpha = 0.85f),
+                        textAlign = TextAlign.Center,
+                        lineHeight = 16.sp
+                    )
+
+                    HorizontalDivider(color = Color.LightGray.copy(alpha = 0.15f), thickness = 1.dp)
+
+                    // Interactive Plan Comparison Table!
+                    PlanComparisonTable(isBengali = isBengali)
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        TextButton(
+                            onClick = onDismiss,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = if (isBengali) "পরে করুন" else "Maybe Later",
+                                color = Color.LightGray,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Button(
+                            onClick = { step = 1 },
+                            modifier = Modifier.weight(1.3f),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = if (isBengali) "পরবর্তী" else "Continue • ₹999",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+                } else if (step == 1) { // Step 1: Configuration Form
+                    Text(
+                        text = if (isBengali) "স্টোরফ্রন্ট কনফিগার করুন" else "Configure Store Details",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+
+                    OutlinedTextField(
+                        value = shopName,
+                        onValueChange = { shopName = it },
+                        label = { Text(if (isBengali) "দোকানের নাম" else "Store / Business Name") },
+                        placeholder = { Text("e.g. Laxmi Store") },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.LightGray,
+                            focusedContainerColor = Color(0xFF1C1C1E),
+                            unfocusedContainerColor = Color(0xFF1C1C1E),
+                            focusedBorderColor = Color(0xFF2E7D32),
+                            unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                            focusedLabelColor = Color(0xFF2E7D32),
+                            unfocusedLabelColor = Color.Gray,
+                            focusedPlaceholderColor = Color.Gray,
+                            unfocusedPlaceholderColor = Color.Gray
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = if (isBengali) "দোকানের ক্যাটাগরি" else "Choose Store Category",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.LightGray
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            listOf("Grocery", "Pharmacy").forEach { cat ->
+                                val isSel = selectedCategoryTab == cat
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(if (isSel) Color(0xFF2E7D32) else Color.White.copy(alpha = 0.08f))
+                                        .clickable { 
+                                            selectedCategoryTab = cat
+                                            shopType = "$cat Shop"
+                                        }
+                                        .padding(vertical = 8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = cat,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isSel) Color.White else Color.LightGray
+                                    )
+                                }
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            listOf("Cafe & Tea", "Other").forEach { cat ->
+                                val isSel = selectedCategoryTab == cat
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(if (isSel) Color(0xFF2E7D32) else Color.White.copy(alpha = 0.08f))
+                                        .clickable { 
+                                            selectedCategoryTab = cat
+                                            if (cat == "Other") {
+                                                shopType = if (customCategoryName.isNotBlank()) customCategoryName else "Other Shop"
+                                            } else {
+                                                shopType = "$cat Shop"
+                                            }
+                                        }
+                                        .padding(vertical = 8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = cat,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isSel) Color.White else Color.LightGray
+                                    )
+                                }
+                            }
+                        }
+
+                        if (selectedCategoryTab == "Other") {
+                            OutlinedTextField(
+                                value = customCategoryName,
+                                onValueChange = { 
+                                    customCategoryName = it
+                                    shopType = if (it.isNotBlank()) it else "Other Shop"
+                                },
+                                label = { Text(if (isBengali) "কাস্টম ক্যাটাগরি" else "Custom Category Name") },
+                                placeholder = { Text(if (isBengali) "যেমন: Cloth Store" else "e.g. Cloth Store") },
+                                singleLine = true,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = Color.White,
+                                    unfocusedTextColor = Color.LightGray,
+                                    focusedContainerColor = Color(0xFF121214),
+                                    unfocusedContainerColor = Color(0xFF121214),
+                                    focusedBorderColor = Color(0xFF2E7D32),
+                                    unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                                    focusedLabelColor = Color(0xFF2E7D32),
+                                    unfocusedLabelColor = Color.Gray,
+                                    focusedPlaceholderColor = Color.Gray,
+                                    unfocusedPlaceholderColor = Color.Gray
+                                ),
+                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                            )
+                        }
+                    }
+
+                    OutlinedTextField(
+                        value = location,
+                        onValueChange = { location = it },
+                        label = { Text(if (isBengali) "অবস্থান / ঠিকানা" else "Store Location") },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.LightGray,
+                            focusedContainerColor = Color(0xFF1C1C1E),
+                            unfocusedContainerColor = Color(0xFF1C1C1E),
+                            focusedBorderColor = Color(0xFF2E7D32),
+                            unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                            focusedLabelColor = Color(0xFF2E7D32),
+                            unfocusedLabelColor = Color.Gray,
+                            focusedPlaceholderColor = Color.Gray,
+                            unfocusedPlaceholderColor = Color.Gray
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    OutlinedTextField(
+                        value = upiId,
+                        onValueChange = { upiId = it },
+                        label = { Text(if (isBengali) "ইউপিআই আইডি (পেমেন্ট সংগ্রহের জন্য)" else "Merchant Payment UPI ID") },
+                        placeholder = { Text("e.g. business@upi") },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.LightGray,
+                            focusedContainerColor = Color(0xFF1C1C1E),
+                            unfocusedContainerColor = Color(0xFF1C1C1E),
+                            focusedBorderColor = Color(0xFF2E7D32),
+                            unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                            focusedLabelColor = Color(0xFF2E7D32),
+                            unfocusedLabelColor = Color.Gray,
+                            focusedPlaceholderColor = Color.Gray,
+                            unfocusedPlaceholderColor = Color.Gray
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        TextButton(
+                            onClick = { step = 0 },
+                            modifier = Modifier.weight(0.4f)
+                        ) {
+                            Text(text = if (isBengali) "পিছনে" else "Back", color = Color.LightGray)
+                        }
+
+                        Button(
+                            onClick = {
+                                if (shopName.isNotBlank() && location.isNotBlank() && upiId.isNotBlank()) {
+                                    step = 2
+                                }
+                            },
+                            enabled = shopName.isNotBlank() && location.isNotBlank() && upiId.isNotBlank(),
+                            modifier = Modifier.weight(0.6f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF2E7D32),
+                                disabledContainerColor = Color(0xFF2E7D32).copy(alpha = 0.25f),
+                                contentColor = Color.White,
+                                disabledContentColor = Color.White.copy(alpha = 0.4f)
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(text = if (isBengali) "পেমেন্ট সিমুলেশন" else "Proceed with Pay", color = Color.White)
+                        }
+                    }
+                } else if (step == 2) { // Step 2: Simulated payment processing
+                    CircularProgressIndicator(
+                        progress = { paymentProgress },
+                        color = ForestGreen,
+                        strokeWidth = 4.dp,
+                        modifier = Modifier.size(56.dp)
+                    )
+
+                    Text(
+                        text = if (isBengali) "পেমেন্ট প্রসেসিং হচ্ছে..." else "Processing Subscription Securely...",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = ForestGreen,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Text(
+                        text = paymentStatusText,
+                        fontSize = 13.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
+
+                    LinearProgressIndicator(
+                        progress = { paymentProgress },
+                        color = DeepGold,
+                        trackColor = Color.LightGray.copy(alpha = 0.3f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(4.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                    )
+                } else if (step == 3) { // Step 3: Success Screen
+                    Box(
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clip(CircleShape)
+                            .background(ForestGreen.copy(alpha = 0.15f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = ForestGreen,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+
+                    Text(
+                        text = if (isBengali) "পেমেন্ট সফল হয়েছে! 🎉" else "Subscription Successful! 🎉",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = ForestGreen,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Text(
+                        text = if (isBengali) "অভিনন্দন! আপনার স্টোরটি সক্রিয় হয়েছে এবং স্থানীয় কাস্টমারদের জন্য পাবলিক ডিরেক্টরিতে প্রকাশিত হয়েছে।" 
+                        else "Congratulations! Your premium storefront is active and now publicly live on the local directory mall.",
+                        fontSize = 13.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 18.sp
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (isPremiumMerchant) {
+                            OutlinedButton(
+                                onClick = { step = 1 },
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.weight(1f),
+                                border = BorderStroke(1.dp, ForestGreen)
+                            ) {
+                                Text(
+                                    text = if (isBengali) "তথ্য সংশোধন" else "Edit Details",
+                                    color = ForestGreen,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        Button(
+                            onClick = {
+                                viewModel.activatePremiumMerchant(shopName, shopType, location, upiId)
+                                Toast.makeText(
+                                    context,
+                                    if (isBengali) "সহজ খাতা প্রিমিয়াম সেটিং সংরক্ষিত!" else "Store features synchronized successfully!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                onDismiss()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = ForestGreen),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1.2f)
+                        ) {
+                            Text(
+                                text = if (isPremiumMerchant) {
+                                    if (isBengali) "সংরক্ষণ করুন" else "Save & Close"
+                                } else {
+                                    if (isBengali) "ঠিক আছে" else "Finish Setup"
+                                },
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AppModeSwitcherRow(viewModel: LedgerViewModel) {
+    val appMode by viewModel.appMode.collectAsState()
+    val isBengali by viewModel.isBengali.collectAsState()
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFFCECECE))
+            .padding(horizontal = 20.dp, vertical = 10.dp)
+            .statusBarsPadding(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color(0xFF2C2C2C))
+                .padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(if (appMode == "MERCHANT") MaterialTheme.colorScheme.background else Color.Transparent)
+                    .clickable { viewModel.setAppMode("MERCHANT") }
+                    .padding(horizontal = 14.dp, vertical = 6.dp)
+            ) {
+                Text(
+                    text = if (isBengali) "🏪 দোকানদার" else "🏪 Merchant",
+                    color = if (appMode == "MERCHANT") MaterialTheme.colorScheme.surface else Color.White.copy(alpha = 0.7f),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(if (appMode == "CLIENT") MaterialTheme.colorScheme.background else Color.Transparent)
+                    .clickable { viewModel.setAppMode("CLIENT") }
+                    .padding(horizontal = 14.dp, vertical = 6.dp)
+            ) {
+                Text(
+                    text = if (isBengali) "👥 কাস্টমার" else "👥 Client",
+                    color = if (appMode == "CLIENT") MaterialTheme.colorScheme.surface else Color.White.copy(alpha = 0.7f),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun GoogleSignInScreen(viewModel: LedgerViewModel) {
+    val isBengali by viewModel.isBengali.collectAsState()
+    var showAccountChooser by remember { mutableStateOf(false) }
+    var currentScreen by remember { mutableStateOf("ONBOARDING") } // "ONBOARDING" or "CREATE_ACCOUNT"
+    var simulatedEmail by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    if (currentScreen == "ONBOARDING") {
+        // --- SCREEN A: PREMIUM INTERLOCKING ONBOARDING SPLASH ---
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF09090B)) // Dark sleek cosmic night background
+                .systemBarsPadding()
+                .padding(24.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                // 1. Top Logo Block
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Color(0xFFF18C22)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Storefront,
+                                contentDescription = "Sohoj Logo",
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Text(
+                            text = if (isBengali) "সহজ খাতা" else "Shohoj Khata!",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color.White
+                        )
+                    }
+
+                    LanguageToggleButton(viewModel = viewModel)
+                }
+
+                // 2. Interlocking Tilted Stack of Cards (Matches requested Lose It! aesthetic)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(290.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Card 1: Back-Left Tilted Card (White)
+                    Card(
+                        modifier = Modifier
+                            .size(width = 175.dp, height = 195.dp)
+                            .offset(x = (-80).dp, y = (-25).dp)
+                            .rotate(-12f),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        shape = RoundedCornerShape(24.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Book,
+                                contentDescription = "Ledger",
+                                tint = Color(0xFF1C1C1E),
+                                modifier = Modifier.size(36.dp)
+                            )
+                            Text(
+                                text = if (isBengali) "খাতা হিসাব\nসহজে রাখুন" else "Track running\nledger easily",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1C1C1E),
+                                lineHeight = 19.sp
+                            )
+                        }
+                    }
+
+                    // Card 2: Back-Right Tilted Card (Orange Theme)
+                    Card(
+                        modifier = Modifier
+                            .size(width = 175.dp, height = 195.dp)
+                            .offset(x = 80.dp, y = (-10).dp)
+                            .rotate(14f),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF18C22)),
+                        shape = RoundedCornerShape(24.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.QrCodeScanner,
+                                contentDescription = "UPI Collections",
+                                tint = Color.White,
+                                modifier = Modifier.size(36.dp)
+                            )
+                            Text(
+                                text = if (isBengali) "ডিজিটাল পেমেন্ট\nসংগ্রহ ও সিঙ্ক" else "Direct UPI\ncollections",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                lineHeight = 19.sp
+                            )
+                        }
+                    }
+
+                    // Card 3: Front Overlapping Centered Card (Glassmorphic Frosted Card representation)
+                    Card(
+                        modifier = Modifier
+                            .size(width = 190.dp, height = 210.dp)
+                            .offset(x = 0.dp, y = 45.dp)
+                            .rotate(-4f)
+                            .border(
+                                BorderStroke(1.dp, Color.White.copy(alpha = 0.25f)),
+                                RoundedCornerShape(26.dp)
+                            ),
+                        colors = CardDefaults.cardColors(containerColor = Color(0x22FFFFFF)),
+                        shape = RoundedCornerShape(26.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = listOf(
+                                            Color.White.copy(alpha = 0.15f),
+                                            Color.White.copy(alpha = 0.04f)
+                                        )
+                                    )
+                                )
+                                .padding(20.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.CloudSync,
+                                    contentDescription = "Cloud Sync",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(40.dp)
+                                )
+                                Text(
+                                    text = if (isBengali) "লাইভ ক্লাউড\nসিঙ্ক্রোনাইজেশন" else "Real-time live\ncloud sync",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = Color.White,
+                                    lineHeight = 20.sp
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // 3. Action Control Block
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = if (isBengali) "১-ক্লিকেই দ্রুত সাইনআপ এবং লাইভ ব্যাকআপ" else "Zero-friction instant Google signup with real-time sync",
+                        fontSize = 13.sp,
+                        color = Color.LightGray.copy(alpha = 0.7f),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    )
+
+                    Button(
+                        onClick = { currentScreen = "CREATE_ACCOUNT" },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        contentPadding = PaddingValues(),
+                        shape = RoundedCornerShape(28.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = listOf(Color(0xFFF18C22), Color(0xFFD66D0E))
+                                    )
+                                )
+                                .padding(horizontal = 24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (isBengali) "শুরু করুন" else "Get Started",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
+
+                    Button(
+                        onClick = { 
+                            currentScreen = "CREATE_ACCOUNT"
+                            showAccountChooser = true 
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(28.dp)),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1C1C1E)),
+                        shape = RoundedCornerShape(28.dp)
+                    ) {
+                        Text(
+                            text = if (isBengali) "সাইন-ইন করুন" else "Sign In",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+        }
+    } else {
+        // --- SCREEN B: MODERN AUTH / CREATE ACCOUNT ---
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF09090B)) // Dark sleek background matching Image 1
+                .systemBarsPadding()
+                .padding(24.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                // 1. Top Bar with back navigation of mockup
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { currentScreen = "ONBOARDING" },
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(Color(0xFF1C1C1E), CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0xFFF18C22)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Storefront,
+                                contentDescription = "Sohoj Logo",
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                        Text(
+                            text = if (isBengali) "সহজ খাতা" else "Shohoj Khata",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color.White
+                        )
+                    }
+                }
+
+                // 2. Middle Authentication Block
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(22.dp)
+                ) {
+                    // Title and descriptions
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = if (isBengali) "নতুন অ্যাকাউন্ট খুলুন" else "Create Account",
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color.White,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            text = if (isBengali) "ডিজিটাল খাতা সুরক্ষিত রাখতে একটি অ্যাকাউন্ট তৈরি করুন ও ভেরিফাই করুন।"
+                                   else "Create a secure account to organize your shop running ledger books.",
+                            fontSize = 13.sp,
+                            color = Color.LightGray.copy(alpha = 0.65f),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 12.dp)
+                        )
+                    }
+
+                    // Social login lists
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        // Google Button
+                        Button(
+                            onClick = { showAccountChooser = true },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                                .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(28.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF131316)),
+                            shape = RoundedCornerShape(28.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(14.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.White),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "G",
+                                        fontWeight = FontWeight.Black,
+                                        fontSize = 14.sp,
+                                        color = Color(0xFFEA4335)
+                                    )
+                                }
+                                Text(
+                                    text = if (isBengali) "গুগল অ্যাকাউন্ট দিয়ে সাইন-ইন" else "Continue with Google",
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+                        }
+
+                        // Guest / Optional AppAuth representation button exactly matching layout (e.g. Apple button representation)
+                        Button(
+                            onClick = { 
+                                // Simulate Guest Access and seeding
+                                viewModel.signInWithGoogle("Guest User", "guest.shohoj@gmail.com")
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                                .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(28.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF131316)),
+                            shape = RoundedCornerShape(28.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(14.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.DirectionsRun,
+                                    contentDescription = "Guest",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text(
+                                    text = if (isBengali) "সরাসরি গেস্ট হিসেবে ব্যবহার করুন" else "Continue as Guest",
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
+
+                    // OR divider
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        HorizontalDivider(modifier = Modifier.weight(1f), color = Color.White.copy(alpha = 0.1f))
+                        Text(
+                            text = if (isBengali) "অথবা ইমেইল দিয়ে" else "Or with email",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.LightGray.copy(alpha = 0.4f)
+                        )
+                        HorizontalDivider(modifier = Modifier.weight(1f), color = Color.White.copy(alpha = 0.1f))
+                    }
+
+                    // Local focus clearance to avoid soft keyboard IME transition timeouts
+                    val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
+
+                    // Email Address text input
+                    OutlinedTextField(
+                        value = simulatedEmail,
+                        onValueChange = { simulatedEmail = it },
+                        placeholder = { Text(if (isBengali) "ইমেইল এড্রেস লিখুন" else "Email address", color = Color.Gray) },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.LightGray,
+                            focusedContainerColor = Color(0xFF131316),
+                            unfocusedContainerColor = Color(0xFF131316),
+                            focusedBorderColor = Color(0xFFF18C22),
+                            unfocusedBorderColor = Color.White.copy(alpha = 0.15f)
+                        ),
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Email,
+                            imeAction = androidx.compose.ui.text.input.ImeAction.Done
+                        ),
+                        keyboardActions = androidx.compose.foundation.text.KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                                if (simulatedEmail.isBlank() || !simulatedEmail.contains("@")) {
+                                    Toast.makeText(context, if (isBengali) "সঠিক ইমেইল এড্রেস প্রবেশ করান" else "Please enter a valid email address", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    viewModel.signInWithGoogle(simulatedEmail.substringBefore("@").replaceFirstChar { it.uppercase() }, simulatedEmail)
+                                }
+                            }
+                        )
+                    )
+
+                    // Gradient Submit Button
+                    Button(
+                        onClick = {
+                            if (simulatedEmail.isBlank() || !simulatedEmail.contains("@")) {
+                                Toast.makeText(context, if (isBengali) "সঠিক ইমেইল এড্রেস প্রবেশ করান" else "Please enter a valid email address", Toast.LENGTH_SHORT).show()
+                            } else {
+                                viewModel.signInWithGoogle(simulatedEmail.substringBefore("@").replaceFirstChar { it.uppercase() }, simulatedEmail)
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        contentPadding = PaddingValues(),
+                        shape = RoundedCornerShape(28.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = listOf(Color(0xFFF18C22), Color(0xFFD66D0E))
+                                    )
+                                )
+                                .padding(horizontal = 24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (isBengali) "অ্যাকাউন্ট তৈরি করুন" else "Create Account",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+
+                // 3. Bottom Footer Links
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = if (isBengali) "আগের একাউন্ট আছে? লগ-ইন" else "Have an account? Log In",
+                        color = Color.LightGray.copy(alpha = 0.8f),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.clickable { showAccountChooser = true }
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = if (isBengali) "ব্যবহারের শর্তাবলী  ।  গোপনীয়তা নীতি" else "Terms of Service  |  Privacy Policy",
+                        color = Color.Gray.copy(alpha = 0.6f),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
+
+        // Account Chooser Dialog
+        if (showAccountChooser) {
+            AlertDialog(
+                onDismissRequest = { showAccountChooser = false },
+                containerColor = Color(0xFF131316),
+                title = {
+                    Text(
+                        text = if (isBengali) "একটি অ্যাকাউন্ট বেছে নিন" else "Choose an account",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                },
+                text = {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                    ) {
+                        listOf(
+                            "Faizen Ahmed" to "faizennahmed@gmail.com",
+                            "Siam Rahman" to "siam.rahman@gmail.com"
+                        ).forEach { (name, email) ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        viewModel.signInWithGoogle(name, email)
+                                        showAccountChooser = false
+                                    },
+                                colors = CardDefaults.cardColors(containerColor = Color(0xFF1C1C1E)),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(14.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                            .background(Color(0xFFF18C22).copy(alpha = 0.15f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = name.first().toString().uppercase(),
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 16.sp,
+                                            color = Color(0xFFF18C22)
+                                        )
+                                    }
+                                    Column {
+                                        Text(name, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Color.White)
+                                        Text(email, fontSize = 12.sp, color = Color.LightGray.copy(alpha = 0.6f))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {},
+                dismissButton = {
+                    TextButton(onClick = { showAccountChooser = false }) {
+                        Text(if (isBengali) "বাদ দিন" else "Cancel", color = Color.Gray)
+                    }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun PremiumMerchantGate(
+    viewModel: LedgerViewModel,
+    onSuccess: () -> Unit
+) {
+    val isBengali by viewModel.isBengali.collectAsState()
+    var currentStep by remember { mutableStateOf("PLANS") } // "PLANS", "CHECKOUT", "STORE_CONFIG"
+
+    // Card details state
+    var cardHolder by remember { mutableStateOf("Bertil Boisen") }
+    var cardNumber by remember { mutableStateOf("1234 1234 1234 1234") }
+    var cardExpiry by remember { mutableStateOf("12/27") }
+    var cardCvv by remember { mutableStateOf("552") }
+
+    // Store config state
+    var shopName by remember { mutableStateOf("") }
+    var shopType by remember { mutableStateOf("Grocery Shop") }
+
+    val defaultGateCats = remember { listOf("Grocery", "Pharmacy", "Cafe & Tea") }
+    var selectedGateCategoryTab by remember { mutableStateOf("Grocery") }
+    var customGateCategoryName by remember { mutableStateOf("") }
+
+    var location by remember { mutableStateOf("") }
+    var upiId by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+
+    when (currentStep) {
+        "PLANS" -> {
+            // --- PAYWALL STEP 1: SUBSCRIPTION PLANS & FAQS ---
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(WarmBg)
+                    .systemBarsPadding()
+                    .padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Top back panel representation of mockup
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surface)
+                                .clickable { 
+                                    // Soft back or switch appMode back to guest CLI
+                                    viewModel.setAppMode("CLIENT") 
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back",
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(0.1f))
+                        Text(
+                            text = if (isBengali) "সাবস্ক্রিপশন প্ল্যান" else "Subscription Plans",
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(0.8f),
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.size(40.dp))
+                    }
+
+                    // Onboarding Get Premium Header
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                    ) {
+                        Text(
+                            text = if (isBengali) "প্রিমিয়াম স্টোর পান" else "Get Premium",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Black,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = if (isBengali) "এক্সক্লুসিভ ফিচার এবং বিজ্ঞাপন মুক্ত ডিরেক্টরি সিঙ্কের জন্য প্রিমিয়াম কিনুন!"
+                                   else "Subscribe to Premium for exclusive features\nand live ledger stream updates!",
+                            fontSize = 13.sp,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 14.dp)
+                        )
+                    }
+
+                    // Premium Color Plan Card (Styled with current theme highlights)
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primary // Matches ForestGreen active color
+                        ),
+                        shape = RoundedCornerShape(24.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.15f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.WorkspacePremium,
+                                    contentDescription = "Crown Premium",
+                                    tint = DeepGold,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+
+                            Row(
+                                verticalAlignment = Alignment.Bottom,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = if (isBengali) "₹৯৯৯" else "₹999",
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = Color.White
+                                )
+                                Text(
+                                    text = if (isBengali) " / বাৎসরিক" else " / year",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.White.copy(alpha = 0.8f),
+                                    modifier = Modifier.padding(bottom = 3.dp)
+                                )
+                            }
+
+                            Text(
+                                text = if (isBengali) "আনলিমিটেড কাস্টমার ও ১-ক্লিক হোয়াটসঅ্যাপ রিমাইন্ডার" else "Unlimited customers & 1-click WhatsApp reminders",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White.copy(alpha = 0.9f),
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(modifier = Modifier.height(2.dp))
+
+                            // Plan button
+                            Button(
+                                onClick = { currentStep = "CHECKOUT" },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                                shape = RoundedCornerShape(24.dp)
+                            ) {
+                                Text(
+                                    text = if (isBengali) "প্ল্যান সাবস্ক্রাইব করুন" else "Manage plan",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
+
+                    // ShohojKhata Plan Comparison board directly integrated into scroll list
+                    Text(
+                        text = if (isBengali) "প্ল্যান তুলনা করুন" else "Compare Plans",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.align(Alignment.Start).padding(top = 8.dp, start = 4.dp)
+                    )
+
+                    PlanComparisonTable(isBengali = isBengali)
+
+                    // FAQs Accordion Board (Matches bottom of Image 2 mockup)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = if (isBengali) "প্রায়শই জিজ্ঞাসিত প্রশ্নাবলী (FAQs)" else "Frequently asked questions",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.align(Alignment.Start)
+                        )
+
+                        var activeFaqIndex by remember { mutableStateOf(-1) }
+                        val faqsList = listOf(
+                            (if (isBengali) "ক্লাউড সিঙ্ক্রোনাইজেশন কিভাবে কাজ করে?" else "How does cloud sync update works?") to 
+                            (if (isBengali) "আপনি যখনই কোনো নতুন লেনদেন লিখবেন, সহজ খাতা তা সরাসরি সার্ভারে ক্লাউড সিঙ্ক করে ফেলে যাতে কাস্টমার সাথে সাথেই লাইভ আপডেট দেখতে পায়।" 
+                             else "Every invoice transaction details sync immediately to secure cloud databases so your regular clients can monitor it in real-time."),
+                            
+                            (if (isBengali) "কাস্টমার ফ্রিতে অ্যাপ ব্যবহার করতে পারবে?" else "Can regular customers use the system for free?") to 
+                            (if (isBengali) "হ্যাঁ! কাস্টমার সম্পূর্ণ বিনামূল্যে সহজ খাতা প্লেস্টোর থেকে ব্যবহার করে আপনার লভ্যাংশ এবং রানিং বিল দেখতে পারে।" 
+                             else "Absolutely! Clients can view their running ledger book and live ledger updates completely free using Client Mode on their devices."),
+
+                            (if (isBengali) "আমি কি কোনো কাস্টমারকে লেজার বুক থেকে বাদ দিতে পারবো?" else "Can I disconnect or remove any joined clients?") to 
+                            (if (isBengali) "হ্যাঁ, যেকোনো কাস্টমারকে প্রোফাইল ট্যাব অথবা কাস্টমার ব্যালেন্স উইন্ডো থেকে এক ক্লিকেই রিমুভ বা ব্লক করা যাবে।" 
+                             else "Yes! You can instantly review, block, or delete client profiles and uncollectable ledger entities straight via settings panel.")
+                        )
+
+                        faqsList.forEachIndexed { idx, (q, a) ->
+                            val isFaqOpen = activeFaqIndex == idx
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                shape = RoundedCornerShape(16.dp),
+                                onClick = { activeFaqIndex = if (isFaqOpen) -1 else idx }
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = q,
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier.weight(0.9f)
+                                        )
+                                        Icon(
+                                            imageVector = if (isFaqOpen) Icons.Default.Remove else Icons.Default.Add,
+                                            contentDescription = "Expand FAQ indicator",
+                                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    }
+
+                                    AnimatedVisibility(visible = isFaqOpen) {
+                                        Text(
+                                            text = a,
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                            lineHeight = 18.sp,
+                                            modifier = Modifier.padding(top = 4.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+            }
+        }
+        "CHECKOUT" -> {
+            // --- PAYWALL STEP 2: PREMIUM ADD CARD / MASTER CARD FORM ---
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(WarmBg)
+                    .systemBarsPadding()
+                    .padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Top checkout Back header panel
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surface)
+                                .clickable { currentStep = "PLANS" },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back to plans",
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(0.1f))
+                        Text(
+                            text = if (isBengali) "কার্ড যুক্ত করুন" else "Add card",
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(0.8f),
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.size(40.dp))
+                    }
+
+                    // STUNNING MASTER CARD UI COMPOSABLE (Updates in real-time!)
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E24)),
+                        shape = RoundedCornerShape(24.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = listOf(Color(0xFF2E2E38), Color(0xFF141419))
+                                    )
+                                )
+                                .padding(24.dp),
+                            verticalArrangement = Arrangement.spacedBy(32.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Master Card",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                                // Wifi contact symbol icon representation
+                                Icon(
+                                    imageVector = Icons.Default.Contactless,
+                                    contentDescription = "Contactless symbol",
+                                    tint = Color.White.copy(alpha = 0.8f),
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+
+                            // Dynamic typed Card Number
+                            Text(
+                                text = if (cardNumber.isNotBlank()) cardNumber else "•••• •••• •••• ••••",
+                                fontSize = 21.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                letterSpacing = 2.sp,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            // Expiry and Name Row
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(
+                                        text = "CARD HOLDER NAME",
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.LightGray.copy(alpha = 0.5f)
+                                    )
+                                    Text(
+                                        text = if (cardHolder.isNotBlank()) cardHolder.uppercase() else "BERTI BOISEN",
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                }
+
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        Text(
+                                            text = "EXPIRY",
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.LightGray.copy(alpha = 0.5f)
+                                        )
+                                        Text(
+                                            text = if (cardExpiry.isNotBlank()) cardExpiry else "MM/YY",
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
+                                    }
+
+                                    // Mastercard Red/Yellow circle icon overlay
+                                    Row(horizontalArrangement = Arrangement.spacedBy((-10).dp)) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                                .clip(CircleShape)
+                                                .background(Color(0xFFEA3725))
+                                        )
+                                        Box(
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                                .clip(CircleShape)
+                                                .background(Color(0xFFFF9900).copy(alpha = 0.82f))
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Card Payment Input Form
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp),
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        // Cardholder Name Input
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Text(
+                                text = if (isBengali) "কার্ডধারীর নাম" else "Card holder name",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                            )
+                            OutlinedTextField(
+                                value = cardHolder,
+                                onValueChange = { cardHolder = it },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    focusedContainerColor = MaterialTheme.colorScheme.surface
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+                        }
+
+                        // Card Number Input
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Text(
+                                text = if (isBengali) "কার্ড নম্বর" else "Card Number",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                            )
+                            OutlinedTextField(
+                                value = cardNumber,
+                                onValueChange = { cardNumber = it },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    focusedContainerColor = MaterialTheme.colorScheme.surface
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+                        }
+
+                        // Code details grid Row
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            // Expiry Date Input
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Text(
+                                    text = if (isBengali) "মেয়াদ উত্তীর্ণের তারিখ" else "Expiry Date",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                                )
+                                OutlinedTextField(
+                                    value = cardExpiry,
+                                    onValueChange = { cardExpiry = it },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                        focusedContainerColor = MaterialTheme.colorScheme.surface
+                                    ),
+                                    shape = RoundedCornerShape(12.dp),
+                                    modifier = Modifier.fillMaxWidth(),
+                                    singleLine = true
+                                )
+                            }
+
+                            // CVV Code Input
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Text(
+                                    text = "CVV",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                                )
+                                OutlinedTextField(
+                                    value = cardCvv,
+                                    onValueChange = { cardCvv = it },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                        focusedContainerColor = MaterialTheme.colorScheme.surface
+                                    ),
+                                    shape = RoundedCornerShape(12.dp),
+                                    modifier = Modifier.fillMaxWidth(),
+                                    singleLine = true
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Checkout Action Add Card submit button
+                    Button(
+                        onClick = {
+                            if (cardHolder.isBlank() || cardNumber.isBlank() || cardExpiry.isBlank() || cardCvv.isBlank()) {
+                                Toast.makeText(context, if (isBengali) "দয়া করে সব পেমেন্ট তথ্য পূরণ করুন" else "Please fill all card details", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, if (isBengali) "পেমেন্ট অথোরাইজেশন সফল হয়েছে!" else "Premium deposit verified successfully!", Toast.LENGTH_SHORT).show()
+                                currentStep = "STORE_CONFIG"
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(54.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        shape = RoundedCornerShape(27.dp)
+                    ) {
+                        Text(
+                            text = if (isBengali) "কার্ড যোগ করুন এবং নিশ্চিত করুন" else "Add Card",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+        }
+        "STORE_CONFIG" -> {
+            // --- PAYWALL STEP 3: CONFIGURE STOREFRONT ---
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(WarmBg)
+                    .systemBarsPadding()
+                    .padding(24.dp)
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Center)
+                        .verticalScroll(rememberScrollState()),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF131316)),
+                    shape = RoundedCornerShape(24.dp),
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Text(
+                            text = if (isBengali) "আপনার দোকান কনফিগার করুন" else "Setup Your Digital Storefront",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color.White
+                        )
+
+                        Text(
+                            text = if (isBengali) "সাবস্ক্রিপশন চালু হয়েছে! নিচের তথ্য দিয়ে আপনার পাবলিক স্টোর ডিরেক্টরি প্রকাশ করুন।"
+                                   else "Premium Active! Provide storefront listing details below to start running live accounts.",
+                            fontSize = 13.sp,
+                            color = Color.LightGray.copy(alpha = 0.8f)
+                        )
+
+                        OutlinedTextField(
+                            value = shopName,
+                            onValueChange = { shopName = it },
+                            label = { Text(if (isBengali) "দোকানের নাম" else "Shop Name") },
+                            placeholder = { Text("e.g. Laxmi Grocery") },
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.LightGray,
+                                focusedContainerColor = Color(0xFF1C1C1E),
+                                unfocusedContainerColor = Color(0xFF1C1C1E),
+                                focusedBorderColor = Color(0xFF2E7D32),
+                                unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                                focusedLabelColor = Color(0xFF2E7D32),
+                                unfocusedLabelColor = Color.Gray,
+                                focusedPlaceholderColor = Color.Gray,
+                                unfocusedPlaceholderColor = Color.Gray
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Text(
+                            text = if (isBengali) "দোকানের ক্যাটাগরি" else "Shop Category",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.LightGray
+                        )
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(6.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                listOf("Grocery", "Pharmacy").forEach { cat ->
+                                    val isSel = selectedGateCategoryTab == cat
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(if (isSel) Color(0xFF2E7D32) else Color.White.copy(alpha = 0.08f))
+                                            .clickable { 
+                                                selectedGateCategoryTab = cat
+                                                shopType = "$cat Shop"
+                                            }
+                                            .padding(vertical = 8.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = cat,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (isSel) Color.White else Color.LightGray
+                                        )
+                                    }
+                                }
+                            }
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                listOf("Cafe & Tea", "Other").forEach { cat ->
+                                    val isSel = selectedGateCategoryTab == cat
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(if (isSel) Color(0xFF2E7D32) else Color.White.copy(alpha = 0.08f))
+                                            .clickable { 
+                                                selectedGateCategoryTab = cat
+                                                if (cat == "Other") {
+                                                    shopType = if (customGateCategoryName.isNotBlank()) customGateCategoryName else "Other Shop"
+                                                } else {
+                                                    shopType = "$cat Shop"
+                                                }
+                                            }
+                                            .padding(vertical = 8.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = cat,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (isSel) Color.White else Color.LightGray
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        if (selectedGateCategoryTab == "Other") {
+                            OutlinedTextField(
+                                value = customGateCategoryName,
+                                onValueChange = { 
+                                    customGateCategoryName = it
+                                    shopType = if (it.isNotBlank()) it else "Other Shop"
+                                },
+                                label = { Text(if (isBengali) "কাস্টম ক্যাটাগরি" else "Custom Category Name") },
+                                placeholder = { Text(if (isBengali) "যেমন: Cloth Store" else "e.g. Cloth Store") },
+                                singleLine = true,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = Color.White,
+                                    unfocusedTextColor = Color.LightGray,
+                                    focusedContainerColor = Color(0xFF1C1C1E),
+                                    unfocusedContainerColor = Color(0xFF1C1C1E),
+                                    focusedBorderColor = Color(0xFF2E7D32),
+                                    unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                                    focusedLabelColor = Color(0xFF2E7D32),
+                                    unfocusedLabelColor = Color.Gray,
+                                    focusedPlaceholderColor = Color.Gray,
+                                    unfocusedPlaceholderColor = Color.Gray
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        OutlinedTextField(
+                            value = location,
+                            onValueChange = { location = it },
+                            label = { Text(if (isBengali) "ঠিকানা / অবস্থান" else "Store Location") },
+                            placeholder = { Text("e.g. Garia, Kolkata") },
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.LightGray,
+                                focusedContainerColor = Color(0xFF1C1C1E),
+                                unfocusedContainerColor = Color(0xFF1C1C1E),
+                                focusedBorderColor = Color(0xFF2E7D32),
+                                unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                                focusedLabelColor = Color(0xFF2E7D32),
+                                unfocusedLabelColor = Color.Gray,
+                                focusedPlaceholderColor = Color.Gray,
+                                unfocusedPlaceholderColor = Color.Gray
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        OutlinedTextField(
+                            value = upiId,
+                            onValueChange = { upiId = it },
+                            label = { Text(if (isBengali) "ইউপিআই আইডি ( পেমেন্টের জন্য)" else "Merchant UPI ID") },
+                            placeholder = { Text("e.g. laxmigrocery@upi") },
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.LightGray,
+                                focusedContainerColor = Color(0xFF1C1C1E),
+                                unfocusedContainerColor = Color(0xFF1C1C1E),
+                                focusedBorderColor = Color(0xFF2E7D32),
+                                unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                                focusedLabelColor = Color(0xFF2E7D32),
+                                unfocusedLabelColor = Color.Gray,
+                                focusedPlaceholderColor = Color.Gray,
+                                unfocusedPlaceholderColor = Color.Gray
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            TextButton(
+                                onClick = { currentStep = "CHECKOUT" },
+                                modifier = Modifier.weight(0.4f)
+                            ) {
+                                Text(if (isBengali) "বাতিল" else "Back", color = Color.Gray)
+                            }
+
+                            Button(
+                                onClick = {
+                                    if (shopName.isBlank() || location.isBlank() || upiId.isBlank()) {
+                                        return@Button
+                                    }
+                                    viewModel.activatePremiumMerchant(shopName, shopType, location, upiId)
+                                    onSuccess()
+                                },
+                                enabled = shopName.isNotBlank() && location.isNotBlank() && upiId.isNotBlank(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF2E7D32),
+                                    disabledContainerColor = Color(0xFF2E7D32).copy(alpha = 0.35f),
+                                    disabledContentColor = Color.White.copy(alpha = 0.4f)
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.weight(0.6f)
+                            ) {
+                                Text(if (isBengali) "চালু করুন" else "Launch Store", color = Color.White)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ClientPortalScreen(viewModel: LedgerViewModel, onOpenSettings: () -> Unit) {
+    val isBengali by viewModel.isBengali.collectAsState()
+    val googleName by viewModel.googleName.collectAsState()
+    val joinedStores by viewModel.joinedStores.collectAsState()
+    val activeMerchant by viewModel.authenticatedUser.collectAsState()
+    val isPremiumMerchant by viewModel.isPremiumMerchant.collectAsState()
+
+    var activeClientTab by remember { mutableStateOf("MY_BOOKS") }
+    var selectedShopIdForBill by remember { mutableStateOf<String?>(null) }
+
+    val activeClientName = googleName ?: "Faizen Ahmed"
+    var ownedCustomersList by remember { mutableStateOf<List<Customer>>(emptyList()) }
+    var isLoadingSummary by remember { mutableStateOf(true) }
+
+    LaunchedEffect(activeClientName) {
+        try {
+            val allCusts = viewModel.repository.getAllCustomersDirect()
+            val matches = allCusts.filter { it.name.lowercase() == activeClientName.lowercase() }
+            ownedCustomersList = matches
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            isLoadingSummary = false
+        }
+    }
+
+    val dueCustomers = remember(ownedCustomersList, joinedStores) {
+        ownedCustomersList.filter { cust ->
+            val shopIdStr = when (cust.ownerId) {
+                1 -> "1"
+                2 -> "2"
+                3 -> "3"
+                else -> cust.ownerId.toString()
+            }
+            (cust.isJoined || joinedStores.contains(shopIdStr)) && cust.totalDues > 0
+        }
+    }
+    val totalDuesAmt = remember(dueCustomers) {
+        dueCustomers.sumOf { it.totalDues }
+    }
+
+    if (selectedShopIdForBill != null) {
+        ClientLiveBillView(
+            viewModel = viewModel,
+            shopId = selectedShopIdForBill!!,
+            onBack = { selectedShopIdForBill = null }
+        )
+        return
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(WarmBg)
+            .padding(16.dp)
+    ) {
+        // 1. Client Profile Greeting exactly matching requested design
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 20.dp, top = 8.dp)
+                .statusBarsPadding()
+        ) {
+            Text(
+                text = if (isBengali) "হ্যালো," else "HELLO,",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                letterSpacing = 1.5.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = activeClientName,
+                fontSize = 36.sp,
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Normal,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
+
+        // 2. High impact dynamic due-summary monochrome card matching previous theme
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            shape = RoundedCornerShape(32.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(Color(0xFF2C2C2C), Color(0xFF1E1E1E))
+                        )
+                    )
+                    .padding(24.dp)
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = if (isBengali) "আপনার দোকানসমূহে সর্বমোট বকেয়া" else "TOTAL DUES ACROSS YOUR SHOPS",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFF5E6D3),
+                        letterSpacing = 1.2.sp
+                    )
+
+                    Text(
+                        text = "₹ ${String.format("%,.0f", totalDuesAmt)}",
+                        fontSize = 54.sp,
+                        fontFamily = FontFamily.Serif,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.White
+                    )
+
+                    val shopCountText = if (isBengali) {
+                        "${dueCustomers.size} টি দোকান"
+                    } else {
+                        "${dueCustomers.size} ${if (dueCustomers.size == 1) "shop" else "shops"}"
+                    }
+                    Text(
+                        text = shopCountText,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White.copy(alpha = 0.85f)
+                    )
+                }
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color.White)
+                .padding(4.dp)
+        ) {
+            listOf(
+                "MY_BOOKS" to (if (isBengali) "আমার লাইভ বিল" else "My Joined Books"),
+                "MALL" to (if (isBengali) "দোকানের তালিকা" else "Shop Directory")
+            ).forEach { (tabId, label) ->
+                val isSel = activeClientTab == tabId
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (isSel) ForestGreen else Color.Transparent)
+                        .clickable { activeClientTab = tabId }
+                        .padding(vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = label,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isSel) Color.White else MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (activeClientTab == "MALL") {
+            val publicShops = remember(activeMerchant, isPremiumMerchant) {
+                val list = mutableListOf(
+                    Triple("1", "Laxmi Grocery Store", "Grocery Shop • Kolkata, WB"),
+                    Triple("2", "Mayer Doa Pharmacy", "Pharmacy • Dhaka, BD"),
+                    Triple("3", "Milon Tea Stall", "Restaurant & Cafe • Garia, WB")
+                )
+                val merchant = activeMerchant
+                if (isPremiumMerchant && merchant != null) {
+                    list.add(Triple("own", merchant.shopName, "${merchant.shopType} • Kolkata, WB"))
+                }
+                list
+            }
+
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(publicShops.size) { index ->
+                    val (shopId, shopName, shopDesc) = publicShops[index]
+                    val isJoined = joinedStores.contains(shopId)
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(shopName, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(shopDesc, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(if (isJoined) Color.LightGray.copy(alpha = 0.2f) else ForestGreen)
+                                    .clickable {
+                                        if (isJoined) {
+                                            viewModel.leaveShop(shopId)
+                                        } else {
+                                            viewModel.joinShop(shopId)
+                                        }
+                                    }
+                                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = if (isJoined) (if (isBengali) "যুক্ত" else "Joined ✅") else (if (isBengali) "যোগ দিন" else "➕ Join"),
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isJoined) Color.Gray else Color.White
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            val joinedList = remember(joinedStores) { joinedStores.toList() }
+
+            if (joinedList.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (isBengali) "কোনো সংযুক্ত দোকান পাওয়া যায়নি। শপ মল খুঁজে সংযুক্ত হোন!" else "No joined stores found. Join shops to track items live!",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(joinedList.size) { index ->
+                        val id = joinedList[index]
+                        val name = when (id) {
+                            "1" -> "Laxmi Grocery Store"
+                            "2" -> "Mayer Doa Pharmacy"
+                            "3" -> "Milon Tea Stall"
+                            else -> activeMerchant?.shopName ?: "My Store"
+                        }
+
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { selectedShopIdForBill = id },
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(20.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(44.dp)
+                                            .clip(CircleShape)
+                                            .background(ForestGreen.copy(alpha = 0.12f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(Icons.Default.Storefront, null, tint = ForestGreen, modifier = Modifier.size(22.dp))
+                                    }
+                                    Column {
+                                        Text(name, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                                        Text(if (isBengali) "লাইভ ভিউ করতে ক্লিক করুন" else "Tap to view live bookkeeping", fontSize = 11.sp, color = Color.Gray)
+                                    }
+                                }
+
+                                Icon(Icons.Default.ChevronRight, null, tint = Color.Gray)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ClientLiveBillView(
+    viewModel: LedgerViewModel,
+    shopId: String,
+    onBack: () -> Unit
+) {
+    val isBengali by viewModel.isBengali.collectAsState()
+    val googleName by viewModel.googleName.collectAsState()
+    
+    val targetOwnerId = remember(shopId) {
+        when (shopId) {
+            "1" -> 1
+            "2" -> 2
+            "3" -> 3
+            else -> shopId.toIntOrNull() ?: (viewModel.authenticatedUser.value?.id ?: 1)
+        }
+    }
+    val shopCustomersFlow = remember(viewModel.repository, targetOwnerId) {
+        viewModel.repository.getCustomers(targetOwnerId)
+    }
+    val shopCustomers by shopCustomersFlow.collectAsState(initial = emptyList())
+    
+    val activeClientName = googleName ?: "Faizen Ahmed"
+    val matchingCustomer = remember(shopCustomers, activeClientName) {
+        shopCustomers.firstOrNull { it.name.lowercase() == activeClientName.lowercase() }
+    }
+
+    val customerTransactions = remember { mutableStateListOf<Transaction>() }
+    var totalDues by remember { mutableStateOf(0.0) }
+
+    LaunchedEffect(matchingCustomer) {
+        if (matchingCustomer != null) {
+            viewModel.repository.getTransactionsForCustomer(matchingCustomer.id).collect { list ->
+                customerTransactions.clear()
+                customerTransactions.addAll(list)
+                totalDues = matchingCustomer.totalDues
+            }
+        } else {
+            customerTransactions.clear()
+            totalDues = 0.0
+        }
+    }
+
+    var showPaymentQr by remember { mutableStateOf(false) }
+
+    val shopTitle = when (shopId) {
+        "1" -> "Laxmi Grocery Store"
+        "2" -> "Mayer Doa Pharmacy"
+        "3" -> "Milon Tea Stall"
+        else -> "My Store"
+    }
+
+    val shopUpi = when (shopId) {
+        "1" -> "laxmigrocery@upi"
+        "2" -> "mayerdoa@upi"
+        "3" -> "milontea@upi"
+        else -> "generic@upi"
+    }
+
+    Scaffold(
+        containerColor = WarmBg,
+        topBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .statusBarsPadding(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                IconButton(
+                    onClick = { onBack() },
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .border(1.dp, Color.LightGray.copy(alpha = 0.4f), CircleShape)
+                ) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = ForestGreen)
+                }
+
+                Column {
+                    Text(shopTitle, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = ForestGreen)
+                    Text(if (isBengali) "লাইভ সুরক্ষিত লেজার বুক" else "Live Synced Ledger", fontSize = 11.sp, color = Color.Gray)
+                }
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = if (isBengali) "আপনার মোট বকেয়া পরিমাণ" else "Your Net Account Balance",
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+
+                    val balanceColor = if (totalDues >= 0) KhataRed else KhataGreen
+                    val statusText = if (totalDues >= 0) {
+                        if (isBengali) "দেবেন (Due)" else "DUE Owed"
+                    } else {
+                        if (isBengali) "পাবেন (We Owe You)" else "Advance Paid"
+                    }
+
+                    Text(
+                        text = "₹${String.format("%,.2f", if (totalDues >= 0) totalDues else -totalDues)}",
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Black,
+                        color = balanceColor
+                    )
+
+                    Text(
+                        text = statusText,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = balanceColor.copy(alpha = 0.85f),
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(balanceColor.copy(alpha = 0.08f))
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    if (totalDues > 0) {
+                        Button(
+                            onClick = { showPaymentQr = true },
+                            colors = ButtonDefaults.buttonColors(containerColor = ForestGreen),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = if (isBengali) "ইউপিআই পেমেন্ট করুন" else "Pay Dues via UPI / Scan QR",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+            }
+
+            Text(
+                text = if (isBengali) "লাইভ স্টেটমেন্ট খতিয়ান" else "Live Synced Timeline Ledger",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+
+            if (customerTransactions.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color.White)
+                        .padding(20.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (isBengali) "কোনো সাম্প্রতিক লেনদেন পাওয়া যায়নি।" else "No live history registered. Once the merchant links your account, entries stream here in real-time!",
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                ) {
+                    items(customerTransactions.size) { index ->
+                        val tx = customerTransactions[index]
+                        val isDebit = tx.type == "GIVE"
+
+                        val txDate = java.text.SimpleDateFormat("dd MMM yyyy, hh:mm a", java.util.Locale.getDefault()).format(java.util.Date(tx.timestamp))
+
+                        NeumorphicCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(14.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = tx.description.ifEmpty { if (isDebit) (if (isBengali) "বাকি দেওয়া হল" else "Purchase") else (if (isBengali) "ক্যাশ পেমেন্ট" else "Receipt") },
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = txDate,
+                                        fontSize = 11.sp,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                        modifier = Modifier.padding(top = 2.dp)
+                                    )
+                                }
+
+                                Text(
+                                    text = "₹${String.format("%,.0f", tx.amount)}",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = if (isDebit) KhataRed else KhataGreen
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (showPaymentQr) {
+        UpiQrCodeDialog(
+            viewModel = viewModel,
+            upiId = shopUpi,
+            merchantName = shopTitle,
+            amount = totalDues,
+            onDismiss = { showPaymentQr = false }
+        )
+    }
+}
+
+@Composable
+fun ClientReportsScreen(viewModel: LedgerViewModel) {
+    val isBengali by viewModel.isBengali.collectAsState()
+    val googleName by viewModel.googleName.collectAsState()
+    val activeClientName = googleName ?: "Faizen Ahmed"
+
+    // Load data reactively inside the report
+    var ownedCustomersList by remember { mutableStateOf<List<Customer>>(emptyList()) }
+    var allTransactionsList by remember { mutableStateOf<List<Transaction>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(activeClientName) {
+        isLoading = true
+        try {
+            val allCusts = viewModel.repository.getAllCustomersDirect()
+            val matches = allCusts.filter { it.name.lowercase() == activeClientName.lowercase() }
+            ownedCustomersList = matches
+
+            val allTxs = viewModel.repository.getAllTransactionsDirect()
+            val custIds = matches.map { it.id }.toSet()
+            val matchedTxs = allTxs.filter { custIds.contains(it.customerId) }
+            allTransactionsList = matchedTxs.sortedByDescending { it.timestamp }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            isLoading = false
+        }
+    }
+
+    val totalDues = remember(ownedCustomersList) {
+        ownedCustomersList.sumOf { it.totalDues }
+    }
+
+    Scaffold(
+        containerColor = WarmBg
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = innerPadding.calculateBottomPadding())
+        ) {
+            // High-Fidelity Header
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = ForestGreen,
+                        shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+                    )
+                    .padding(horizontal = 24.dp, vertical = 24.dp)
+                    .statusBarsPadding()
+            ) {
+                Column {
+                    Text(
+                        text = if (isBengali) "ব্যক্তিগত আমানত হিসাব" else "Personal Ledger Statement",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White.copy(alpha = 0.75f),
+                        letterSpacing = 1.sp
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = activeClientName,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
+                }
+            }
+
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize().weight(1f), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = ForestGreen)
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Summary Section cards
+                    item {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            shape = RoundedCornerShape(24.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(20.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = if (isBengali) "মোট বাকি (ওভারঅল)" else "Total Outstanding Dues",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Default.Analytics,
+                                        contentDescription = null,
+                                        tint = ForestGreen,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                                
+                                Spacer(modifier = Modifier.height(8.dp))
+                                
+                                Text(
+                                    text = "₹ ${String.format("%,.0f", totalDues)}",
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = if (totalDues > 0) KhataRed else KhataGreen
+                                )
+                                
+                                Spacer(modifier = Modifier.height(12.dp))
+                                
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .background(ForestGreen.copy(alpha = 0.08f))
+                                            .padding(12.dp)
+                                    ) {
+                                        Column {
+                                            Text(
+                                                text = if (isBengali) "যোগ দেওয়া খাতা" else "Join Books",
+                                                fontSize = 11.sp,
+                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                            )
+                                            Text(
+                                                text = "${ownedCustomersList.size}",
+                                                fontSize = 18.sp,
+                                                fontWeight = FontWeight.ExtraBold,
+                                                color = Color.White
+                                            )
+                                        }
+                                    }
+                                    
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .background(ForestGreen.copy(alpha = 0.08f))
+                                            .padding(12.dp)
+                                    ) {
+                                        Column {
+                                            Text(
+                                                text = if (isBengali) "মোট লেনদেন" else "Total Transactions",
+                                                fontSize = 11.sp,
+                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                            )
+                                            Text(
+                                                text = "${allTransactionsList.size}",
+                                                fontSize = 18.sp,
+                                                fontWeight = FontWeight.ExtraBold,
+                                                color = Color.White
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Shop Breakdown Card
+                    item {
+                        Text(
+                            text = if (isBengali) "দোকান ভিত্তিক হিসাব" else "Shopwise Standing",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = ForestGreen,
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                        )
+                    }
+
+                    if (ownedCustomersList.isEmpty()) {
+                        item {
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth().padding(24.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = if (isBengali) "কোনো তথ্য এখনো নেই।" else "No shop files linked yet.",
+                                        fontSize = 13.sp,
+                                        color = Color.Gray
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        items(ownedCustomersList.size) { index ->
+                            val customer = ownedCustomersList[index]
+                            
+                            // Let's resolve the shopName using ownerId
+                            var resolvedShopName by remember { mutableStateOf("") }
+                            LaunchedEffect(customer.ownerId) {
+                                val user = viewModel.repository.getUserById(customer.ownerId)
+                                resolvedShopName = user?.shopName ?: when (customer.ownerId.toString()) {
+                                    "1" -> "Laxmi Grocery Store"
+                                    "2" -> "Mayer Doa Pharmacy"
+                                    "3" -> "Milon Tea Stall"
+                                    else -> "My Store"
+                                }
+                            }
+
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = resolvedShopName.ifEmpty { if (isBengali) "লোড হচ্ছে..." else "Loading shop..." },
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 15.sp,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = if (isBengali) "সংযুক্ত খাতা আইডি: ${customer.id}" else "Synced Book ID # ${customer.id}",
+                                            fontSize = 11.sp,
+                                            color = Color.Gray
+                                        )
+                                    }
+                                    
+                                    Text(
+                                        text = "₹ ${String.format("%,.0f", customer.totalDues)}",
+                                        fontWeight = FontWeight.Black,
+                                        fontSize = 16.sp,
+                                        color = if (customer.totalDues > 0) KhataRed else KhataGreen
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Transactions Log Section Header
+                    item {
+                        Text(
+                            text = if (isBengali) "সম্পূর্ণ লেনদেন ইতিহাস" else "Full Statement History",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = ForestGreen,
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                        )
+                    }
+
+                    if (allTransactionsList.isEmpty()) {
+                        item {
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth().padding(24.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = if (isBengali) "কোনো লেনদেন পাওয়া যায়নি।" else "No transactions found.",
+                                        fontSize = 13.sp,
+                                        color = Color.Gray
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        items(allTransactionsList.size) { index ->
+                            val tx = allTransactionsList[index]
+                            val isDebit = tx.type == "GIVE"
+                            
+                            val txDate = remember(tx.timestamp) {
+                                val sfd = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
+                                sfd.format(Date(tx.timestamp))
+                            }
+
+                            // Find customer corresponding shop name dynamically 
+                            var shopNameForTx by remember { mutableStateOf("") }
+                            LaunchedEffect(tx.customerId) {
+                                val cust = ownedCustomersList.firstOrNull { it.id == tx.customerId }
+                                if (cust != null) {
+                                    val user = viewModel.repository.getUserById(cust.ownerId)
+                                    shopNameForTx = user?.shopName ?: when (cust.ownerId.toString()) {
+                                        "1" -> "Laxmi Grocery Store"
+                                        "2" -> "Mayer Doa Pharmacy"
+                                        "3" -> "Milon Tea Stall"
+                                        else -> "My Store"
+                                    }
+                                }
+                            }
+
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(14.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = shopNameForTx.ifEmpty { if (isBengali) "লেজার বুক" else "Ledger book" },
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp,
+                                            color = ForestGreen
+                                        )
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(
+                                            text = tx.description.ifEmpty { if (isDebit) (if (isBengali) "বাকি বিক্রি" else "Purchase on Credit") else (if (isBengali) "টাকা পরিশোধ" else "Payment Received") },
+                                            fontSize = 13.sp,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = txDate,
+                                            fontSize = 11.sp,
+                                            color = Color.Gray,
+                                            modifier = Modifier.padding(top = 2.dp)
+                                        )
+                                    }
+                                    
+                                    Column(horizontalAlignment = Alignment.End) {
+                                        Text(
+                                            text = "₹ ${String.format("%,.0f", tx.amount)}",
+                                            fontWeight = FontWeight.Black,
+                                            fontSize = 16.sp,
+                                            color = if (isDebit) KhataRed else KhataGreen
+                                        )
+                                        Text(
+                                            text = if (isDebit) (if (isBengali) "বাকি" else "DUE") else (if (isBengali) "পরিশোধিত" else "PAID"),
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (isDebit) KhataRed else KhataGreen
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 

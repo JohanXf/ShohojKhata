@@ -202,4 +202,7 @@ class SohojRepository(private val database: AppDatabase) {
             return false
         }
     }
+
+    suspend fun getAllCustomersDirect(): List<Customer> = customerDao.getAllCustomersDirect()
+    suspend fun getAllTransactionsDirect(): List<Transaction> = transactionDao.getAllTransactionsDirect()
 }
