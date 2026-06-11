@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Access: Any authenticated user can read the /shops collection to browse the marketplace.
+    match /shops/{shopId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && resource.data.ownerId == request.auth.uid;
+    }
+
+    // Walled-Garden Search Rules: A merchant can only search, read, or query a customer profile 
+    // if a document exists inside the /memberships collection where 
+    // memberships.shopId == merchant.uid AND memberships.clientPhoneNumber == searchTarget.
+    match /users/{userId} {
+      allow read: if request.auth != null && (
+        request.auth.uid == userId ||
+        exists(/databases/$(database)/documents/memberships/$(request.auth.uid + "_" + resource.data.phone_number))
+      );
+      // Let user write their own profile
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /memberships/{membershipId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    // Write Protections: Only the owner of a shop (shops.ownerId == auth.uid) has write privileges 
+    // to add rows inside the /ledger_entries collection for that specific store layout.
+    match /ledger_entries/{entryId} {
+      allow read: if request.auth != null && (
+        resource.data.shopId == request.auth.uid || 
+        resource.data.customerUid == request.auth.uid
+      );
+      // Strictly only allow the owner to write
+      allow write: if request.auth != null && request.resource.data.shopId == request.auth.uid;
+    }
+  }
+}

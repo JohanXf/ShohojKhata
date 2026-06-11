@@ -20,9 +20,14 @@ class SohojRepository(private val database: AppDatabase) {
         shopName: String,
         shopType: String,
         upiId: String,
-        pin: String
+        pin: String,
+        id: Int = 0
     ): Long {
+        val finalId = if (id > 0) id else {
+            (java.util.UUID.randomUUID().hashCode() and 0x7FFFFFFF).let { if (it == 0) 1 else it }
+        }
         val user = User(
+            id = finalId,
             name = name,
             phone = phone,
             shopName = shopName,
@@ -30,24 +35,18 @@ class SohojRepository(private val database: AppDatabase) {
             upiId = upiId,
             pin = pin
         )
-        val id = userDao.insertUser(user)
-        val insertedUser = user.copy(id = id.toInt())
+        val insertedId = userDao.insertUser(user)
+        val insertedUser = user.copy(id = insertedId.toInt())
         
-        // Attempt cloud sync
-        SupabaseClient.api?.let { api ->
-            runCatching { api.upsertUser(insertedUser) }
-        }
+
         
-        return id
+        return insertedId
     }
 
     suspend fun updateUser(user: User) {
         userDao.updateUser(user)
         
-        // Attempt cloud sync
-        SupabaseClient.api?.let { api ->
-            runCatching { api.upsertUser(user) }
-        }
+
     }
 
     fun getCustomers(ownerId: Int): Flow<List<Customer>> {
@@ -59,7 +58,9 @@ class SohojRepository(private val database: AppDatabase) {
     }
 
     suspend fun insertCustomer(ownerId: Int, name: String, phone: String, email: String?, isJoined: Boolean = false): Long {
+        val randomId = (java.util.UUID.randomUUID().hashCode() and 0x7FFFFFFF).let { if (it == 0) 1 else it }
         val customer = Customer(
+            id = randomId,
             ownerId = ownerId,
             name = name,
             phone = phone,
@@ -70,10 +71,7 @@ class SohojRepository(private val database: AppDatabase) {
         val id = customerDao.insertCustomer(customer)
         val insertedCustomer = customer.copy(id = id.toInt())
 
-        // Attempt cloud sync
-        SupabaseClient.api?.let { api ->
-            runCatching { api.upsertCustomers(listOf(insertedCustomer)) }
-        }
+
 
         return id
     }
@@ -81,19 +79,13 @@ class SohojRepository(private val database: AppDatabase) {
     suspend fun updateCustomer(customer: Customer) {
         customerDao.updateCustomer(customer)
 
-        // Attempt cloud sync
-        SupabaseClient.api?.let { api ->
-            runCatching { api.upsertCustomers(listOf(customer)) }
-        }
+
     }
 
     suspend fun deleteCustomer(customer: Customer) {
         customerDao.deleteCustomer(customer)
 
-        // Attempt cloud sync
-        SupabaseClient.api?.let { api ->
-            runCatching { api.deleteCustomer("id=eq.${customer.id}") }
-        }
+
     }
 
     fun getTransactionsForCustomer(customerId: Int): Flow<List<Transaction>> {
@@ -112,7 +104,9 @@ class SohojRepository(private val database: AppDatabase) {
         paymentMethod: String // "CASH", "UPI", "OTHER"
     ): Long {
         val timestamp = System.currentTimeMillis()
+        val randomTxId = (java.util.UUID.randomUUID().hashCode() and 0x7FFFFFFF).let { if (it == 0) 1 else it }
         val transaction = Transaction(
+            id = randomTxId,
             customerId = customerId,
             amount = amount,
             type = type,
@@ -131,13 +125,7 @@ class SohojRepository(private val database: AppDatabase) {
 
         val insertedTx = transaction.copy(id = transactionId.toInt())
 
-        // Attempt cloud sync of both transaction and updated customer
-        SupabaseClient.api?.let { api ->
-            runCatching {
-                api.upsertTransactions(listOf(insertedTx))
-                getCustomerById(customerId)?.let { api.upsertCustomers(listOf(it)) }
-            }
-        }
+
 
         return transactionId
     }
@@ -151,55 +139,24 @@ class SohojRepository(private val database: AppDatabase) {
             customerDao.updateCustomerDues(transaction.customerId, delta, timestamp)
         }
 
-        // Attempt cloud sync
-        SupabaseClient.api?.let { api ->
-            runCatching {
-                api.deleteTransaction("id=eq.${transaction.id}")
-                getCustomerById(transaction.customerId)?.let { api.upsertCustomers(listOf(it)) }
-            }
-        }
+
     }
 
     // --- High-level Full Database Sync and Merge function ---
     suspend fun syncWithSupabase(): Boolean {
-        val api = SupabaseClient.api ?: return false
-        try {
-            // 1. Sync User Profile
-            val localUser = getFirstUser()
-            if (localUser != null) {
-                runCatching { api.upsertUser(localUser) }
-            }
+        return false
+    }
 
-            // 2. Sync Customers (Push)
-            val localCustomers = customerDao.getAllCustomersDirect()
-            if (localCustomers.isNotEmpty()) {
-                api.upsertCustomers(localCustomers)
-            }
+    suspend fun updateCustomerDirectly(customer: Customer) {
+        customerDao.insertCustomer(customer)
+    }
 
-            // 3. Sync Transactions (Push)
-            val localTransactions = transactionDao.getAllTransactionsDirect()
-            if (localTransactions.isNotEmpty()) {
-                api.upsertTransactions(localTransactions)
+    suspend fun replaceCustomerTransactions(customerId: Int, txList: List<Transaction>) {
+        database.withTransaction {
+            transactionDao.deleteTransactionsByCustomer(customerId)
+            for (tx in txList) {
+                transactionDao.insertTransaction(tx)
             }
-
-            // 4. Remote Pull & Merge
-            if (localUser != null) {
-                // Pull remote customers for this owner and save locally
-                val remoteCustomers = api.getCustomers("ownerId=eq.${localUser.id}")
-                for (remoteCust in remoteCustomers) {
-                    customerDao.insertCustomer(remoteCust)
-                }
-
-                // Pull remote transactions and save locally
-                val remoteTransactions = api.getTransactions()
-                for (remoteTx in remoteTransactions) {
-                    transactionDao.insertTransaction(remoteTx)
-                }
-            }
-            return true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
         }
     }
 

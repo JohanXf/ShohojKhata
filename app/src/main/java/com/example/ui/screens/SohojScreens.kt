@@ -24,6 +24,9 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -1590,7 +1593,7 @@ fun CustomerDetailScreen(
                                             Icon(Icons.Default.Add, null, tint = if (hasInput) ForestGreen else Color.White.copy(alpha = 0.5f), modifier = Modifier.size(16.dp))
                                             Spacer(modifier = Modifier.width(4.dp))
                                             Text(
-                                                text = if (isBengali) "+ আইটেম" else "+ Add item",
+                                                text = if (isBengali) "আইটেম" else "Add item",
                                                 color = if (hasInput) ForestGreen else Color.White.copy(alpha = 0.5f),
                                                 fontWeight = FontWeight.Bold,
                                                 fontSize = 13.sp
@@ -2227,7 +2230,7 @@ fun TransactionEntryDialog(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = if (isBengali) "+ আইটেম যোগ করুন" else "+ Add item",
+                        text = if (isBengali) "আইটেম যোগ করুন" else "Add item",
                         fontWeight = FontWeight.Bold,
                         fontSize = 13.sp,
                         color = if (isSystemInDarkTheme()) Color.White else NavyDark
@@ -2441,66 +2444,355 @@ fun UpiQrCodeDialog(
     onDismiss: () -> Unit
 ) {
     val isBengali by viewModel.isBengali.collectAsState()
+    val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
+
+    var editableUpiId by remember { mutableStateOf(upiId) }
+    var editableName by remember { mutableStateOf(merchantName) }
+    var editableAmount by remember { mutableStateOf(if (amount > 0) String.format(Locale.US, "%.0f", amount) else "") }
+    var editableNote by remember { mutableStateOf(if (isBengali) "বকেয়া বিল পরিশোধ" else "Dues payment") }
+    var isCopied by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isCopied) {
+        if (isCopied) {
+            kotlinx.coroutines.delay(2000)
+            isCopied = false
+        }
+    }
+
+    val computedUriString = remember(editableUpiId, editableName, editableAmount, editableNote) {
+        val amtVal = editableAmount.toDoubleOrNull()
+        val amtPart = if (amtVal != null && amtVal > 0) String.format(Locale.US, "%.2f", amtVal) else ""
+        
+        "upi://pay?pa=${editableUpiId.trim()}" +
+                (if (editableName.isNotBlank()) "&pn=${Uri.encode(editableName.trim())}" else "") +
+                (if (amtPart.isNotEmpty()) "&am=$amtPart" else "") +
+                "&cu=INR" +
+                (if (editableNote.isNotBlank()) "&tn=${Uri.encode(editableNote.trim())}" else "")
+    }
+
     Dialog(onDismissRequest = { onDismiss() }) {
         NeumorphicCard(
             shape = RoundedCornerShape(24.dp),
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 4.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
                     .padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 Text(
-                    text = if (isBengali) "UPI পেমেন্ট QR কোড" else "UPI Instant Payment QR",
+                    text = if (isBengali) "UPI পেমেন্ট লিংক ও QR জেনারেটর" else "UPI Link & QR Generator",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = KhataGreen
+                    color = ForestGreen,
+                    textAlign = TextAlign.Center
                 )
 
                 Text(
-                    text = if (isBengali) "কাস্টমারকে স্ক্রিন স্ক্যান করতে বলুন:" else "Ask Customer to Scan QR directly:",
-                    fontSize = 13.sp,
-                    color = AppCaramel.copy(alpha = 0.7f)
+                    text = if (isBengali) {
+                        "ডিজিটাল লিংক বা QR কোড তৈরি করে কাস্টমারের সাথে শেয়ার করুন"
+                    } else {
+                        "Create real-time custom UPI links or QR to share instantly"
+                    },
+                    fontSize = 12.sp,
+                    color = AppCaramel.copy(alpha = 0.7f),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
 
-                // Stenciled mockup QR Canvas representation
-                Box(
-                    modifier = Modifier
-                        .size(180.dp)
-                        .background(Color.White)
-                        .border(3.dp, KhataGreen, RoundedCornerShape(12.dp))
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
+                // Input fields section
+                OutlinedTextField(
+                    value = editableUpiId,
+                    onValueChange = { editableUpiId = it },
+                    label = { Text(if (isBengali) "UPI VPA আইডি" else "Merchant UPI VPA") },
+                    placeholder = { Text("e.g. shopowner@upi") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = ForestGreen,
+                        unfocusedBorderColor = AppCaramel.copy(alpha = 0.4f),
+                        focusedLabelColor = ForestGreen,
+                        unfocusedLabelColor = AppCaramel.copy(alpha = 0.7f),
+                        focusedTextColor = AppCaramel,
+                        unfocusedTextColor = AppCaramel
+                    )
+                )
+
+                OutlinedTextField(
+                    value = editableName,
+                    onValueChange = { editableName = it },
+                    label = { Text(if (isBengali) "গ্রহীতার নাম" else "Payee / Merchant Name") },
+                    placeholder = { Text("e.g. Laxmi Grocery") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = ForestGreen,
+                        unfocusedBorderColor = AppCaramel.copy(alpha = 0.4f),
+                        focusedLabelColor = ForestGreen,
+                        unfocusedLabelColor = AppCaramel.copy(alpha = 0.7f),
+                        focusedTextColor = AppCaramel,
+                        unfocusedTextColor = AppCaramel
+                    )
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Default.QrCode, null, modifier = Modifier.size(100.dp), tint = Color.Black)
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text("SCAN TO PAY INR", fontSize = 10.sp, fontWeight = FontWeight.Black, color = Color.Black)
+                    OutlinedTextField(
+                        value = editableAmount,
+                        onValueChange = { editableAmount = it },
+                        label = { Text(if (isBengali) "পরিমাণ (₹)" else "Amount (₹)") },
+                        placeholder = { Text("0") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = ForestGreen,
+                            unfocusedBorderColor = AppCaramel.copy(alpha = 0.4f),
+                            focusedLabelColor = ForestGreen,
+                            unfocusedLabelColor = AppCaramel.copy(alpha = 0.7f),
+                            focusedTextColor = AppCaramel,
+                            unfocusedTextColor = AppCaramel
+                        )
+                    )
+
+                    OutlinedTextField(
+                        value = editableNote,
+                        onValueChange = { editableNote = it },
+                        label = { Text(if (isBengali) "নোট / বিবরণ" else "Payment Note") },
+                        placeholder = { Text("e.g. Invoice #1") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1.2f),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = ForestGreen,
+                            unfocusedBorderColor = AppCaramel.copy(alpha = 0.4f),
+                            focusedLabelColor = ForestGreen,
+                            unfocusedLabelColor = AppCaramel.copy(alpha = 0.7f),
+                            focusedTextColor = AppCaramel,
+                            unfocusedTextColor = AppCaramel
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Generated String Block
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = (if (isSystemInDarkTheme()) Color(0xFF1E1E1E) else Color(0xFFF5F5F5)).copy(alpha = 0.9f)
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = if (isBengali) "জেনারেট করা UPI লিংক (UPI String):" else "Generated UPI Pay Intent String:",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = ForestGreen
+                        )
+                        SelectionContainer {
+                            Text(
+                                text = computedUriString,
+                                fontSize = 11.sp,
+                                fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                                color = if (isSystemInDarkTheme()) Color(0xFFE0E0E0) else Color(0xFF333333),
+                                maxLines = 3,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = merchantName, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = AppCaramel)
-                    Text(text = "UPI / MFS: $upiId", fontSize = 11.sp, color = AppCaramel.copy(alpha = 0.7f))
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = if (isBengali) "পরিশোধের পরিমাণ ₹ ${String.format("%,.0f", amount)}" else "Collection Arrears: ₹ ${String.format("%,.0f", amount)}",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = KhataRed
-                    )
+                // Sharing Quick Actions
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Copy button
+                    Button(
+                        onClick = {
+                            clipboardManager.setText(AnnotatedString(computedUriString))
+                            isCopied = true
+                            Toast.makeText(
+                                context,
+                                if (isBengali) "লিংক ক্লিপবোর্ডে কপি হয়েছে!" else "UPI intent link copied to clipboard!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isCopied) KhataGreen else ForestGreen
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (isCopied) Icons.Default.Check else Icons.Default.ContentCopy,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = if (isCopied) (if (isBengali) "কপি হয়েছে" else "Copied") else (if (isBengali) "কপি করুন" else "Copy Link"),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
+
+                    // Share button
+                    Button(
+                        onClick = {
+                            try {
+                                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "text/plain"
+                                    putExtra(Intent.EXTRA_TEXT, computedUriString)
+                                }
+                                context.startActivity(Intent.createChooser(shareIntent, if (isBengali) "লিংক শেয়ার করুন" else "Share Payment Link"))
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Error sharing link", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = if (isBengali) "শেয়ার করুন" else "Share Link",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
                 }
+
+                // WhatsApp Sharing Card
+                Card(
+                    modifier = Modifier.fillMaxWidth().clickable {
+                        try {
+                            val msg = if (isBengali) {
+                                "প্রিয় কাস্টমার, আপনার পরিশোধযোগ্য ₹ $editableAmount বকেয়া বিল এই লিংকের মাধ্যমে পরিশোধ করুন:\n$computedUriString\nবিনীত, $editableName - সহজ খাতা (SohojKhata)"
+                            } else {
+                                "Dear customer, please pay your due billing amount of ₹ $editableAmount using this UPI instant pay link:\n$computedUriString\nRegards, $editableName - ShohojKhata"
+                            }
+                            val uri = Uri.parse("https://api.whatsapp.com/send?text=${Uri.encode(msg)}")
+                            val intent = Intent(Intent.ACTION_VIEW, uri)
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            Toast.makeText(context, if (isBengali) "হোয়াটসঅ্যাপ পাওয়া যায়নি অথবা সমস্যা হচ্ছে" else "WhatsApp request failed", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFE8F5E9)
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .background(Color(0xFF25D366), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.SendToMobile,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (isBengali) "হোয়াটসঅ্যাপে কাস্টমারকে রিকোয়েস্ট পাঠান" else "Request Customer via WhatsApp",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1B5E20)
+                            )
+                            Text(
+                                text = if (isBengali) "সরাসরি রেডিমেড টেক্সট মেসেজ ও পেমেন্ট লিংক শেয়ার করুন" else "Instantly share prefilled message & link details",
+                                fontSize = 9.sp,
+                                color = Color(0xFF2E7D32)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Beautiful interactive QR Display container
+                Box(
+                    modifier = Modifier
+                        .size(140.dp)
+                        .background(Color.White, RoundedCornerShape(16.dp))
+                        .border(3.dp, ForestGreen, RoundedCornerShape(16.dp))
+                        .padding(12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = Icons.Default.QrCode,
+                            contentDescription = null,
+                            modifier = Modifier.size(70.dp),
+                            tint = Color.Black
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = if (editableAmount.isNotBlank() && editableAmount.toDoubleOrNull() != null) {
+                                "PAY ₹${editableAmount}"
+                            } else {
+                                "SCAN TO PAY"
+                            },
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color.Black
+                        )
+                    }
+                }
+
+                Text(
+                    text = if (isBengali) {
+                        "নোট: কাস্টমার যেকোনো UPI অ্যাপ (GPay, PhonePe, Paytm, bKash) দিয়ে স্ক্যান করে টাকা পাঠাতে পারবেন"
+                    } else {
+                        "Info: Scanning this QR or clicking the link opens any dynamic UPI app (GPay, PhonePe, Paytm, BHIM) on customer's phone"
+                    },
+                    fontSize = 9.sp,
+                    color = AppCaramel.copy(alpha = 0.5f),
+                    textAlign = TextAlign.Center,
+                    lineHeight = 12.sp,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
 
                 NeumorphicButton(
                     onClick = { onDismiss() },
                     containerColor = ForestGreen,
                     shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().height(48.dp)
                 ) {
-                    Text(if (isBengali) "সম্পন্ন" else "Done", color = Color.White)
+                    Text(if (isBengali) "সম্পন্ন" else "Done", color = Color.White, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -6601,6 +6893,10 @@ fun ClientLiveBillView(
 
     val customerTransactions = remember { mutableStateListOf<Transaction>() }
     var totalDues by remember { mutableStateOf(0.0) }
+
+    LaunchedEffect(targetOwnerId, activeClientName) {
+        // Do nothing without Supabase
+    }
 
     LaunchedEffect(matchingCustomer) {
         if (matchingCustomer != null) {

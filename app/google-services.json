@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "135044219040",
+    "project_id": "sohojkhataapp",
+    "storage_bucket": "sohojkhataapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135044219040:android:01f81a81a553471a6389c5",
+        "android_client_info": {
+          "package_name": "com.aistudio.shohojkhata.fzxq"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCURb-EcdYRgOcf_JaS01McnhBKpJ0QB88"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

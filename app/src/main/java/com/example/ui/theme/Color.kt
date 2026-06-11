@@ -17,18 +17,16 @@ val NavyDark: Color
 val MintGreenLight: Color
     @Composable get() = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
 
-val DeepGold = Color(0xFFFFA500)      // Accent/Highlights warm gold
+val DeepGold = Color(0xFFFFA500)
 
-// High contrast Black and White styled states or fallback to modern readable indicators
-val KhataGreen = Color(0xFF4CAF50)    // High contrast green for paid states
+val KhataGreen = Color(0xFF4CAF50)
 val KhataGreenBg: Color
     @Composable get() = Color(0xFF1B382B)
 
-val KhataRed = Color(0xFFF44336)      // High contrast red for dues states
+val KhataRed = Color(0xFFF44336)
 val KhataRedBg: Color
     @Composable get() = Color(0xFF3F1B1B)
 
-// Compatibility aliases - all fully dynamic mapping to material color scheme
 val AppBeige: Color
     @Composable get() = Color(0xFF2C2C2C)
 
