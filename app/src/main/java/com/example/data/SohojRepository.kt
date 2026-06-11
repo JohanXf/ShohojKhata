@@ -2,6 +2,7 @@ package com.example.data
 
 import kotlinx.coroutines.flow.Flow
 import androidx.room.withTransaction
+import kotlinx.coroutines.tasks.await
 
 class SohojRepository(private val database: AppDatabase) {
     private val userDao = database.userDao()
@@ -142,9 +143,30 @@ class SohojRepository(private val database: AppDatabase) {
 
     }
 
-    // --- High-level Full Database Sync and Merge function ---
-    suspend fun syncWithSupabase(): Boolean {
-        return false
+    suspend fun syncWithFirebase(): Boolean {
+        try {
+            val firestore = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+            val dbMap = mutableMapOf<String, Any>()
+            
+            val user = userDao.getFirstUser()
+            if (user != null) {
+                dbMap["user"] = user
+                
+                val customers = customerDao.getAllCustomersDirect()
+                dbMap["customers"] = customers
+                
+                val txs = transactionDao.getAllTransactionsDirect()
+                dbMap["transactions"] = txs
+                
+                // Upload all backup to Firebase Firestore
+                firestore.collection("backups").document("user_${user.id}").set(dbMap).await()
+                return true
+            }
+            return false
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        }
     }
 
     suspend fun updateCustomerDirectly(customer: Customer) {

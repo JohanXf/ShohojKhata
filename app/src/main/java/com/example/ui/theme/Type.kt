@@ -7,8 +7,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 fun getAppTypography(isBengali: Boolean): Typography {
-  // Use the gorgeous premium FontFamily.Serif across the entire app globally
-  val selectedFamily = FontFamily.Serif
+  val selectedFamily = FontFamily.SansSerif
 
   return Typography(
     displayLarge = TextStyle(

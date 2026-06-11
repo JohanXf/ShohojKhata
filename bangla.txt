@@ -1,0 +1,372 @@
+139:    val isBengali by viewModel.isBengali.collectAsState()
+145:            .clickable { viewModel.setLanguage(!isBengali) }
+157:            text = if (isBengali) "English" else "বাংলা",
+170:    val isBengali by viewModel.isBengali.collectAsState()
+174:    var shopType by remember { mutableStateOf(if (isBengali) "মুদি দোকান (Grocery)" else "Grocery Shop") }
+181:    val shopTypes = if (isBengali) {
+235:                    text = if (isBengali) "সহজ খাতা (Sohoj Khata)" else "Sohoj Khata",
+241:                    text = if (isBengali) "আপনার দোকানের হিসাব, সুন্দরভাবে রাখা।" else "Your digital shop register. Beautifully kept.",
+260:                            text = if (isBengali) "দোকান খোলার ফর্ম" else "Register Your Shop",
+269:                            label = { Text(if (isBengali) "দোকানদারের নাম" else "Owner's Name") },
+278:                            label = { Text(if (isBengali) "মোবাইল নম্বর" else "Mobile Number") },
+288:                            label = { Text(if (isBengali) "দোকানের নাম" else "Shop Name") },
+299:                                label = { Text(if (isBengali) "ব্যবসার ধরন" else "Business Type") },
+330:                            label = { Text(if (isBengali) "UPI আইডি / পেমেন্ট নম্বর" else "UPI ID / Pay Number") },
+332:                            placeholder = { Text(if (isBengali) "merchant@upi বা bKash নম্বর" else "merchant@upi or bKash number") },
+340:                            label = { Text(if (isBengali) "৪-ডিজিটের পিন লক" else "4-Digit Security PIN") },
+351:                            label = { Text(if (isBengali) "পিন নিশ্চিত করুন" else "Confirm PIN") },
+368:                            text = if (isBengali) "আগের খাতা ক্লাউড থেকে রিস্টোর করুন" else "Restore Existing Ledger from Cloud",
+381:                    val alertText = if (isBengali) "অনুগ্রহ করে সব তথ্য এবং ৪ ডিজিটের পিন সঠিক দিন" else "Please fill all details and set a 4-digit PIN"
+384:                    val alertText = if (isBengali) "পিন দুটি মিলেনি!" else "PINs do not match!"
+388:                        val alertText = if (isBengali) "খাতা সফলভাবে খোলা হয়েছে!" else "Registered ledger successfully!"
+404:            Text(if (isBengali) "নতুন খাতা চালু করুন" else "Launch Shop Ledger", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+423:    val isBengali by viewModel.isBengali.collectAsState()
+456:                text = registeredUser?.shopName ?: (if (isBengali) "সহজ খাতা" else "Sohoj Khata"),
+462:                text = if (isBengali) "খাতা খুলতে পিন কোড দিন" else "Enter PIN to Unlock Ledger",
+490:                    if (isBengali) "ভুল পিন! আবার চেষ্টা করুন।" else "Incorrect PIN! Try again."
+503:            val clearLabel = if (isBengali) "খালি" else "Clear"
+504:            val deleteLabel = if (isBengali) "মুছুন" else "Delete"
+564:                    text = if (isBengali) "ক্লাউড থেকে খাতা রিস্টোর করুন" else "Restore Ledger from Cloud",
+588:    val isBengali by viewModel.isBengali.collectAsState()
+637:                                text = ownerUser?.shopName ?: (if (isBengali) "আমার দোকান" else "My Shop"),
+653:                                    text = ownerUser?.name ?: (if (isBengali) "মালিক" else "Owner"),
+670:                            text = if (isBengali) "মোট নেট হিসাব (Net Balance)" else "Net Balance",
+733:                                    text = if (isBengali) "পাবেন" else "You Get",
+781:                                    text = if (isBengali) "দেবেন" else "You Give",
+809:                        placeholder = { Text(if (isBengali) "নাম বা মোবাইল দিয়ে সার্চ করুন..." else "Search by name or mobile...") },
+872:                                    if (isBengali) "কোনো কাস্টমার যোগ করা হয়নি!" else "No customers have been added!"
+874:                                    if (isBengali) "সার্চে কোনো কাস্টমার মেলেনি!" else "No customers matched your search!"
+882:                                    if (isBengali) "নতুন কাস্টমার যোগ করতে উপরের '+' বোতামে চাপুন।" else "Tap the '+' button above to add your first customer."
+884:                                    if (isBengali) "বানান চেক করে আবার চেষ্টা করুন।" else "Check your query spelling and retry."
+927:    val isBengali by viewModel.isBengali.collectAsState()
+998:                                        text = if (isBengali) "অনলাইন" else "Online",
+1030:                                        text = if (isBengali) "নিজে যুক্ত" else "Manual",
+1052:                        Text(if (isBengali) "পাবেন" else "Get", fontSize = 11.sp, color = Color(0xFFFFCDD2), fontWeight = FontWeight.Bold)
+1056:                        Text(if (isBengali) "দেবেন" else "Give", fontSize = 11.sp, color = Color(0xFFC8E6C9), fontWeight = FontWeight.Bold)
+1060:                        Text(if (isBengali) "সমতা" else "Settled", fontSize = 11.sp, color = Color.White.copy(alpha = 0.7f), fontWeight = FontWeight.Medium)
+1061:                        Text(if (isBengali) "₹ ০" else "₹ 0", fontSize = 15.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Serif, color = Color.White)
+1075:    val isBengali by viewModel.isBengali.collectAsState()
+1094:                    text = if (isBengali) "নতুন কাস্টমার যোগ করুন" else "Add New Customer",
+1103:                    label = { Text(if (isBengali) "কাস্টমারের নাম" else "Customer Name") },
+1125:                    label = { Text(if (isBengali) "মোবাইল নম্বর" else "Mobile Number") },
+1151:                        Text(if (isBengali) "বাতিল" else "Cancel", color = Color.LightGray, fontWeight = FontWeight.Bold)
+1157:                                val alert = if (isBengali) "নাম ও মোবাইল দেয়া আবশ্যক" else "Name & Mobile are required"
+1166:                        Text(if (isBengali) "যোগ করুন" else "Add", color = Color.White, fontWeight = FontWeight.Bold)
+1182:    val isBengali by viewModel.isBengali.collectAsState()
+1264:                                                text = if (isBengali) "অনলাইন" else "Online",
+1292:                                                text = if (isBengali) "নিজে যুক্ত" else "Manual",
+1333:                                text = if (isBengali) "চলতি ব্যালেন্স" else "RUNNING BALANCE",
+1351:                                    currentDues > 0 -> if (isBengali) "আপনার কাছে কাস্টমার ঋণী আছেন" else "Customer owes you money"
+1352:                                    currentDues < 0 -> if (isBengali) "কাস্টমার আপনার কাছে পাবেন" else "You owe this customer"
+1353:                                    else -> if (isBengali) "হিসাব সম্পূর্ণ পরিশোধ করা হয়েছে" else "Ledger completely settled"
+1374:                                        Text(if (isBengali) "পেমেন্ট QR কোড" else "Collect via QR", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.White)
+1382:                                            val alert = if (isBengali) "কোনো বকেয়া dues নেই!" else "No arrears details to send!"
+1386:                                        val shareText = if (isBengali) {
+1396:                                            val title = if (isBengali) "রিমাইন্ডার পাঠান" else "Send Payment Reminder"
+1399:                                            val alert = if (isBengali) "শেয়ার করা যায়নি" else "Failed to trigger share"
+1406:                                    Text(if (isBengali) "রিমাইন্ডার পাঠান" else "Share customer link", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 13.sp)
+1425:                                text = if (isBengali) "এন্ট্রি যোগ করুন" else "Add entry",
+1449:                                            text = if (isBengali) "+ বাকি (Due)" else "+ Due",
+1470:                                            text = if (isBengali) "- জমা (Paid)" else "- Paid",
+1491:                                                text = if (isBengali) "আইটেম বিবরণী" else "Write item",
+1585:                                                Toast.makeText(context, if (isBengali) "অনুগ্রহ করে সঠিক বিবরণ ও টাকা লিখুন" else "Please enter valid item description and amount", Toast.LENGTH_SHORT).show()
+1596:                                                text = if (isBengali) "আইটেম" else "Add item",
+1613:                                                Toast.makeText(context, if (isBengali) "কোনো আইটেম যোগ করা হয়নি!" else "No items to save!", Toast.LENGTH_SHORT).show()
+1625:                                                        Toast.makeText(context, if (isBengali) "হিসাব এন্ট্রি সংরক্ষণ করা হয়েছে" else "Due entry saved successfully", Toast.LENGTH_SHORT).show()
+1636:                                                text = if (isBengali) "সংরক্ষণ করুন" else "Save",
+1652:                                        value = if (isBengali) "জমা হিসাব (Paid)" else "Amount",
+1700:                                            val desc = if (isBengali) "জমা" else "Paid"
+1703:                                                Toast.makeText(context, if (isBengali) "পেমেন্ট জমা করা হয়েছে" else "Payment received successfully", Toast.LENGTH_SHORT).show()
+1706:                                            Toast.makeText(context, if (isBengali) "অনুগ্রহ করে সঠিক টাকা লিখুন" else "Please enter a valid amount", Toast.LENGTH_SHORT).show()
+1715:                                            text = if (isBengali) "সংরক্ষণ করুন (Save)" else "Save",
+1737:                            text = if (isBengali) "টাইমলাইন" else "TIMELINE",
+1744:                            text = if (isBengali) "${transactions.size}টি বিবরণী" else "${transactions.size} entries",
+1771:                                    text = if (isBengali) "কোনো বিবরণী নেই" else "No transactions yet.",
+1837:                                                            if (isGet) (if (isBengali) "জমা" else "Paid")
+1838:                                                            else (if (isBengali) "বাকি" else "Due")
+1879:                                            text = if (isBengali) "দিনের সংগ্রহ" else "Day total",
+1921:                                    text = if (isBengali) "সর্বমোট বকেয়া (Total Due)" else "Total Due",
+1959:    val isBengali by viewModel.isBengali.collectAsState()
+2002:                                if (isBengali) "বাকি এন্ট্রি" else "Due Entry"
+2004:                                if (isBengali) "জমা এন্ট্রি" else "Paid Entry"
+2025:                                "CASH" -> if (isBengali) "নগদ" else "CASH"
+2026:                                "UPI" -> if (isBengali) "UPI/bKash" else "UPI/MFS"
+2027:                                else -> if (isBengali) "অন্যান্য" else "OTHER"
+2060:    val isBengali by viewModel.isBengali.collectAsState()
+2084:                    text = if (isBengali) "নতুন এন্ট্রি যোগ করুন" else "Add Entry Details",
+2113:                                if (isBengali) "বাকি এন্ট্রি (Due)" else "Due Entry"
+2115:                                if (isBengali) "জমা এন্ট্রি (Paid)" else "Paid Entry"
+2135:                                text = if (isBengali) "আইটেমের নাম" else "Item name",
+2170:                                text = if (isBengali) "টাকার পরিমাণ" else "Amount",
+2208:                            val errMsg = if (isBengali) "আইটেমের নাম ফাঁকা রাখা যাবে না!" else "Write item name first!"
+2211:                            val errMsg = if (isBengali) "সঠিক টাকার পরিমাণ টাইপ করুন!" else "Please type a valid price!"
+2233:                        text = if (isBengali) "আইটেম যোগ করুন" else "Add item",
+2243:                        text = if (isBengali) "যোগকৃত তালিকা:" else "Added list:",
+2331:                            text = if (isBengali) "মোট পরিমাণ" else "Total Invoice",
+2348:                        text = if (isBengali) "লেনদেনের মাধ্যম" else "Payment Channel",
+2358:                        val modes = if (isBengali) {
+2405:                        Text(if (isBengali) "বাতিল" else "Cancel", color = if (isSystemInDarkTheme()) Color.White else Color.Gray)
+2420:                                val err = if (isBengali) "কমপক্ষে একটি পেমেন্ট আইটেম এন্ট্রি দিন" else "Please list at least one valid item amount"
+2430:                        Text(if (isBengali) "সংরক্ষণ করুন" else "Save", color = Color.White)
+2446:    val isBengali by viewModel.isBengali.collectAsState()
+2453:    var editableNote by remember { mutableStateOf(if (isBengali) "বকেয়া বিল পরিশোধ" else "Dues payment") }
+2490:                    text = if (isBengali) "UPI পেমেন্ট লিংক ও QR জেনারেটর" else "UPI Link & QR Generator",
+2498:                    text = if (isBengali) {
+2513:                    label = { Text(if (isBengali) "UPI VPA আইডি" else "Merchant UPI VPA") },
+2530:                    label = { Text(if (isBengali) "গ্রহীতার নাম" else "Payee / Merchant Name") },
+2551:                        label = { Text(if (isBengali) "পরিমাণ (₹)" else "Amount (₹)") },
+2569:                        label = { Text(if (isBengali) "নোট / বিবরণ" else "Payment Note") },
+2599:                            text = if (isBengali) "জেনারেট করা UPI লিংক (UPI String):" else "Generated UPI Pay Intent String:",
+2629:                                if (isBengali) "লিংক ক্লিপবোর্ডে কপি হয়েছে!" else "UPI intent link copied to clipboard!",
+2648:                            text = if (isCopied) (if (isBengali) "কপি হয়েছে" else "Copied") else (if (isBengali) "কপি করুন" else "Copy Link"),
+2663:                                context.startActivity(Intent.createChooser(shareIntent, if (isBengali) "লিংক শেয়ার করুন" else "Share Payment Link"))
+2681:                            text = if (isBengali) "শেয়ার করুন" else "Share Link",
+2693:                            val msg = if (isBengali) {
+2702:                            Toast.makeText(context, if (isBengali) "হোয়াটসঅ্যাপ পাওয়া যায়নি অথবা সমস্যা হচ্ছে" else "WhatsApp request failed", Toast.LENGTH_SHORT).show()
+2730:                                text = if (isBengali) "হোয়াটসঅ্যাপে কাস্টমারকে রিকোয়েস্ট পাঠান" else "Request Customer via WhatsApp",
+2736:                                text = if (isBengali) "সরাসরি রেডিমেড টেক্সট মেসেজ ও পেমেন্ট লিংক শেয়ার করুন" else "Instantly share prefilled message & link details",
+2777:                    text = if (isBengali) {
+2795:                    Text(if (isBengali) "সম্পন্ন" else "Done", color = Color.White, fontWeight = FontWeight.Bold)
+2807:    val isBengali by viewModel.isBengali.collectAsState()
+2886:                        text = if (isBengali) "ব্যবসায়িক অ্যানালাইসিস" else "Business Intelligence",
+2893:                        text = if (isBengali) "দেনার মোট হিসাব ও আদায়ের গতিধারা" else "Gain insights into your credit & collection",
+2910:                        isBengali = isBengali,
+2921:                        isBengali = isBengali,
+2930:                        isBengali = isBengali,
+2939:                        isBengali = isBengali,
+2947:                        text = if (isBengali) "লেনদেনের তালিকা (${finalFilteredList.size}টি)" else "Transactions Listing (${finalFilteredList.size})",
+2957:                        EmptyStateBlock(isBengali = isBengali)
+2961:                        TransactionItemRow(isBengali = isBengali, tx = tx)
+2971:    isBengali: Boolean,
+2976:        "DAILY" to (if (isBengali) "আজ" else "Daily"),
+2977:        "WEEKLY" to (if (isBengali) "সветаহ" else "Weekly"), // corrected translated text for better aesthetic representation
+2978:        "MONTHLY" to (if (isBengali) "মাস" else "Monthly"),
+2979:        "ALL" to (if (isBengali) "সব সময়" else "All Time")
+3021:    isBengali: Boolean,
+3025:    val filters = if (isBengali) {
+3064:    isBengali: Boolean,
+3087:                    Text(if (isBengali) "বাকি দিয়েছেন" else "Credit Given", fontSize = 11.sp, color = Color.White.copy(alpha = 0.85f), fontWeight = FontWeight.Bold)
+3112:                    Text(if (isBengali) "ক্যাশ উঠেছে" else "Cash Received", fontSize = 11.sp, color = Color.White.copy(alpha = 0.85f), fontWeight = FontWeight.Bold)
+3128:    isBengali: Boolean,
+3140:        collectionRate >= 80 -> if (isBengali) "ক্যাশ আদায় চমৎকার!" else "Excellent cash collection."
+3141:        collectionRate >= 50 -> if (isBengali) "ক্যাশ আদায় সন্তোষজনক।" else "Healthy balanced cashflow."
+3142:        collectionRate > 0 -> if (isBengali) "তাড়াতাড়ি বাকি আদায় করুন।" else "Collect dues soon."
+3143:        else -> if (isBengali) "কোনো আদান-প্রদান শুরু হয়নি।" else "No transactions found."
+3146:    val dueText = if (isBengali) {
+3163:                text = if (isBengali) "লেনদেন আদায় অগ্রগতি" else "Ledger Collection Progress",
+3215:                        text = if (isBengali) "মোট আদায়ের হার" else "Cash collection rate",
+3227:    isBengali: Boolean,
+3247:                    text = if (isBengali) "লেনদেন ট্রেন্ড" else "Ledger Trend",
+3268:                            text = if (isBengali) "বাকি" else "Give",
+3285:                            text = if (isBengali) "আদায়" else "Got",
+3304:                        text = if (isBengali) "পর্যাপ্ত ডেটা নেই" else "Not enough data",
+3376:fun EmptyStateBlock(isBengali: Boolean) {
+3392:                text = if (isBengali) "কোনো লেনদেনের হিসাব পাওয়া যায়নি!" else "No transactions found!",
+3398:                text = if (isBengali) "অন্য আরেকটি ক্যাটাগরি বা সময় নির্বাচন করে চেষ্টা করুন" else "Try filtering a different window range or payment type",
+3408:fun TransactionItemRow(isBengali: Boolean, tx: Transaction) {
+3429:                            if (isBengali) "বাকি বিক্রি" else "Sales on Credit"
+3431:                            if (isBengali) "টাকা আদায়" else "Payment Received"
+3442:                text = if (isBengali) {
+3461:    val isBengali by viewModel.isBengali.collectAsState()
+3512:                    text = if (isBengali) "প্রোফাইল সেটিংস" else "Settings",
+3569:                                text = if (isBengali) "হাই, $displayName" else "Hi, $displayName",
+3576:                                text = ownerUser?.shopName ?: (if (isBengali) "কাস্টমার অ্যাকাউন্ট" else "Customer Connected Account"),
+3626:                                    text = if (isBengali) "সহজ খাতা প্রিমিয়াম" else "Shohoj Khata Premium",
+3635:                                    if (isBengali) "আপনার প্রিমিয়াম স্টোর অ্যাক্সেস সফলভাবে সক্রিয় করা হয়েছে! সুবিধা উপভোগ করুন।" 
+3638:                                    if (isBengali) "পাবলিক ডিরেক্টরিতে আপনার দোকান তালিকাভুক্ত করুন এবং গ্রাহকদের সরাসরি লাইভ বিল আপডেট পাঠান।" 
+3654:                                        text = if (isBengali) "প্রিমিয়াম স্টোর অ্যাক্টিভ ✨" else "Active Premium Status ✨",
+3672:                                        text = if (isBengali) "প্রিমিয়াম স্টোর চালু করুন" else "Activate Premium • ₹999",
+3708:                    text = if (isBengali) "অন্যান্য সেটিংস" else "Other Settings",
+3731:                            title = if (isBengali) "আমার প্রোফাইল ও অ্যাকাউন্ট" else "My Account & Profile",
+3744:                                title = if (isBengali) "দোকানের সেটিংস" else "Shop Settings",
+3763:                                text = if (isBengali) "ভাষা" else "App Language",
+3774:                                // "বাংলা" Segment (Selected if isBengali is true)
+3781:                                            if (isBengali) Color.White else Color(0xFF1F1F1F)
+3784:                                            width = if (isBengali) 1.5.dp else 1.dp,
+3785:                                            color = if (isBengali) Color.White else Color.White.copy(alpha = 0.2f),
+3788:                                        .clickable { if (!isBengali) viewModel.setLanguage(true) },
+3794:                                        fontWeight = if (isBengali) FontWeight.Bold else FontWeight.Medium,
+3795:                                        color = if (isBengali) Color(0xFF121212) else Color.White.copy(alpha = 0.65f)
+3799:                                // "English" Segment (Selected if isBengali is false)
+3806:                                            if (!isBengali) Color.White else Color(0xFF1F1F1F)
+3809:                                            width = if (!isBengali) 1.5.dp else 1.dp,
+3810:                                            color = if (!isBengali) Color.White else Color.White.copy(alpha = 0.2f),
+3813:                                        .clickable { if (isBengali) viewModel.setLanguage(false) },
+3819:                                        fontWeight = if (!isBengali) FontWeight.Bold else FontWeight.Medium,
+3820:                                        color = if (!isBengali) Color(0xFF121212) else Color.White.copy(alpha = 0.65f)
+3841:                                text = if (isBengali) "ব্যবহারকারীর ধরণ" else "User Mode",
+3871:                                        text = if (isBengali) "দোকানদার" else "Merchant",
+3896:                                        text = if (isBengali) "কাস্টমার" else "Client",
+3915:                            title = if (isBengali) "বার্তা নোটিফিকেশন" else "Notifications",
+3941:                            title = if (isBengali) "ক্লাউড সিকিউর ব্যাকআপ" else "Upload / Sync to Supabase",
+3944:                                    LedgerViewModel.SyncState.SYNCING -> if (isBengali) "সিঙ্ক..." else "Syncing..."
+3945:                                    LedgerViewModel.SyncState.SUCCESS -> if (isBengali) "সফল ✅" else "Success ✅"
+3946:                                    LedgerViewModel.SyncState.ERROR -> if (isBengali) "ব্যর্থ ❌" else "Failed ❌"
+3947:                                    else -> if (isBengali) "ব্যাকআপ" else "Backup"
+3974:                                val msg = if (isBengali) "ক্লাউড আপলোড শুরু হয়েছে..." else "Uploading database to Supabase Cloud..."
+3987:                            title = if (isBengali) "সাইন আউট" else "Sign out",
+3991:                                val logoutAlert = if (isBengali) "সাফল্যজনকভাবে লগআউট সম্পন্ন!" else "Secured Google log-out complete!"
+4005:                isBengali = isBengali,
+4015:                isBengali = isBengali,
+4025:                isBengali = isBengali,
+4093:    isBengali: Boolean,
+4105:                text = if (isBengali) "প্রোফাইল সংশোধন" else "Edit Profile Information",
+4119:                    label = { Text(if (isBengali) "মালিকের নাম" else "Owner Name") },
+4141:                    label = { Text(if (isBengali) "পিন লক পাসওয়ার্ড" else "Security PIN Password") },
+4167:                        val alert = if (isBengali) "অনুগ্রহ করে সব তথ্য সঠিক দিন" else "Please correctly fill all information"
+4171:                        val successAlert = if (isBengali) "প্রোফাইল পরিবর্তন সফল হয়েছে!" else "Profile details updated!"
+4178:                Text(if (isBengali) "সংরক্ষণ" else "Save", color = Color.White)
+4183:                Text(if (isBengali) "বাতিল" else "Cancel", color = Color.LightGray)
+4193:    isBengali: Boolean,
+4220:                text = if (isBengali) "দোকানের সেটিংস" else "Edit Shop Settings",
+4234:                    label = { Text(if (isBengali) "দোকানের নাম" else "Shop Name") },
+4254:                    text = if (isBengali) "দোকানের ক্যাটাগরি" else "Shop Category",
+4323:                            label = { Text(if (isBengali) "কাস্টম ক্যাটাগরি" else "Custom Category") },
+4344:                    label = { Text(if (isBengali) "পেমেন্ট UPI আইডি" else "Payment UPI ID") },
+4373:                        val alert = if (isBengali) "দয়া করে দোকানের নাম দিন" else "Please enter a shop name"
+4383:                        val successAlert = if (isBengali) "দোকানের সেটিংস আপডেট করা হয়েছে!" else "Shop details updated!"
+4390:                Text(if (isBengali) "সংরক্ষণ" else "Save", color = Color.White)
+4395:                Text(if (isBengali) "বাতিল" else "Cancel", color = Color.LightGray)
+4406:    val isBengali by viewModel.isBengali.collectAsState()
+4418:                text = if (isBengali) "ক্লাউড থেকে খাতা রিস্টোর করুন" else "Restore Ledger from Cloud",
+4430:                    text = if (isBengali) "আপনার নিবন্ধিত ইমেইল আইডি এবং ৪-ডিজিটের পিন কোড দিন।" else "Provide your registered email and 4-digit PIN.",
+4456:                    label = { Text(if (isBengali) "৪-ডিজিট পিন" else "4-Digit PIN") },
+4475:                        if (isBengali) "খাতা ডাউনলোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন..." else "Downloading ledger, please wait..."
+4492:                        statusMsg = if (isBengali) "সঠিক ইমেইল এবং ৪ অঙ্কের পিন লিখুন।" else "Enter a valid email and 4-digit PIN."
+4498:                            Toast.makeText(context, if (isBengali) "সাফল্যজনকভাবে খাতা রিস্টোর হয়েছে!" else "Ledger successfully restored!", Toast.LENGTH_SHORT).show()
+4505:                Text(if (isBengali) "রিস্টোর করুন" else "Restore", color = Color.White)
+4510:                Text(if (isBengali) "বাতিল" else "Cancel", color = Color.LightGray)
+4517:fun PlanComparisonTable(isBengali: Boolean) {
+4539:                    text = if (isBengali) "ফিচার" else "Feature",
+4546:                    text = if (isBengali) "ফ্রি (₹০)" else "Free (₹0)",
+4554:                    text = if (isBengali) "প্রিমিয়াম (₹৯৯৯)" else "Premium (₹999)",
+4567:                    if (isBengali) "গ্রাহক সংখ্যা" else "Customers",
+4568:                    if (isBengali) "সর্বোচ্চ ১৫" else "Max 15 customers",
+4569:                    if (isBengali) "আনলিমিটেড" else "Unlimited customers"
+4572:                    if (isBengali) "হোয়াটসঅ্যাপ" else "WhatsApp",
+4573:                    if (isBengali) "নেই" else "No WhatsApp reminders",
+4574:                    if (isBengali) "১-ক্লিক" else "Yes (1-Click WhatsApp reminders)"
+4577:                    if (isBengali) "পাবলিক ডিরেক্টরি" else "Shop Directory",
+4578:                    if (isBengali) "পাবলিক স্টোর" else "Public (Listed in global Shop Section)",
+4579:                    if (isBengali) "পাবলিক স্টোর" else "Public (Listed in global Shop Section)"
+4582:                    if (isBengali) "আইটেমযুক্ত হিসাব" else "Itemized Entries",
+4583:                    if (isBengali) "৫০ চা, ৫০ আদা" else "Itemized entries (50 cha, 50 ada)",
+4584:                    if (isBengali) "৫০ চা, ৫০ আদা" else "Itemized entries (50 cha, 50 ada)"
+4587:                    if (isBengali) "ক্লায়েন্ট ড্যাশবোর্ড" else "Client UI Live",
+4588:                    if (isBengali) "রিয়েল-টাইম" else "Real-Time line-item details on client UI",
+4589:                    if (isBengali) "রিয়েল-টাইম" else "Real-Time line-item details on client UI"
+4659:    isBengali: Boolean,
+4692:            paymentStatusText = if (isBengali) "নিরাপদ পেমেন্ট গেটওয়েতে সংযোগ করা হচ্ছে..." else "Opening secure UPI checkout gateway..."
+4695:            paymentStatusText = if (isBengali) "ট্রানজ্যাকশন অনুমোদিত হচ্ছে..." else "Authorizing ₹999 subscription charge..."
+4698:            paymentStatusText = if (isBengali) "পেমেন্ট সফলভাবে নিশ্চিত করা হয়েছে!" else "Secure UPI Payment authorization successful!"
+4739:                        text = if (isBengali) "সহজ খাতা প্রিমিয়াম" else "ShohojKhata Premium",
+4747:                        text = if (isBengali) "মাত্র ₹৯৯৯/বছরে আনলিমিটেড কাস্টমার পান!" 
+4759:                    PlanComparisonTable(isBengali = isBengali)
+4772:                                text = if (isBengali) "পরে করুন" else "Maybe Later",
+4785:                                text = if (isBengali) "পরবর্তী" else "Continue • ₹999",
+4794:                        text = if (isBengali) "স্টোরফ্রন্ট কনফিগার করুন" else "Configure Store Details",
+4803:                        label = { Text(if (isBengali) "দোকানের নাম" else "Store / Business Name") },
+4826:                            text = if (isBengali) "দোকানের ক্যাটাগরি" else "Choose Store Category",
+4898:                                label = { Text(if (isBengali) "কাস্টম ক্যাটাগরি" else "Custom Category Name") },
+4899:                                placeholder = { Text(if (isBengali) "যেমন: Cloth Store" else "e.g. Cloth Store") },
+4921:                        label = { Text(if (isBengali) "অবস্থান / ঠিকানা" else "Store Location") },
+4941:                        label = { Text(if (isBengali) "ইউপিআই আইডি (পেমেন্ট সংগ্রহের জন্য)" else "Merchant Payment UPI ID") },
+4969:                            Text(text = if (isBengali) "পিছনে" else "Back", color = Color.LightGray)
+4988:                            Text(text = if (isBengali) "পেমেন্ট সিমুলেশন" else "Proceed with Pay", color = Color.White)
+5000:                        text = if (isBengali) "পেমেন্ট প্রসেসিং হচ্ছে..." else "Processing Subscription Securely...",
+5040:                        text = if (isBengali) "পেমেন্ট সফল হয়েছে! 🎉" else "Subscription Successful! 🎉",
+5048:                        text = if (isBengali) "অভিনন্দন! আপনার স্টোরটি সক্রিয় হয়েছে এবং স্থানীয় কাস্টমারদের জন্য পাবলিক ডিরেক্টরিতে প্রকাশিত হয়েছে।" 
+5068:                                    text = if (isBengali) "তথ্য সংশোধন" else "Edit Details",
+5080:                                    if (isBengali) "সহজ খাতা প্রিমিয়াম সেটিং সংরক্ষিত!" else "Store features synchronized successfully!",
+5091:                                    if (isBengali) "সংরক্ষণ করুন" else "Save & Close"
+5093:                                    if (isBengali) "ঠিক আছে" else "Finish Setup"
+5109:    val isBengali by viewModel.isBengali.collectAsState()
+5135:                    text = if (isBengali) "🏪 দোকানদার" else "🏪 Merchant",
+5149:                    text = if (isBengali) "👥 কাস্টমার" else "👥 Client",
+5161:    val isBengali by viewModel.isBengali.collectAsState()
+5206:                            text = if (isBengali) "সহজ খাতা" else "Shohoj Khata!",
+5246:                                text = if (isBengali) "খাতা হিসাব\nসহজে রাখুন" else "Track running\nledger easily",
+5278:                                text = if (isBengali) "ডিজিটাল পেমেন্ট\nসংগ্রহ ও সিঙ্ক" else "Direct UPI\ncollections",
+5325:                                    text = if (isBengali) "লাইভ ক্লাউড\nসিঙ্ক্রোনাইজেশন" else "Real-time live\ncloud sync",
+5343:                        text = if (isBengali) "১-ক্লিকেই দ্রুত সাইনআপ এবং লাইভ ব্যাকআপ" else "Zero-friction instant Google signup with real-time sync",
+5371:                                text = if (isBengali) "শুরু করুন" else "Get Started",
+5392:                            text = if (isBengali) "সাইন-ইন করুন" else "Sign In",
+5454:                            text = if (isBengali) "সহজ খাতা" else "Shohoj Khata",
+5476:                            text = if (isBengali) "নতুন অ্যাকাউন্ট খুলুন" else "Create Account",
+5483:                            text = if (isBengali) "ডিজিটাল খাতা সুরক্ষিত রাখতে একটি অ্যাকাউন্ট তৈরি করুন ও ভেরিফাই করুন।"
+5526:                                    text = if (isBengali) "গুগল অ্যাকাউন্ট দিয়ে সাইন-ইন" else "Continue with Google",
+5558:                                    text = if (isBengali) "সরাসরি গেস্ট হিসেবে ব্যবহার করুন" else "Continue as Guest",
+5575:                            text = if (isBengali) "অথবা ইমেইল দিয়ে" else "Or with email",
+5590:                        placeholder = { Text(if (isBengali) "ইমেইল এড্রেস লিখুন" else "Email address", color = Color.Gray) },
+5610:                                    Toast.makeText(context, if (isBengali) "সঠিক ইমেইল এড্রেস প্রবেশ করান" else "Please enter a valid email address", Toast.LENGTH_SHORT).show()
+5622:                                Toast.makeText(context, if (isBengali) "সঠিক ইমেইল এড্রেস প্রবেশ করান" else "Please enter a valid email address", Toast.LENGTH_SHORT).show()
+5646:                                text = if (isBengali) "অ্যাকাউন্ট তৈরি করুন" else "Create Account",
+5662:                        text = if (isBengali) "আগের একাউন্ট আছে? লগ-ইন" else "Have an account? Log In",
+5670:                        text = if (isBengali) "ব্যবহারের শর্তাবলী  ।  গোপনীয়তা নীতি" else "Terms of Service  |  Privacy Policy",
+5686:                        text = if (isBengali) "একটি অ্যাকাউন্ট বেছে নিন" else "Choose an account",
+5746:                        Text(if (isBengali) "বাদ দিন" else "Cancel", color = Color.Gray)
+5759:    val isBengali by viewModel.isBengali.collectAsState()
+5825:                            text = if (isBengali) "সাবস্ক্রিপশন প্ল্যান" else "Subscription Plans",
+5842:                            text = if (isBengali) "প্রিমিয়াম স্টোর পান" else "Get Premium",
+5848:                            text = if (isBengali) "এক্সক্লুসিভ ফিচার এবং বিজ্ঞাপন মুক্ত ডিরেক্টরি সিঙ্কের জন্য প্রিমিয়াম কিনুন!"
+5893:                                    text = if (isBengali) "₹৯৯৯" else "₹999",
+5899:                                    text = if (isBengali) " / বাৎসরিক" else " / year",
+5908:                                text = if (isBengali) "আনলিমিটেড কাস্টমার ও ১-ক্লিক হোয়াটসঅ্যাপ রিমাইন্ডার" else "Unlimited customers & 1-click WhatsApp reminders",
+5927:                                    text = if (isBengali) "প্ল্যান সাবস্ক্রাইব করুন" else "Manage plan",
+5938:                        text = if (isBengali) "প্ল্যান তুলনা করুন" else "Compare Plans",
+5945:                    PlanComparisonTable(isBengali = isBengali)
+5955:                            text = if (isBengali) "প্রায়শই জিজ্ঞাসিত প্রশ্নাবলী (FAQs)" else "Frequently asked questions",
+5964:                            (if (isBengali) "ক্লাউড সিঙ্ক্রোনাইজেশন কিভাবে কাজ করে?" else "How does cloud sync update works?") to 
+5965:                            (if (isBengali) "আপনি যখনই কোনো নতুন লেনদেন লিখবেন, সহজ খাতা তা সরাসরি সার্ভারে ক্লাউড সিঙ্ক করে ফেলে যাতে কাস্টমার সাথে সাথেই লাইভ আপডেট দেখতে পায়।" 
+5968:                            (if (isBengali) "কাস্টমার ফ্রিতে অ্যাপ ব্যবহার করতে পারবে?" else "Can regular customers use the system for free?") to 
+5969:                            (if (isBengali) "হ্যাঁ! কাস্টমার সম্পূর্ণ বিনামূল্যে সহজ খাতা প্লেস্টোর থেকে ব্যবহার করে আপনার লভ্যাংশ এবং রানিং বিল দেখতে পারে।" 
+5972:                            (if (isBengali) "আমি কি কোনো কাস্টমারকে লেজার বুক থেকে বাদ দিতে পারবো?" else "Can I disconnect or remove any joined clients?") to 
+5973:                            (if (isBengali) "হ্যাঁ, যেকোনো কাস্টমারকে প্রোফাইল ট্যাব অথবা কাস্টমার ব্যালেন্স উইন্ডো থেকে এক ক্লিকেই রিমুভ বা ব্লক করা যাবে।" 
+6069:                            text = if (isBengali) "কার্ড যুক্ত করুন" else "Add card",
+6200:                                text = if (isBengali) "কার্ডধারীর নাম" else "Card holder name",
+6221:                                text = if (isBengali) "কার্ড নম্বর" else "Card Number",
+6250:                                    text = if (isBengali) "মেয়াদ উত্তীর্ণের তারিখ" else "Expiry Date",
+6300:                                Toast.makeText(context, if (isBengali) "দয়া করে সব পেমেন্ট তথ্য পূরণ করুন" else "Please fill all card details", Toast.LENGTH_SHORT).show()
+6302:                                Toast.makeText(context, if (isBengali) "পেমেন্ট অথোরাইজেশন সফল হয়েছে!" else "Premium deposit verified successfully!", Toast.LENGTH_SHORT).show()
+6313:                            text = if (isBengali) "কার্ড যোগ করুন এবং নিশ্চিত করুন" else "Add Card",
+6348:                            text = if (isBengali) "আপনার দোকান কনফিগার করুন" else "Setup Your Digital Storefront",
+6355:                            text = if (isBengali) "সাবস্ক্রিপশন চালু হয়েছে! নিচের তথ্য দিয়ে আপনার পাবলিক স্টোর ডিরেক্টরি প্রকাশ করুন।"
+6364:                            label = { Text(if (isBengali) "দোকানের নাম" else "Shop Name") },
+6383:                            text = if (isBengali) "দোকানের ক্যাটাগরি" else "Shop Category",
+6460:                                label = { Text(if (isBengali) "কাস্টম ক্যাটাগরি" else "Custom Category Name") },
+6461:                                placeholder = { Text(if (isBengali) "যেমন: Cloth Store" else "e.g. Cloth Store") },
+6482:                            label = { Text(if (isBengali) "ঠিকানা / অবস্থান" else "Store Location") },
+6503:                            label = { Text(if (isBengali) "ইউপিআই আইডি ( পেমেন্টের জন্য)" else "Merchant UPI ID") },
+6531:                                Text(if (isBengali) "বাতিল" else "Back", color = Color.Gray)
+6551:                                Text(if (isBengali) "চালু করুন" else "Launch Store", color = Color.White)
+6563:    val isBengali by viewModel.isBengali.collectAsState()
+6626:                text = if (isBengali) "হ্যালো," else "HELLO,",
+6664:                        text = if (isBengali) "আপনার দোকানসমূহে সর্বমোট বকেয়া" else "TOTAL DUES ACROSS YOUR SHOPS",
+6679:                    val shopCountText = if (isBengali) {
+6703:                "MY_BOOKS" to (if (isBengali) "আমার লাইভ বিল" else "My Joined Books"),
+6704:                "MALL" to (if (isBengali) "দোকানের তালিকা" else "Shop Directory")
+6841:                        text = if (isBengali) "কোনো সংযুক্ত দোকান পাওয়া যায়নি। শপ মল খুঁজে সংযুক্ত হোন!" else "No joined stores found. Join shops to track items live!",
+6891:                                        Text(if (isBengali) "লাইভ ভিউ করতে ক্লিক করুন" else "Tap to view live bookkeeping", fontSize = 11.sp, color = Color.Gray)
+6911:    val isBengali by viewModel.isBengali.collectAsState()
+6992:                    Text(if (isBengali) "লাইভ সুরক্ষিত লেজার বুক" else "Live Synced Ledger", fontSize = 11.sp, color = Color.Gray)
+7016:                        text = if (isBengali) "আপনার মোট বকেয়া পরিমাণ" else "Your Net Account Balance",
+7023:                        if (isBengali) "দেবেন (Due)" else "DUE Owed"
+7025:                        if (isBengali) "পাবেন (We Owe You)" else "Advance Paid"
+7056:                                text = if (isBengali) "ইউপিআই পেমেন্ট করুন" else "Pay Dues via UPI / Scan QR",
+7066:                text = if (isBengali) "লাইভ স্টেটমেন্ট খতিয়ান" else "Live Synced Timeline Ledger",
+7084:                        text = if (isBengali) "কোনো সাম্প্রতিক লেনদেন পাওয়া যায়নি।" else "No live history registered. Once the merchant links your account, entries stream here in real-time!",
+7116:                                        text = tx.description.ifEmpty { if (isDebit) (if (isBengali) "বাকি দেওয়া হল" else "Purchase") else (if (isBengali) "ক্যাশ পেমেন্ট" else "Receipt") },
+7156:    val isBengali by viewModel.isBengali.collectAsState()
+7208:                        text = if (isBengali) "ব্যক্তিগত আমানত হিসাব" else "Personal Ledger Statement",
+7251:                                        text = if (isBengali) "মোট বাকি (ওভারঅল)" else "Total Outstanding Dues",
+7288:                                                text = if (isBengali) "যোগ দেওয়া খাতা" else "Join Books",
+7310:                                                text = if (isBengali) "মোট লেনদেন" else "Total Transactions",
+7330:                            text = if (isBengali) "দোকান ভিত্তিক হিসাব" else "Shopwise Standing",
+7350:                                        text = if (isBengali) "কোনো তথ্য এখনো নেই।" else "No shop files linked yet.",
+7386:                                            text = resolvedShopName.ifEmpty { if (isBengali) "লোড হচ্ছে..." else "Loading shop..." },
+7392:                                            text = if (isBengali) "সংযুক্ত খাতা আইডি: ${customer.id}" else "Synced Book ID # ${customer.id}",
+7412:                            text = if (isBengali) "সম্পূর্ণ লেনদেন ইতিহাস" else "Full Statement History",
+7432:                                        text = if (isBengali) "কোনো লেনদেন পাওয়া যায়নি।" else "No transactions found.",
+7477:                                            text = shopNameForTx.ifEmpty { if (isBengali) "লেজার বুক" else "Ledger book" },
+7484:                                            text = tx.description.ifEmpty { if (isDebit) (if (isBengali) "বাকি বিক্রি" else "Purchase on Credit") else (if (isBengali) "টাকা পরিশোধ" else "Payment Received") },
+7504:                                            text = if (isDebit) (if (isBengali) "বাকি" else "DUE") else (if (isBengali) "পরিশোধিত" else "PAID"),

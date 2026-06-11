@@ -14,6 +14,8 @@ data class User(
     val shopType: String,
     val upiId: String,
     val pin: String, // 4-digit security PIN for authentication
+    val avatarUrl: String? = null,
+    val bannerUrl: String? = null,
     val createdAt: Long = System.currentTimeMillis()
 )
 

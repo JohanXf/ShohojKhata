@@ -51,6 +51,14 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.text.font.FontFamily
 
+fun formatAmt(amount: Double, isBengali: Boolean, decimals: Int = 0): String {
+    val formatStr = if (decimals > 0) "%,.${decimals}f" else "%,.0f"
+    val enFormat = String.format(formatStr, amount)
+    if (!isBengali) return enFormat
+    val banglaDigits = mapOf('0' to '০', '1' to '১', '2' to '২', '3' to '৩', '4' to '৪', '5' to '৫', '6' to '৬', '7' to '৭', '8' to '৮', '9' to '৯')
+    return enFormat.map { banglaDigits[it] ?: it }.joinToString("")
+}
+
 @Composable
 fun NeumorphicCard(
     modifier: Modifier = Modifier,
@@ -674,7 +682,7 @@ fun DashboardScreen(
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "₹ ${String.format("%,.0f", netBalance)}",
+                            text = "₹ ${formatAmt(netBalance, isBengali)}",
                             fontSize = 32.sp,
                             fontWeight = FontWeight.ExtraBold,
                             fontFamily = FontFamily.Serif,
@@ -736,7 +744,7 @@ fun DashboardScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "₹ ${String.format("%,.0f", totalWeGet)}",
+                                    text = "₹ ${formatAmt(totalWeGet, isBengali)}",
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     fontFamily = FontFamily.Serif,
@@ -784,7 +792,7 @@ fun DashboardScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "₹ ${String.format("%,.0f", totalWeGive)}",
+                                    text = "₹ ${formatAmt(totalWeGive, isBengali)}",
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     fontFamily = FontFamily.Serif,
@@ -1050,11 +1058,11 @@ fun CustomerListItem(
                 when {
                     dues > 0 -> {
                         Text(if (isBengali) "পাবেন" else "Get", fontSize = 11.sp, color = Color(0xFFFFCDD2), fontWeight = FontWeight.Bold)
-                        Text("₹ ${String.format("%,.0f", dues)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Serif, color = Color(0xFFFF8A80))
+                        Text("₹ ${formatAmt(dues, isBengali)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Serif, color = Color(0xFFFF8A80))
                     }
                     dues < 0 -> {
                         Text(if (isBengali) "দেবেন" else "Give", fontSize = 11.sp, color = Color(0xFFC8E6C9), fontWeight = FontWeight.Bold)
-                        Text("₹ ${String.format("%,.0f", -dues)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Serif, color = Color(0xFF81C784))
+                        Text("₹ ${formatAmt(-dues, isBengali)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Serif, color = Color(0xFF81C784))
                     }
                     else -> {
                         Text(if (isBengali) "সমতা" else "Settled", fontSize = 11.sp, color = Color.White.copy(alpha = 0.7f), fontWeight = FontWeight.Medium)
@@ -1340,7 +1348,7 @@ fun CustomerDetailScreen(
                             Spacer(modifier = Modifier.height(4.dp))
 
                             Text(
-                                text = "₹ ${String.format("%,.0f", currentDues)}",
+                                text = "₹ ${formatAmt(currentDues, isBengali)}",
                                 fontSize = 32.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = if (currentDues > 0) Color(0xFFFF8A80) else (if (currentDues < 0) Color(0xFF81C784) else Color.White)
@@ -1384,9 +1392,9 @@ fun CustomerDetailScreen(
                                             return@TextButton
                                         }
                                         val shareText = if (isBengali) {
-                                            "প্রিয় ${customer!!.name},\nসহজ খাতা (Sohoj Khata) অনুযায়ী '${ownerUser?.shopName}' দোকানে আপনার বকেয়া হিসাব রয়েছে ₹ ${String.format("%,.0f", currentDues)}। অনুগ্রহ করে দ্রুত পরিশোধ করুন।\nধন্যবাদ!"
+                                            "প্রিয় ${customer!!.name},\nসহজ খাতা (Sohoj Khata) অনুযায়ী '${ownerUser?.shopName}' দোকানে আপনার বকেয়া হিসাব রয়েছে ₹ ${formatAmt(currentDues, isBengali)}। অনুগ্রহ করে দ্রুত পরিশোধ করুন।\nধন্যবাদ!"
                                         } else {
-                                            "Dear ${customer!!.name},\nAccording to Sohoj Khata, your outstanding balance with '${ownerUser?.shopName}' is ₹ ${String.format("%,.0f", currentDues)}. Please settle it at your earliest convenience.\nThank you!"
+                                            "Dear ${customer!!.name},\nAccording to Sohoj Khata, your outstanding balance with '${ownerUser?.shopName}' is ₹ ${formatAmt(currentDues, isBengali)}. Please settle it at your earliest convenience.\nThank you!"
                                         }
                                         try {
                                             val intent = Intent(Intent.ACTION_SEND).apply {
@@ -1562,7 +1570,7 @@ fun CustomerDetailScreen(
                                                     Spacer(modifier = Modifier.width(4.dp))
                                                     Text(pair.first, fontSize = 13.sp, color = Color.White, fontWeight = FontWeight.Medium)
                                                 }
-                                                Text("₹ ${String.format("%,.0f", pair.second)}", fontSize = 13.sp, color = Color.White, fontWeight = FontWeight.Bold)
+                                                Text("₹ ${formatAmt(pair.second, isBengali)}", fontSize = 13.sp, color = Color.White, fontWeight = FontWeight.Bold)
                                             }
                                         }
                                     }
@@ -1855,7 +1863,7 @@ fun CustomerDetailScreen(
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Text(
-                                                    text = "${if (isGet) "-" else ""}₹${String.format("%,.0f", tx.amount)}",
+                                                    text = "${if (isGet) "-" else ""}₹${formatAmt(tx.amount, isBengali)}",
                                                     fontSize = 14.sp,
                                                     color = rowTextCol,
                                                     fontWeight = FontWeight.Bold
@@ -1882,7 +1890,7 @@ fun CustomerDetailScreen(
                                             color = AppCaramel.copy(alpha = 0.6f)
                                         )
                                         Text(
-                                            text = "${if (dayTotal < 0) "-" else ""}₹${String.format("%,.0f", if (dayTotal >= 0) dayTotal else -dayTotal)}",
+                                            text = "${if (dayTotal < 0) "-" else ""}₹${formatAmt(if (dayTotal >= 0) dayTotal else -dayTotal, isBengali)}",
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 15.sp,
                                             color = if (dayTotal < 0) KhataGreen else KhataRed
@@ -1925,7 +1933,7 @@ fun CustomerDetailScreen(
                                 )
                             }
                             Text(
-                                text = "₹ ${String.format("%,.0f", finalDues)}",
+                                text = "₹ ${formatAmt(finalDues, isBengali)}",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
@@ -2034,7 +2042,7 @@ fun TransactionRow(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "${if (isGive) "-" else "+"} ₹ ${String.format("%,.0f", transaction.amount)}",
+                    text = "${if (isGive) "-" else "+"} ₹ ${formatAmt(transaction.amount, isBengali)}",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = if (isGive) KhataRed else (if (isSystemInDarkTheme()) Color(0xFFFFD494) else KhataGreen)
@@ -2286,7 +2294,7 @@ fun TransactionEntryDialog(
                                 }
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
-                                        text = "₹ ${String.format("%,.0f", item.second)}",
+                                        text = "₹ ${formatAmt(item.second, isBengali)}",
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = if (isSystemInDarkTheme()) Color.White else NavyDark
@@ -2334,7 +2342,7 @@ fun TransactionEntryDialog(
                             color = if (isSystemInDarkTheme()) Color.White else (if (activeType == "GIVE") KhataRed else KhataGreen)
                         )
                         Text(
-                            text = "₹ ${String.format("%,.0f", runningTotal)}",
+                            text = "₹ ${formatAmt(runningTotal, isBengali)}",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = if (isSystemInDarkTheme()) Color.White else (if (activeType == "GIVE") KhataRed else KhataGreen)
@@ -2974,7 +2982,7 @@ fun TimeFilterTabsRow(
 ) {
     val filters = listOf(
         "DAILY" to (if (isBengali) "আজ" else "Daily"),
-        "WEEKLY" to (if (isBengali) "সветаহ" else "Weekly"), // corrected translated text for better aesthetic representation
+        "WEEKLY" to (if (isBengali) "এই সপ্তাহ" else "This Week"), // corrected translated text for better aesthetic representation
         "MONTHLY" to (if (isBengali) "মাস" else "Monthly"),
         "ALL" to (if (isBengali) "সব সময়" else "All Time")
     )
@@ -3088,7 +3096,7 @@ fun AuditMetricsBlock(
                 }
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "₹ ${String.format("%,.0f", creditTotal)}",
+                    text = "₹ ${formatAmt(creditTotal, isBengali)}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = Color(0xFFFF8A80)
@@ -3113,7 +3121,7 @@ fun AuditMetricsBlock(
                 }
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "₹ ${String.format("%,.0f", debitTotal)}",
+                    text = "₹ ${formatAmt(debitTotal, isBengali)}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = Color(0xFF81C784)
@@ -3144,9 +3152,9 @@ fun CollectionGoalGaugeCard(
     }
 
     val dueText = if (isBengali) {
-        "বাকি পাওনা: ₹ ${String.format("%,.0f", maxOf(0.0, creditTotal - debitTotal))}"
+        "বাকি পাওনা: ₹ ${formatAmt(maxOf(0.0, creditTotal - debitTotal), isBengali)}"
     } else {
-        "Pending Dues: ₹ ${String.format("%,.0f", maxOf(0.0, creditTotal - debitTotal))}"
+        "Pending Dues: ₹ ${formatAmt(maxOf(0.0, creditTotal - debitTotal), isBengali)}"
     }
 
     NeumorphicCard(
@@ -3440,9 +3448,9 @@ fun TransactionItemRow(isBengali: Boolean, tx: Transaction) {
 
             Text(
                 text = if (isBengali) {
-                    "${if (isGive) "বাকি " else "জমা "} ₹ ${String.format("%,.0f", tx.amount)}"
+                    "${if (isGive) "বাকি " else "জমা "} ₹ ${formatAmt(tx.amount, isBengali)}"
                 } else {
-                    "${if (isGive) "DUE " else "PAID "} ₹ ${String.format("%,.0f", tx.amount)}"
+                    "${if (isGive) "DUE " else "PAID "} ₹ ${formatAmt(tx.amount, isBengali)}"
                 },
                 fontSize = 14.sp,
                 fontWeight = FontWeight.ExtraBold,
@@ -3935,56 +3943,9 @@ fun ProfileScreen(
                             thickness = 1.dp
                         )
 
-                        val syncState by viewModel.syncState.collectAsState()
-                        SettingsListItem(
-                            icon = Icons.Default.CloudSync,
-                            title = if (isBengali) "ক্লাউড সিকিউর ব্যাকআপ" else "Upload / Sync to Supabase",
-                            trailingContent = {
-                                val statusText = when (syncState) {
-                                    LedgerViewModel.SyncState.SYNCING -> if (isBengali) "সিঙ্ক..." else "Syncing..."
-                                    LedgerViewModel.SyncState.SUCCESS -> if (isBengali) "সফল ✅" else "Success ✅"
-                                    LedgerViewModel.SyncState.ERROR -> if (isBengali) "ব্যর্থ ❌" else "Failed ❌"
-                                    else -> if (isBengali) "ব্যাকআপ" else "Backup"
-                                }
-                                val badgeBg = when (syncState) {
-                                    LedgerViewModel.SyncState.SYNCING -> Color.Gray.copy(alpha = 0.2f)
-                                    LedgerViewModel.SyncState.SUCCESS -> Color(0xFF2E7D32).copy(alpha = 0.15f)
-                                    LedgerViewModel.SyncState.ERROR -> Color.Red.copy(alpha = 0.15f)
-                                    else -> Color.Gray.copy(alpha = 0.15f)
-                                }
-                                val badgeColor = when (syncState) {
-                                    LedgerViewModel.SyncState.SYNCING -> Color.LightGray
-                                    LedgerViewModel.SyncState.SUCCESS -> Color(0xFF4CAF50)
-                                    LedgerViewModel.SyncState.ERROR -> Color.Red
-                                    else -> Color.LightGray
-                                }
-                                Text(
-                                    text = statusText,
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = badgeColor,
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(badgeBg)
-                                        .padding(horizontal = 10.dp, vertical = 4.dp)
-                                )
-                            },
-                            onItemClick = {
-                                viewModel.triggerSync()
-                                val msg = if (isBengali) "ক্লাউড আপলোড শুরু হয়েছে..." else "Uploading database to Supabase Cloud..."
-                                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                            }
-                        )
-
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 20.dp),
-                            color = Color.LightGray.copy(alpha = 0.3f),
-                            thickness = 1.dp
-                        )
-
                         SettingsListItem(
                             icon = Icons.Default.ExitToApp,
-                            title = if (isBengali) "লগআউট (গুগল অ্যাকাউন্ট)" else "Log Out (Google Account)",
+                            title = if (isBengali) "সাইন আউট" else "Sign out",
                             titleColor = Color.Red,
                             onItemClick = {
                                 viewModel.logoutGoogle()
@@ -4210,6 +4171,8 @@ fun EditShopSettingsDialog(
         )
     }
     var upiId by remember { mutableStateOf(ownerUser.upiId) }
+    var avatarUrl by remember { mutableStateOf(ownerUser.avatarUrl ?: "") }
+    var bannerUrl by remember { mutableStateOf(ownerUser.bannerUrl ?: "") }
     val context = LocalContext.current
 
     AlertDialog(
@@ -4359,6 +4322,50 @@ fun EditShopSettingsDialog(
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                OutlinedTextField(
+                    value = avatarUrl,
+                    onValueChange = { avatarUrl = it },
+                    label = { Text(if (isBengali) "প্রোফাইল পিকচার লিংক" else "Avatar URL (Optional)") },
+                    leadingIcon = { Icon(Icons.Default.Image, null, tint = ForestGreen) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.LightGray,
+                        focusedContainerColor = Color(0xFF1C1C1E),
+                        unfocusedContainerColor = Color(0xFF1C1C1E),
+                        focusedBorderColor = Color(0xFF2E7D32),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                        focusedLabelColor = Color(0xFF2E7D32),
+                        unfocusedLabelColor = Color.Gray,
+                        focusedLeadingIconColor = ForestGreen,
+                        unfocusedLeadingIconColor = Color.Gray
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                OutlinedTextField(
+                    value = bannerUrl,
+                    onValueChange = { bannerUrl = it },
+                    label = { Text(if (isBengali) "ব্যানার ছবির লিংক" else "Banner URL (Optional)") },
+                    leadingIcon = { Icon(Icons.Default.Image, null, tint = ForestGreen) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.LightGray,
+                        focusedContainerColor = Color(0xFF1C1C1E),
+                        unfocusedContainerColor = Color(0xFF1C1C1E),
+                        focusedBorderColor = Color(0xFF2E7D32),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
+                        focusedLabelColor = Color(0xFF2E7D32),
+                        unfocusedLabelColor = Color.Gray,
+                        focusedLeadingIconColor = ForestGreen,
+                        unfocusedLeadingIconColor = Color.Gray
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         },
         confirmButton = {
@@ -4378,7 +4385,9 @@ fun EditShopSettingsDialog(
                             shopName = shopName,
                             shopType = finalCategory,
                             upiId = upiId,
-                            pin = ownerUser.pin
+                            pin = ownerUser.pin,
+                            avatarUrl = avatarUrl.ifBlank { null },
+                            bannerUrl = bannerUrl.ifBlank { null }
                         )
                         val successAlert = if (isBengali) "দোকানের সেটিংস আপডেট করা হয়েছে!" else "Shop details updated!"
                         Toast.makeText(context, successAlert, Toast.LENGTH_SHORT).show()
@@ -6669,7 +6678,7 @@ fun ClientPortalScreen(viewModel: LedgerViewModel, onOpenSettings: () -> Unit) {
                     )
 
                     Text(
-                        text = "₹ ${String.format("%,.0f", totalDuesAmt)}",
+                        text = "₹ ${formatAmt(totalDuesAmt, isBengali)}",
                         fontSize = 54.sp,
                         fontFamily = FontFamily.Serif,
                         fontWeight = FontWeight.Normal,
@@ -6726,26 +6735,27 @@ fun ClientPortalScreen(viewModel: LedgerViewModel, onOpenSettings: () -> Unit) {
         Spacer(modifier = Modifier.height(8.dp))
 
         if (activeClientTab == "MALL") {
+            data class ShopDisplayInfo(val id: String, val name: String, val desc: String, val owner: String, val bannerUrl: String?, val avatarUrl: String?)
             val publicShops = remember(activeMerchant, isPremiumMerchant) {
                 val list = mutableListOf(
-                    Triple("1", "Laxmi Grocery Store", "Grocery Shop • Kolkata, WB"),
-                    Triple("2", "Mayer Doa Pharmacy", "Pharmacy • Dhaka, BD"),
-                    Triple("3", "Milon Tea Stall", "Restaurant & Cafe • Garia, WB")
+                    ShopDisplayInfo("1", "Laxmi Grocery Store", "Grocery Shop • Kolkata, WB", "Subir Mukherjee", null, null),
+                    ShopDisplayInfo("2", "Mayer Doa Pharmacy", "Pharmacy • Dhaka, BD", "Abdul Hamid", null, null),
+                    ShopDisplayInfo("3", "Milon Tea Stall", "Restaurant & Cafe • Garia, WB", "Milon Kanti", null, null)
                 )
                 val merchant = activeMerchant
                 if (isPremiumMerchant && merchant != null) {
-                    list.add(Triple("own", merchant.shopName, "${merchant.shopType} • Kolkata, WB"))
+                    list.add(ShopDisplayInfo("own", merchant.shopName, "${merchant.shopType} • Kolkata, WB", merchant.name, merchant.bannerUrl, merchant.avatarUrl))
                 }
                 list
             }
 
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(publicShops.size) { index ->
-                    val (shopId, shopName, shopDesc) = publicShops[index]
-                    val isJoined = joinedStores.contains(shopId)
+                    val shopInfo = publicShops[index]
+                    val isJoined = joinedStores.contains(shopInfo.id)
 
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -6753,39 +6763,93 @@ fun ClientPortalScreen(viewModel: LedgerViewModel, onOpenSettings: () -> Unit) {
                         shape = RoundedCornerShape(16.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(shopName, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-                                Spacer(modifier = Modifier.height(2.dp))
-                                Text(shopDesc, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                            }
-
+                        Column {
+                            // Banner
                             Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .background(if (isJoined) Color.LightGray.copy(alpha = 0.2f) else ForestGreen)
-                                    .clickable {
-                                        if (isJoined) {
-                                            viewModel.leaveShop(shopId)
-                                        } else {
-                                            viewModel.joinShop(shopId)
-                                        }
-                                    }
-                                    .padding(horizontal = 14.dp, vertical = 8.dp),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxWidth()
+                                    .height(80.dp)
+                                    .background(ForestGreen.copy(alpha = 0.2f))
                             ) {
-                                Text(
-                                    text = if (isJoined) (if (isBengali) "যুক্ত" else "Joined ✅") else (if (isBengali) "যোগ দিন" else "➕ Join"),
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (isJoined) Color.Gray else Color.White
-                                )
+                                if (shopInfo.bannerUrl != null) {
+                                    coil.compose.AsyncImage(
+                                        model = shopInfo.bannerUrl,
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Default.Storefront,
+                                        contentDescription = null,
+                                        tint = ForestGreen.copy(alpha = 0.3f),
+                                        modifier = Modifier.align(Alignment.Center).size(48.dp)
+                                    )
+                                }
+                            }
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.Top,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                // Profile picture
+                                Box(
+                                    modifier = Modifier
+                                        .size(50.dp)
+                                        .offset(y = (-30).dp)
+                                        .clip(CircleShape)
+                                        .background(Color.White)
+                                        .border(2.dp, ForestGreen, CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (shopInfo.avatarUrl != null) {
+                                        coil.compose.AsyncImage(
+                                            model = shopInfo.avatarUrl,
+                                            contentDescription = null,
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                        )
+                                    } else {
+                                        Text(
+                                            text = shopInfo.name.take(1),
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = ForestGreen
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column(modifier = Modifier.weight(1f).offset(y = (-4).dp)) {
+                                    Text(shopInfo.name, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text("খাতা: ${shopInfo.owner}", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = ForestGreen)
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(shopInfo.desc, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(20.dp))
+                                        .background(if (isJoined) Color.LightGray.copy(alpha = 0.2f) else ForestGreen)
+                                        .clickable {
+                                            if (isJoined) {
+                                                viewModel.leaveShop(shopInfo.id)
+                                            } else {
+                                                viewModel.joinShop(shopInfo.id)
+                                            }
+                                        }
+                                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = if (isJoined) Icons.Default.CheckCircle else Icons.Default.AddCircleOutline,
+                                        contentDescription = if (isJoined) "Joined" else "Join",
+                                        tint = if (isJoined) Color.Gray else Color.White,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
                             }
                         }
                     }
@@ -6988,7 +7052,7 @@ fun ClientLiveBillView(
                     }
 
                     Text(
-                        text = "₹${String.format("%,.2f", if (totalDues >= 0) totalDues else -totalDues)}",
+                        text = "₹${formatAmt(if (totalDues >= 0) totalDues else -totalDues, isBengali, 2)}",
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Black,
                         color = balanceColor
@@ -7089,7 +7153,7 @@ fun ClientLiveBillView(
                                 }
 
                                 Text(
-                                    text = "₹${String.format("%,.0f", tx.amount)}",
+                                    text = "₹${formatAmt(tx.amount, isBengali)}",
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Black,
                                     color = if (isDebit) KhataRed else KhataGreen
@@ -7226,7 +7290,7 @@ fun ClientReportsScreen(viewModel: LedgerViewModel) {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 
                                 Text(
-                                    text = "₹ ${String.format("%,.0f", totalDues)}",
+                                    text = "₹ ${formatAmt(totalDues, isBengali)}",
                                     fontSize = 28.sp,
                                     fontWeight = FontWeight.Black,
                                     color = if (totalDues > 0) KhataRed else KhataGreen
@@ -7358,7 +7422,7 @@ fun ClientReportsScreen(viewModel: LedgerViewModel) {
                                     }
                                     
                                     Text(
-                                        text = "₹ ${String.format("%,.0f", customer.totalDues)}",
+                                        text = "₹ ${formatAmt(customer.totalDues, isBengali)}",
                                         fontWeight = FontWeight.Black,
                                         fontSize = 16.sp,
                                         color = if (customer.totalDues > 0) KhataRed else KhataGreen
@@ -7457,7 +7521,7 @@ fun ClientReportsScreen(viewModel: LedgerViewModel) {
                                     
                                     Column(horizontalAlignment = Alignment.End) {
                                         Text(
-                                            text = "₹ ${String.format("%,.0f", tx.amount)}",
+                                            text = "₹ ${formatAmt(tx.amount, isBengali)}",
                                             fontWeight = FontWeight.Black,
                                             fontSize = 16.sp,
                                             color = if (isDebit) KhataRed else KhataGreen

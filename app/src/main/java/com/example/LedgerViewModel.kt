@@ -212,10 +212,9 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
     fun isSupabaseActive(): Boolean = false
 
     fun triggerSync() {
-        if (!isSupabaseActive()) return
         viewModelScope.launch {
             _syncState.value = SyncState.SYNCING
-            val success = repository.syncWithSupabase()
+            val success = repository.syncWithFirebase()
             if (success) {
                 _syncState.value = SyncState.SUCCESS
                 // Refresh active customer data to update screens
@@ -274,17 +273,81 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
     init {
         // Auto-authenticate and auto-seed default owner Laxmi Grocery / Subir Mukherjee on first launch
         viewModelScope.launch {
-            val user = repository.getFirstUser()
+            var user = repository.getFirstUser()
             if (user == null) {
-                // Not authenticated yet
-                _isLocked.value = false
-            } else {
+                // Seed default Shop Owner 1 (Laxmi Grocery)
+                repository.registerUser(
+                    name = "Subir Mukherjee",
+                    phone = "+91 98765 43210",
+                    shopName = "Laxmi Grocery",
+                    shopType = "Kirana store",
+                    upiId = "laxmigrocery@upi",
+                    pin = "1234",
+                    id = 1
+                )
+                // Seed Owner 2 (Mayer Doa Enterprise)
+                repository.registerUser(
+                    name = "Abdul Hamid",
+                    phone = "+91 98765 88888",
+                    shopName = "Mayer Doa Enterprise",
+                    shopType = "Electronics & hardware",
+                    upiId = "mayerdoa@upi",
+                    pin = "5678",
+                    id = 2
+                )
+                // Seed Owner 3 (Milon Tea Stall)
+                repository.registerUser(
+                    name = "Milon Kanti",
+                    phone = "+91 98765 99999",
+                    shopName = "Milon Tea Stall",
+                    shopType = "Tea & snacks",
+                    upiId = "milontea@upi",
+                    pin = "0000",
+                    id = 3
+                )
+
+                // Seed some customers for Owner 1 (Laxmi Grocery)
+                val sujataId = repository.insertCustomer(1, "Sujata di", "+91 91234 56780", null, false)
+                repository.insertCustomer(1, "Imran (mechanic)", "+91 99887 12345", null, false)
+                repository.insertCustomer(1, "Ravi da", "+91 93333 44455", null, false)
+                repository.insertCustomer(1, "Amit (3rd floor)", "+91 98765 43210", null, false)
+                repository.insertCustomer(1, "Priyanka madam", "+91 90000 11122", null, false)
+
+                // Add Sujata di's transactions
+                repository.addTransaction(sujataId.toInt(), 320.0, "GIVE", "Vegetables", "CASH")
+                repository.addTransaction(sujataId.toInt(), 320.0, "GET", "Paid", "CASH")
+                repository.addTransaction(sujataId.toInt(), 50.0, "GIVE", "Cha", "CASH")
+                repository.addTransaction(sujataId.toInt(), 60.0, "GIVE", "Gorom moshla", "CASH")
+
+                // Seed "Faizen Ahmed" customer accounts under all three shops to show live bills
+                val faizen1 = repository.insertCustomer(1, "Faizen Ahmed", "+91 91234 00000", "faizennahmed@gmail.com", true)
+                repository.addTransaction(faizen1.toInt(), 120.0, "GIVE", "Amul Butter & bread", "CASH")
+                repository.addTransaction(faizen1.toInt(), 120.0, "GIVE", "Cadbury Celebration pack", "CASH")
+
+                val faizen2 = repository.insertCustomer(2, "Faizen Ahmed", "+91 91234 00000", "faizennahmed@gmail.com", true)
+                repository.addTransaction(faizen2.toInt(), 1500.0, "GIVE", "Electric Stand Fan", "UPI")
+                repository.addTransaction(faizen2.toInt(), 300.0, "GET", "Advance payment", "UPI")
+
+                val faizen3 = repository.insertCustomer(3, "Faizen Ahmed", "+91 91234 00000", "faizennahmed@gmail.com", true)
+                repository.addTransaction(faizen3.toInt(), 25.0, "GIVE", "Lemon Tea & Biscuits", "CASH")
+                repository.addTransaction(faizen3.toInt(), 30.0, "GIVE", "Special Milk Tea & Cake", "CASH")
+                repository.addTransaction(faizen3.toInt(), 30.0, "GIVE", "Hot Tea x 3", "CASH")
+
+                // Seed Siam Rahman customer accounts
+                val siam1 = repository.insertCustomer(1, "Siam Rahman", "+91 99887 76655", "siam.rahman@gmail.com", true)
+                repository.addTransaction(siam1.toInt(), 90.0, "GIVE", "Rin soap & Surf Excel", "CASH")
+
+                user = repository.getFirstUser()
+            }
+
+            if (user != null) {
                 _authenticatedUser.value = user
                 _isLocked.value = false
-                
                 if (isSupabaseActive()) {
                     triggerSync()
                 }
+            } else {
+                _isLocked.value = false
             }
         }
     }
@@ -340,7 +403,7 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
         _pinError.value = null
     }
 
-    fun updateProfile(name: String, shopName: String, shopType: String, upiId: String, pin: String) {
+    fun updateProfile(name: String, shopName: String, shopType: String, upiId: String, pin: String, avatarUrl: String? = null, bannerUrl: String? = null) {
         val currentUser = _authenticatedUser.value ?: return
         viewModelScope.launch {
             val updatedUser = currentUser.copy(
@@ -348,7 +411,9 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
                 shopName = shopName,
                 shopType = shopType,
                 upiId = upiId,
-                pin = pin
+                pin = pin,
+                avatarUrl = avatarUrl ?: currentUser.avatarUrl,
+                bannerUrl = bannerUrl ?: currentUser.bannerUrl
             )
             repository.updateUser(updatedUser)
             _authenticatedUser.value = updatedUser
@@ -364,6 +429,7 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
         val currentUser = _authenticatedUser.value ?: return
         viewModelScope.launch {
             repository.insertCustomer(currentUser.id, name, phone, email, isJoined)
+            triggerSync()
             onSuccess()
         }
     }
@@ -385,6 +451,7 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
             val updated = customer.copy(name = name, phone = phone, email = email)
             repository.updateCustomer(updated)
             _selectedCustomer.value = updated
+            triggerSync()
         }
     }
 
@@ -392,6 +459,7 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             repository.deleteCustomer(customer)
             _selectedCustomer.value = null
+            triggerSync()
             onSuccess()
         }
     }
@@ -408,6 +476,7 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             repository.addTransaction(currentCust.id, amount, type, description, paymentMethod)
             refreshSelectedCustomer()
+            triggerSync()
             onSuccess()
         }
     }
@@ -416,6 +485,7 @@ class LedgerViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             repository.deleteTransaction(transaction)
             refreshSelectedCustomer()
+            triggerSync()
         }
     }
 }
